@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LaptopRepairController;
 use App\Http\Controllers\CompleteRepairController;
+use App\Http\Controllers\RepairTrackingController;
 
 
 // Public routes
@@ -40,7 +41,11 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
   
     Route::resource('complete-repair', CompleteRepairController::class)->except(['show']);  
 
+ 
+
 });
+
+   Route::get('/repair-tracking', [RepairTrackingController::class, 'index'])->name('web.repair-tracking.index');
 
    
 

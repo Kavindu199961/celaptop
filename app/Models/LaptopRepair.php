@@ -52,26 +52,13 @@ class LaptopRepair extends Model
     }
 
     /**
-     * Generate note number using NoteCounter
+     * Generate note number using NoteCounter (starts from 425)
      */
-
-/**
- * Generate note number using NoteCounter
- */
-public static function generateNoteNumber()
-{
-    return NoteCounter::getNextNoteNumber();
-}
-
-/**
- * Get current note number without incrementing
- */
-public static function getCurrentNoteNumber()
-{
-    return NoteCounter::getCurrentNoteNumber();
-}  /**
-     * Scope for filtering by status
-     */
+    public static function generateNoteNumber()
+    {
+        return NoteCounter::incrementAndGet('note_number');
+    }
+  
     public function scopeByStatus(Builder $query, string $status)
     {
         return $query->where('status', $status);
@@ -84,4 +71,6 @@ public static function getCurrentNoteNumber()
     {
         return $query->whereBetween('date', [$startDate, $endDate]);
     }
+
+    
 }

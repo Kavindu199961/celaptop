@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LaptopRepair;
 use App\Models\CompletedRepair;
 use Illuminate\Http\Request;
+use App\Models\NoteCounter; // Assuming you have a NoteCounter model for managing note numbers
 use Illuminate\Support\Facades\DB;
 
 class LaptopRepairController extends Controller
@@ -12,11 +13,12 @@ class LaptopRepairController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+ public function index()
 {
     $search = request('search');
-    $lastNoteNumber = LaptopRepair::latest()->value('note_number');
-    $nextNoteNumber = $lastNoteNumber ? $lastNoteNumber + 1 : 1; // Handle case when there are no records
+    
+    // Get the next note number that will be assigned to the next repair (without consuming it)
+    $nextNoteNumber = NoteCounter::incrementAndGet('note_number');
     
     $repairs = LaptopRepair::when($search, function($query) use ($search) {
             $query->where('customer_number', 'like', '%'.$search.'%')
@@ -27,7 +29,7 @@ class LaptopRepairController extends Controller
         })
         ->orderBy('date', 'desc')
         ->paginate(10);
-
+        
     return view('admin.laptop-repair.index', compact('repairs', 'nextNoteNumber'));
 }
 
@@ -55,13 +57,11 @@ class LaptopRepairController extends Controller
             'repair_price' => 'required|numeric|min:0',
             'note_number' => 'nullable|string|max:255',
             'date' => 'required|date',
-            'status' => 'nullable|in:pending,in_progress,completed,cancelled'
+            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+
         ]);
         
-        // Generate note number if not provided
-        if (empty($validated['note_number'])) {
-            $validated['note_number'] = LaptopRepair::generateNoteNumber();
-        }
+      
 
         // Set default status
         if (!isset($validated['status'])) {
