@@ -365,8 +365,6 @@
         });
 });
 
-
-
         // Handle Delete button click
         $(document).on('click', '.delete-repair', function() {
             var repairId = $(this).data('id');

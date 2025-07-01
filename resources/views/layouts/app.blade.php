@@ -82,11 +82,26 @@
                   </a>
               </li>
 
+
+              <li class="dropdown {{ request()->is('admin/invoices*') ? 'active' : '' }}">
+                  <a href="{{ route('admin.invoices.index') }}" class="nav-link">
+                      <i data-feather="monitor"></i><span>Invoice (Half A4)</span>
+                  </a>
+              </li>
+
+              <li class="dropdown {{ request()->is('admin/shop*') ? 'active' : '' }}">
+                  <a href="{{ route('admin.shop.index') }}" class="nav-link">
+                      <i data-feather="monitor"></i><span>Shop Details</span>
+                  </a>
+              </li>
+
             <li class="dropdown {{ request()->is('admin/complete-repair*') ? 'active' : '' }}">
                   <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">
                       <i data-feather="monitor"></i><span>Laptop traking</span>
                   </a>
               </li>
+
+              
 
 
               

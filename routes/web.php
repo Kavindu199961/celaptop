@@ -7,6 +7,8 @@ use App\Http\Controllers\LaptopRepairController;
 use App\Http\Controllers\CompleteRepairController;
 use App\Http\Controllers\RepairTrackingController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ShopController;
 
 
 // Public routes
@@ -57,7 +59,32 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
     // Vendor routes
     Route::get('/vendor/{vendor}', [StockController::class, 'vendorShow'])->name('vendor.show');
 });
- 
+
+Route::prefix('invoices')->name('invoices.')->group(function () {
+    Route::get('/', [InvoiceController::class, 'index'])->name('index');
+    Route::post('/', [InvoiceController::class, 'store'])->name('store');
+    Route::get('/create', [InvoiceController::class, 'create'])->name('create');
+    Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+    Route::get('/{invoice}/edit', [InvoiceController::class, 'edit'])->name('edit');
+    Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
+    Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
+    
+    // Additional invoice-specific routes
+    Route::get('/{invoice}/print', [InvoiceController::class, 'print'])->name('print');
+    Route::get('/{invoice}/download', [InvoiceController::class, 'download'])->name('download');
+    
+    // Customer routes (similar to your vendor routes)
+    Route::get('/customer/{customer}', [InvoiceController::class, 'customerShow'])->name('customer.show');
+});
+
+Route::prefix('shop')->name('shop.')->group(function () {
+    Route::get('/', [ShopController::class, 'index'])->name('index');
+    Route::post('/', [ShopController::class, 'store'])->name('store');
+    Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('edit');
+    Route::put('/{shop}', [ShopController::class, 'update'])->name('update');
+    Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('destroy');
+     Route::get('/{shop}', [ShopController::class, 'show'])->name('show');
+});
 
 });
 
