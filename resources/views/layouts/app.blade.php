@@ -95,7 +95,7 @@
                   </a>
               </li>
 
-            <li class="dropdown {{ request()->is('admin/complete-repair*') ? 'active' : '' }}">
+            <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
                   <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">
                       <i data-feather="monitor"></i><span>Laptop traking</span>
                   </a>
