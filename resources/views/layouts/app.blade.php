@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>Micro Channeling Center</title>
+  <title>CE Laptop Repair</title>
   <!-- General CSS Files -->
   <link rel="stylesheet" href="{{ asset('assets/css/app.min.css') }}">
   <!-- Template CSS -->
@@ -76,7 +76,13 @@
                   </a>
               </li>
 
- <li class="dropdown {{ request()->is('admin/complete-repair*') ? 'active' : '' }}">
+              <li class="dropdown {{ request()->is('admin/stock*') ? 'active' : '' }}">
+                  <a href="{{ route('admin.stock.index') }}" class="nav-link">
+                      <i data-feather="monitor"></i><span>Stock</span>
+                  </a>
+              </li>
+
+            <li class="dropdown {{ request()->is('admin/complete-repair*') ? 'active' : '' }}">
                   <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">
                       <i data-feather="monitor"></i><span>Laptop traking</span>
                   </a>

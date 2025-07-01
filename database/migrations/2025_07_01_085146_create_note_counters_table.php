@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('note_counters', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique(); // e.g., 'note_number'
-            $table->integer('value')->default(0);
+            $table->unsignedBigInteger('value')->default(1);
             $table->timestamps();
         });
     }

@@ -29,7 +29,7 @@ class LaptopRepair extends Model
     ];
 
     /**
-     * Boot method to auto-generate customer_number
+     * Boot method to auto-generate customer_number and note_number
      */
     protected static function boot()
     {
@@ -38,6 +38,10 @@ class LaptopRepair extends Model
         static::creating(function ($model) {
             if (empty($model->customer_number)) {
                 $model->customer_number = static::generateCustomerNumber();
+            }
+
+            if (empty($model->note_number)) {
+                $model->note_number = static::generateNoteNumber();
             }
         });
     }
@@ -52,13 +56,24 @@ class LaptopRepair extends Model
     }
 
     /**
-     * Generate note number using NoteCounter (starts from 425)
+     * Generate unique note number starting from 425
      */
     public static function generateNoteNumber()
     {
-        return NoteCounter::incrementAndGet('note_number');
+        $start = 425;
+        $noteNumber = NoteCounter::incrementAndGet('note_number');
+
+        // If it's the first time ever, set base
+        if ($noteNumber < $start) {
+            $noteNumber = $start;
+        }
+
+        return $noteNumber;
     }
-  
+
+    /**
+     * Scope for filtering by status
+     */
     public function scopeByStatus(Builder $query, string $status)
     {
         return $query->where('status', $status);
@@ -71,6 +86,4 @@ class LaptopRepair extends Model
     {
         return $query->whereBetween('date', [$startDate, $endDate]);
     }
-
-    
 }

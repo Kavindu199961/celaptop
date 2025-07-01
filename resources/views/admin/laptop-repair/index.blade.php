@@ -89,9 +89,9 @@
                                 <div class="editable-price" data-id="{{ $repair->id }}">
                                     <span class="price-display">{{ number_format($repair->repair_price, 2) }}</span>
                                     <input type="number" step="0.01" class="form-control price-input d-none" value="{{ $repair->repair_price }}">
-                                    <!-- <button class="btn btn-sm btn-link p-0 ml-1 edit-price-btn" title="Edit Price">
+                                    <button class="btn btn-sm btn-link p-0 ml-1 edit-price-btn" title="Edit Price">
                                         <i class="fas fa-edit text-primary"></i>
-                                    </button> -->
+                                    </button>
                                 </div>
                             </td>
                             <td>
@@ -111,9 +111,6 @@
                             </td>
                             <td>{{ $repair->date->format('Y-m-d') }}</td>
                             <td>
-                                <!-- <a href="{{ route('admin.laptop-repair.edit', $repair->id) }}" class="btn btn-sm btn-primary" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a> -->
                                 <button class="btn btn-sm btn-danger delete-repair" 
                                         data-id="{{ $repair->id }}"
                                         data-name="{{ $repair->customer_name }}">
@@ -123,7 +120,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="text-center">No repairs found</td>
+                            <td colspan="11" class="text-center">No repairs found</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -189,15 +186,16 @@
                                 <input type="number" step="0.01" class="form-control" id="create_repair_price" name="repair_price" required>
                             </div>
                             <div class="form-group">
-                            <label for="create_note_number">Note Number</label>
-                            <input type="text" class="form-control" id="create_note_number_display" value="{{ $nextNoteNumber }}" disabled>
-                            <input type="hidden" name="note_number" value="{{ $nextNoteNumber }}">
-                        </div>
+    <label for="create_note_number">Note Number</label>
+    <input type="text" class="form-control" id="create_note_number_display" disabled>
+    <input type="hidden" name="note_number">
+</div>
+
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="create_date">Date</label>
-                        <input type="date" class="form-control" id="create_date" name="date" required>
+                        <input type="date" class="form-control" id="create_date" name="date" required value="{{ date('Y-m-d') }}">
                     </div>
                 </div>
                 <div class="modal-footer bg-whitesmoke br">
@@ -333,15 +331,41 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
-        // Handle Add Repair button click
-        $('#addRepairBtn').on('click', function() {
-            $('#createRepairModal').modal('show');
-            
-            // Set default date to today
-            $('#create_date').val(new Date().toISOString().split('T')[0]);
+        // Initialize the modal
+        $('#createRepairModal').modal({
+            show: false
         });
+
+        // Handle Add Repair button click
+       $('#addRepairBtn').on('click', function () {
+    // Set today's date
+    $('#create_date').val(new Date().toISOString().split('T')[0]);
+
+    // Clear previous note number (optional)
+    $('#create_note_number_display').val('');
+    $('input[name="note_number"]').val('');
+
+    // Always show modal immediately to avoid "not opening" issues
+    $('#createRepairModal').modal('show');
+
+    // Now fetch note number asynchronously
+    $.get("{{ route('admin.laptop-repair.get-note-number') }}")
+        .done(function(response) {
+            if (response.note_number) {
+                $('#create_note_number_display').val(response.note_number);
+                $('input[name="note_number"]').val(response.note_number);
+            }
+        })
+        .fail(function() {
+            // If the request fails, show a message (optional)
+            alert('Failed to fetch note number');
+        });
+});
+
+
 
         // Handle Delete button click
         $(document).on('click', '.delete-repair', function() {
@@ -403,15 +427,14 @@
                                 confirmButtonText: 'Confirm & Complete',
                                 cancelButtonText: 'Cancel',
                                 showLoaderOnConfirm: true,
-                                allowOutsideClick: false, // Prevent closing by clicking outside
-                                allowEscapeKey: false, // Prevent closing with escape key
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
                                 preConfirm: (price) => {
                                     if (!price || price <= 0) {
                                         Swal.showValidationMessage('Please enter a valid price');
                                         return false;
                                     }
                                     
-                                    // Call the complete repair endpoint
                                     return $.ajax({
                                         url: "{{ route('admin.laptop-repair.complete', ':id') }}".replace(':id', repairId),
                                         method: 'PATCH',
@@ -446,7 +469,7 @@
                                         window.location.reload();
                                     });
                                 } else if (result.isDismissed) {
-                                    // If cancelled, revert the status back
+                                    // Revert to previous status
                                     Swal.fire({
                                         title: 'Reverting Status',
                                         text: 'Reverting repair status...',
@@ -457,7 +480,6 @@
                                         }
                                     });
                                     
-                                    // Revert to previous status
                                     $.ajax({
                                         url: "{{ route('admin.laptop-repair.update-status', ':id') }}".replace(':id', repairId),
                                         method: 'PATCH',
@@ -481,16 +503,6 @@
                                         }
                                     });
                                 }
-                            }).catch((error) => {
-                                console.error('SweetAlert error:', error);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'An error occurred while processing the request',
-                                    showConfirmButton: true
-                                }).then(() => {
-                                    window.location.reload();
-                                });
                             });
                         } else {
                             // For other status changes
@@ -504,7 +516,8 @@
                             });
                         }
                     }
-                },                error: function(xhr) {
+                },
+                error: function(xhr) {
                     // Revert the select to previous state on error
                     selectElement.val(currentStatus);
                     

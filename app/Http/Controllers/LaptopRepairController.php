@@ -13,13 +13,12 @@ class LaptopRepairController extends Controller
     /**
      * Display a listing of the resource.
      */
- public function index()
+public function index()
 {
     $search = request('search');
-    
-    // Get the next note number that will be assigned to the next repair (without consuming it)
-    $nextNoteNumber = NoteCounter::incrementAndGet('note_number');
-    
+
+
+
     $repairs = LaptopRepair::when($search, function($query) use ($search) {
             $query->where('customer_number', 'like', '%'.$search.'%')
                   ->orWhere('customer_name', 'like', '%'.$search.'%')
@@ -29,8 +28,8 @@ class LaptopRepairController extends Controller
         })
         ->orderBy('date', 'desc')
         ->paginate(10);
-        
-    return view('admin.laptop-repair.index', compact('repairs', 'nextNoteNumber'));
+
+    return view('admin.laptop-repair.index', compact('repairs', ));
 }
 
     /**
@@ -47,7 +46,6 @@ class LaptopRepairController extends Controller
   public function store(Request $request)
 {
     try {
-        // Validation
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'contact' => 'required|string|max:255',
@@ -55,21 +53,27 @@ class LaptopRepairController extends Controller
             'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
             'fault' => 'required|string',
             'repair_price' => 'required|numeric|min:0',
-            'note_number' => 'nullable|string|max:255',
             'date' => 'required|date',
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
-
         ]);
-        
-      
 
-        // Set default status
+        // Set default status if not provided
         if (!isset($validated['status'])) {
             $validated['status'] = 'pending';
         }
 
+        // Generate note number ONLY during store
+        $noteNumber = NoteCounter::incrementAndGet('note_number');
+        $validated['note_number'] = $noteNumber;
+
+        // Save note number to session temporarily (optional for display later)
+        session(['note_number' => $noteNumber]);
+
         // Create the record
         $repair = LaptopRepair::create($validated);
+
+        // Clear session note number to avoid reuse
+        session()->forget('note_number');
 
         return redirect()->route('admin.laptop-repair.index')
                          ->with('success', 'Repair record created successfully. Customer Number: ' . $repair->customer_number);
@@ -79,18 +83,17 @@ class LaptopRepairController extends Controller
                          ->withErrors($e->validator)
                          ->withInput()
                          ->with('error', 'Validation failed. Please check the form fields.');
-
     } catch (\Illuminate\Database\QueryException $e) {
         return redirect()->back()
                          ->withInput()
                          ->with('error', 'Database error occurred. Please try again.');
-
     } catch (\Exception $e) {
         return redirect()->back()
                          ->withInput()
                          ->with('error', 'An error occurred. Please try again.');
     }
-}/**
+}
+/**
      * Display the specified resource.
      */
     public function show($id)
@@ -295,4 +298,15 @@ class LaptopRepairController extends Controller
                              ->with('error', 'Failed to delete repair record: ' . $e->getMessage());
         }
     }
+
+ public function getNextNoteNumber()
+{
+    $currentValue = NoteCounter::where('key', 'note_number')->value('value');
+
+    // If no record exists yet, default to 1
+    $nextNoteNumber = $currentValue ? $currentValue + 1 : 1;
+
+    return response()->json(['note_number' => $nextNoteNumber]);
+}
+
 }
