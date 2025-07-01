@@ -2,6 +2,10 @@
 
 @section('content')
 <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>Completed Repairs</h4>
+            
+        </div>
     <div class="card-body">
         <!-- Search Form -->
         <form action="{{ route('admin.complete-repair.index') }}" method="GET" class="mb-4">
