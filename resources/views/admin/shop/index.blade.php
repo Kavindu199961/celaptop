@@ -97,7 +97,7 @@
 
 <!-- Create Shop Modal -->
 <div class="modal fade" id="createShopModal" tabindex="-1" role="dialog" aria-labelledby="createShopModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createShopModalLabel">Add New Shop</h5>
@@ -182,53 +182,11 @@
     </div>
 </div>
 
-<!-- View Shop Modal -->
-<div class="modal fade" id="viewShopModal" tabindex="-1" role="dialog" aria-labelledby="viewShopModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewShopModalLabel">Shop Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h5 id="view_shop_name"></h5>
-                        <p id="view_phone_number"></p>
-                    </div>
-                </div>
-                
-                <h5>Items</h5>
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Item Name</th>
-                                <th>Description</th>
-                                <th>Price</th>
-                                <th>Serial No.</th>
-                                <th>Warranty</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="viewItemsBody">
-                            <!-- Items will be loaded via AJAX -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer bg-whitesmoke br">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Edit Shop Modal -->
 <div class="modal fade" id="editShopModal" tabindex="-1" role="dialog" aria-labelledby="editShopModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editShopModalLabel">Edit Shop</h5>
@@ -368,45 +326,7 @@
         });
         
         // Handle View button click
-        $(document).on('click', '.view-shop', function() {
-            var shopId = $(this).data('id');
-            
-            // Fetch shop data via AJAX
-            $.get("{{ route('admin.shop.edit', ':id') }}".replace(':id', shopId), function(data) {
-                // Populate the view modal
-                $('#view_shop_name').text(data.shop_name);
-                $('#view_phone_number').text('Phone: ' + data.phone_number);
-                
-                // Populate items
-                var itemsHtml = '';
-                if(data.items.length > 0) {
-                    $.each(data.items, function(index, item) {
-                        itemsHtml += `
-                            <tr>
-                                <td>${item.item_name}</td>
-                                <td>${item.description || 'N/A'}</td>
-                                <td>${item.price.toFixed(2)}</td>
-                                <td>${item.serial_number || 'N/A'}</td>
-                                <td>${item.warranty || 'N/A'}</td>
-                                <td>${item.date ? item.date.split('T')[0] : 'N/A'}</td>
-                            </tr>
-                        `;
-                    });
-                } else {
-                    itemsHtml = '<tr><td colspan="6" class="text-center">No items found for this shop</td></tr>';
-                }
-                
-                $('#viewItemsBody').html(itemsHtml);
-                $('#viewShopModal').modal('show');
-            }).fail(function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to load shop data',
-                    confirmButtonColor: '#0d6efd'
-                });
-            });
-        });
+       
         
         // Handle Edit button click
         $(document).on('click', '.edit-shop', function() {

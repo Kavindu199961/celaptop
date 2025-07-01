@@ -89,9 +89,9 @@
                                 <div class="editable-price" data-id="{{ $repair->id }}">
                                     <span class="price-display">{{ number_format($repair->repair_price, 2) }}</span>
                                     <input type="number" step="0.01" class="form-control price-input d-none" value="{{ $repair->repair_price }}">
-                                    <button class="btn btn-sm btn-link p-0 ml-1 edit-price-btn" title="Edit Price">
+                                    <!-- <button class="btn btn-sm btn-link p-0 ml-1 edit-price-btn" title="Edit Price">
                                         <i class="fas fa-edit text-primary"></i>
-                                    </button>
+                                    </button> -->
                                 </div>
                             </td>
                             <td>
