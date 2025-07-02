@@ -32,7 +32,8 @@ class CompletedRepair extends Model
         'note_number',
         'customer_number',
         'status',
-        'completed_at'
+        'completed_at',
+        'images', // This will be a JSON field to store multiple image paths
     ];
 
     /**

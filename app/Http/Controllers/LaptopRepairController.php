@@ -26,7 +26,7 @@ public function index()
                   ->orWhere('note_number', 'like', '%'.$search.'%')
                   ->orWhere('device', 'like', '%'.$search.'%');
         })
-        ->orderBy('date', 'desc')
+        ->latest() // Assuming you have a scope for latest repairs
         ->paginate(10);
 
     return view('admin.laptop-repair.index', compact('repairs', ));
@@ -43,9 +43,10 @@ public function index()
     /**
      * Store a newly created resource in storage.
      */
-  public function store(Request $request)
+ public function store(Request $request)
 {
     try {
+        // ✅ Validate all inputs, including images array
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'contact' => 'required|string|max:255',
@@ -55,26 +56,44 @@ public function index()
             'repair_price' => 'nullable|numeric|min:0',
             'date' => 'required|date',
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+
+            // ✅ These two lines are important:
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
-        // Set default status if not provided
+        // ✅ Set default status
         if (!isset($validated['status'])) {
             $validated['status'] = 'pending';
         }
 
-        // Generate note number ONLY during store
+        // ✅ Generate note number
         $noteNumber = NoteCounter::incrementAndGet('note_number');
         $validated['note_number'] = $noteNumber;
 
-        // Save note number to session temporarily (optional for display later)
-        session(['note_number' => $noteNumber]);
+        // ✅ Handle image uploads if present
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
 
-        // Create the record
+            foreach ($request->file('images') as $image) {
+                if ($image && $image->isValid()) {
+                    $path = $image->store('repairs', 'public'); // stores in storage/app/public/repairs
+                    $imagePaths[] = $path;
+                }
+            }
+
+            if (!empty($imagePaths)) {
+                $validated['images'] = json_encode($imagePaths); // store as JSON in DB
+            }
+        }
+
+        // ✅ Create the repair record
         $repair = LaptopRepair::create($validated);
 
-        // Clear session note number to avoid reuse
+        // ✅ Clear session note number
         session()->forget('note_number');
 
+        // ✅ Redirect with success
         return redirect()->route('admin.laptop-repair.index')
                          ->with('success', 'Repair record created successfully. Customer Number: ' . $repair->customer_number);
 
@@ -93,12 +112,14 @@ public function index()
                          ->with('error', 'An error occurred. Please try again.');
     }
 }
+
 /**
      * Display the specified resource.
      */
     public function show($id)
     {
         $repair = LaptopRepair::findOrFail($id);
+        $repair->images = json_decode($repair->images, true);
         return view('admin.laptop-repair.show', compact('repair'));
     }
 

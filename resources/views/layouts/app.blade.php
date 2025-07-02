@@ -61,6 +61,11 @@
                 <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
               </a>
             </li>
+            <li class="dropdown {{ request()->is('admin/myshop*') ? 'active' : '' }}">
+              <a href="{{ route('admin.myshop.index') }}" class="nav-link">
+                <i class="fas fa-home"></i><span>My Shop Details</span>
+              </a>
+            </li>
 
             <li class="dropdown {{ request()->is('admin/invoices*') ? 'active' : '' }}">
               <a href="{{ route('admin.invoices.index') }}" class="nav-link">

@@ -17,7 +17,7 @@ class CompleteRepairController extends Controller
                       ->orWhere('serial_number', 'like', '%'.$search.'%')
                       ->orWhere('device', 'like', '%'.$search.'%');
             })
-            ->orderBy('date', 'desc')
+            ->latest() // Assuming you have a scope for latest repairs
             ->paginate(10);
 
         return view('admin.complete-repair.index', compact('repairs'));

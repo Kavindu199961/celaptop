@@ -138,16 +138,27 @@
         <div class="header">
             <table style="width: 100%; border: none; table-layout: fixed;">
                 <tr>
-                    <td style="width: 15%; text-align: left;">
-                        @if(isset($logoBase64))
-                            <img src="data:image/jpeg;base64,{{ $logoBase64 }}" alt="Logo" style="width: 70px; height: auto;">
+                   <td style="width: 15%; text-align: left;">
+                        @if($logoPath)
+                            <img src="{{ $logoPath }}" alt="Logo" style="width: 70px; height: auto;">
                         @endif
                     </td>
-                    <td style="width: 450%; text-align: center; margin-left: 100px;">
-                        <h1 style="margin: 0; font-size: 18px;">CE LAPTOP REPAIR CENTER</h1>
-                        <p style="margin: 5px 0; font-size: 10px;">Dealers in Desktop Computers, Laptop Accessories, Repairs Service & import wholesale and retail</p>
-                        <p style="margin: 5px 0; font-size: 10px;">254/1/1/6, Baladaksha Mawatha, New Sathipola Road, Mawanella, Sri Lanka</p>
-                        <p style="margin: 5px 0; font-size: 10px;"><strong>| Hotline: 0756502913 | Email : chammikaelectronic@gmail.com |</strong></p>
+                    <td style="width: 450%; text-align: center;">
+                        <h1 style="margin: 0; font-size: 18px; text-transform: uppercase;">
+                            {{ strtoupper($shopDetail->shop_name ?? 'SHOP NAME') }}
+                        </h1>
+                        <p style="margin: 2px 0; font-size: 10px;">
+                            {{ $shopDetail->description ?? 'Shop Description' }}
+                        </p>
+                        <p style="margin: 2px 0; font-size: 10px;">
+                            {{ $shopDetail->address ?? 'Shop Address' }}
+                        </p>
+                        <p style="margin: 2px 0; font-size: 10px;">
+                            <strong>
+                                | Hotline: {{ $shopDetail->hotline ?? 'Hotline' }} | 
+                                Email : {{ $shopDetail->email ?? 'Email' }} |
+                            </strong>
+                        </p>
                     </td>
                 </tr>
             </table>
@@ -207,12 +218,13 @@
             </tfoot>
         </table>
 
-        <div style="text-align: center; margin-top: 1px;">
+       <div style="text-align: center; margin-top: 1px;">
             <p style="margin: 0; font-size: 9px;">Thank You For Choosing Us</p>
-            <p style="margin: 0; font-size: 9px; text-align: left;">* Warranty for 1 Year Less 21 Working Days for computer hardware.</p>
-            <p style="margin: 0; font-size: 9px; text-align: left;">* No Warranty for Bum Marks, Scratches, Physical damages and any other damage happened by user activities.</p>
-            <p style="margin: 0; font-size: 9px; text-align: left;">* Goods sold once can't return.</p>
+            <p style="margin: 0; font-size: 9px; text-align: left;">* {{ $shopDetail->condition_1 ?? '' }}</p>
+            <p style="margin: 0; font-size: 9px; text-align: left;">* {{ $shopDetail->condition_2 ?? '' }}</p>
+            <p style="margin: 0; font-size: 9px; text-align: left;">* {{ $shopDetail->condition_3 ?? '' }}</p>
         </div>
+
 
         <table style="width: 100%; margin-top: 10px; table-layout: fixed;">
             <tr>

@@ -111,6 +111,9 @@
                             </td>
                             <td>{{ $repair->date->format('Y-m-d') }}</td>
                             <td>
+                                <a href="{{ route('admin.laptop-repair.show', $repair->id) }}" class="btn btn-sm btn-info" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <button class="btn btn-sm btn-danger delete-repair" 
                                         data-id="{{ $repair->id }}"
                                         data-name="{{ $repair->customer_name }}">
@@ -138,7 +141,7 @@
 
 <!-- Create Repair Modal -->
 <div class="modal fade" id="createRepairModal" tabindex="-1" role="dialog" aria-labelledby="createRepairModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createRepairModalLabel">Add New Laptop Repair</h5>
@@ -146,7 +149,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createRepairForm" method="POST" action="{{ route('admin.laptop-repair.store') }}">
+            <form id="createRepairForm" enctype="multipart/form-data"  method="POST" action="{{ route('admin.laptop-repair.store') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -180,6 +183,15 @@
                                 <textarea class="form-control" id="create_fault" name="fault" rows="3" required></textarea>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="create_images">Upload Images (optional)</label>
+                            <input type="file" class="form-control" name="images[]" id="create_images" multiple accept="image/*">
+                            <div id="imagePreviewContainer" class="mt-2 d-flex flex-wrap"></div>
+                        </div>
+
+                        </div>
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="create_repair_price">Repair Price (Optional)</label>
@@ -652,6 +664,81 @@
             $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
         });
     });
+
+    let selectedFiles = [];
+
+const input = document.getElementById('create_images');
+const container = document.getElementById('imagePreviewContainer');
+
+input.addEventListener('change', function (event) {
+    const newFiles = Array.from(event.target.files);
+
+    // Append new files (prevent duplicates by checking name + size)
+    newFiles.forEach(file => {
+        const isDuplicate = selectedFiles.some(existing =>
+            existing.name === file.name && existing.size === file.size
+        );
+        if (!isDuplicate) {
+            selectedFiles.push(file);
+        }
+    });
+
+    // Clear file input so selecting the same file again still triggers change
+    input.value = '';
+
+    // Refresh preview
+    showPreviews();
+});
+
+function showPreviews() {
+    container.innerHTML = '';
+
+    selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const previewBox = document.createElement('div');
+            previewBox.className = 'position-relative mr-2 mb-2';
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '120px';
+            img.style.height = '120px';
+            img.style.objectFit = 'cover';
+            img.className = 'img-thumbnail';
+
+            const removeBtn = document.createElement('span');
+            removeBtn.innerHTML = '&times;';
+            removeBtn.className = 'position-absolute text-white bg-danger rounded-circle text-center';
+            removeBtn.style.cssText = `
+                width: 18px;
+                height: 18px;
+                top: -6px;
+                right: -6px;
+                font-size: 14px;
+                cursor: pointer;
+                line-height: 18px;
+            `;
+            removeBtn.title = 'Remove';
+
+            removeBtn.addEventListener('click', function () {
+                selectedFiles.splice(index, 1);
+                showPreviews();
+            });
+
+            previewBox.appendChild(img);
+            previewBox.appendChild(removeBtn);
+            container.appendChild(previewBox);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Intercept form submit to update the input field manually
+document.getElementById('createRepairForm').addEventListener('submit', function (e) {
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach(file => dataTransfer.items.add(file));
+    input.files = dataTransfer.files;
+});
 </script>
 @endpush
 @endsection

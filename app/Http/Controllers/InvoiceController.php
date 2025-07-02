@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\MyShopDetail;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -85,50 +86,60 @@ class InvoiceController extends Controller
 
 
 
-    public function download(Invoice $invoice)
+public function download(Invoice $invoice)
 {
-    // Add logo path handling
-    $logoPath = public_path('assets/logo/logo1.jpg');
-    
-    // Convert logo to base64 for PDF embedding
-    $logoBase64 = null;
-    if (file_exists($logoPath)) {
-        $logoData = file_get_contents($logoPath);
-        $logoBase64 = base64_encode($logoData);
+    $shopDetail = MyShopDetail::first();
+    $logoPath = null;
+
+    if ($shopDetail && $shopDetail->logo_image) {
+        // Use storage path with proper visibility
+        $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
+        
+        // Verify file exists and is readable
+        if (!file_exists($logoPath) || !is_readable($logoPath)) {
+            \Log::error("Logo file not found or not readable: " . $logoPath);
+            $logoPath = null;
+        }
     }
 
-    // Determine which view to use based on the number of items
-    $viewName = ($invoice->items->count() > 10) 
+    $viewName = $invoice->items->count() > 10 
         ? 'admin.invoices.fullpdf' 
         : 'admin.invoices.pdf';
 
     $pdf = PDF::loadView($viewName, [
         'invoice' => $invoice,
-        'logoBase64' => $logoBase64
+        'logoPath' => $logoPath,  // Pass the path instead of base64
+        'shopDetail' => $shopDetail,
     ]);
-    
+
     return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
 }
 
- public function print(Invoice $invoice)
+
+public function print(Invoice $invoice)
 {
-    // Convert logo to base64
-    $logoPath = public_path('/assets/logo/logo1.jpg');
+    // Get the first shop detail (assuming one row)
+    $shopDetail = MyShopDetail::first();
+
+    // Default to null
     $logoBase64 = null;
 
-    if (file_exists($logoPath)) {
-        $logoData = file_get_contents($logoPath);
-        $logoBase64 = base64_encode($logoData);
+    if ($shopDetail && $shopDetail->logo_image) {
+        $logoPath = storage_path('app/public/' . $shopDetail->logo_image);// Adjust path as needed
+
+        if (file_exists($logoPath)) {
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = base64_encode($logoData);
+        }
     }
 
-    // Determine which view to use based on item count
+    // Determine which view to use
     $viewName = $invoice->items->count() > 10 
         ? 'admin.invoices.fullprint' 
         : 'admin.invoices.print';
 
-    return view($viewName, compact('invoice', 'logoBase64'));
+    return view($viewName, compact('invoice', 'logoBase64', 'shopDetail'));
 }
-
 
     public function destroy(Invoice $invoice)
     {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2025 at 09:14 AM
+-- Generation Time: Jul 02, 2025 at 09:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,6 +63,7 @@ CREATE TABLE `completed_repairs` (
   `note_number` varchar(255) DEFAULT NULL,
   `customer_number` varchar(255) NOT NULL,
   `status` enum('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'completed',
+  `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`images`)),
   `completed_at` datetime NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -72,9 +73,10 @@ CREATE TABLE `completed_repairs` (
 -- Dumping data for table `completed_repairs`
 --
 
-INSERT INTO `completed_repairs` (`id`, `customer_name`, `contact`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `note_number`, `customer_number`, `status`, `completed_at`, `created_at`, `updated_at`) VALUES
-(7, 'kavindu', '0765645303', '2025-06-29', 'fererg', 'dell', 65000.00, '12hghjer78542649freg', '438', 'CE-0008', 'completed', '2025-06-29 16:36:18', '2025-06-29 11:06:18', '2025-06-29 11:06:18'),
-(8, 'Kavindu', '0765645303', '2025-07-01', 'no power', 'Dell', 2500.00, '1245del234rtyun', '426', 'CE-0015', 'completed', '2025-07-01 09:19:36', '2025-07-01 03:49:36', '2025-07-01 03:49:36');
+INSERT INTO `completed_repairs` (`id`, `customer_name`, `contact`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `note_number`, `customer_number`, `status`, `images`, `completed_at`, `created_at`, `updated_at`) VALUES
+(7, 'kavindu', '0765645303', '2025-06-29', 'fererg', 'dell', 65000.00, '12hghjer78542649freg', '438', 'CE-0008', 'completed', NULL, '2025-06-29 16:36:18', '2025-06-29 11:06:18', '2025-06-29 11:06:18'),
+(8, 'Kavindu', '0765645303', '2025-07-01', 'no power', 'Dell', 2500.00, '1245del234rtyun', '426', 'CE-0015', 'completed', NULL, '2025-07-01 09:19:36', '2025-07-01 03:49:36', '2025-07-01 03:49:36'),
+(9, 'janith', '0765645303', '2025-07-02', 'ytjujuj', 'asus', 2000.00, 'e33rhhettht5tt', '433', 'CE-0022', 'completed', '[\"repairs\\/Q0gLCBJJxx07QR8XrN0NWBNM0MnsyxjioESK1ywb.jpg\",\"repairs\\/on9yVCYC3zEXXsH5FUx1NtYTpZ2Yds59psCk7U8a.png\",\"repairs\\/EE9KZWAe1OMIaxXUPZqrRFbOm5mU0w5GUTTBDJkm.png\",\"repairs\\/0FfC1mHd4BmwG6VqjmbjD2enD3WBCBXwl8aIaGc3.png\"]', '2025-07-02 22:39:01', '2025-07-02 17:09:01', '2025-07-02 17:09:01');
 
 -- --------------------------------------------------------
 
@@ -95,7 +97,7 @@ CREATE TABLE `counters` (
 --
 
 INSERT INTO `counters` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
-(1, 'customer_number', 19, '2025-06-28 09:48:38', '2025-07-02 05:51:24');
+(1, 'customer_number', 25, '2025-06-28 09:48:38', '2025-07-02 18:13:54');
 
 -- --------------------------------------------------------
 
@@ -236,6 +238,7 @@ CREATE TABLE `laptop_repairs` (
   `repair_price` decimal(10,2) DEFAULT NULL,
   `serial_number` varchar(255) NOT NULL,
   `status` enum('pending','in_progress','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`images`)),
   `customer_number` varchar(255) NOT NULL DEFAULT 'CE-0001',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -246,11 +249,9 @@ CREATE TABLE `laptop_repairs` (
 -- Dumping data for table `laptop_repairs`
 --
 
-INSERT INTO `laptop_repairs` (`id`, `customer_name`, `contact`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `status`, `customer_number`, `created_at`, `updated_at`, `note_number`) VALUES
-(27, 'Kavindu', '0765645303', '2025-07-01', 'no puwer', 'Dell', 0.00, '1245del234rtyun', 'pending', 'CE-0016', '2025-07-01 06:27:01', '2025-07-02 04:32:47', '427'),
-(28, 'Kavindu', '0765645303', '2025-07-01', 'efere', 'Dell', 15000.00, '1245del234rtyunp', 'pending', 'CE-0017', '2025-07-01 12:30:53', '2025-07-01 12:31:00', '428'),
-(29, 'Kavindu Nelshan', '0765645303', '2025-07-02', '34t5y', 'Dell', 0.00, 'y5688636', 'pending', 'CE-0018', '2025-07-02 05:48:50', '2025-07-02 05:48:50', '429'),
-(30, 'janith', '0765645303', '2025-07-02', 'trtrhrth', 'asus', NULL, 'e33rhhetth', 'pending', 'CE-0019', '2025-07-02 05:51:24', '2025-07-02 05:51:24', '430');
+INSERT INTO `laptop_repairs` (`id`, `customer_name`, `contact`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `status`, `images`, `customer_number`, `created_at`, `updated_at`, `note_number`) VALUES
+(34, 'janith', '0765645303', '2025-07-02', 'rerer', 'asus', NULL, 'e33rhhettht5ttrrrr', 'pending', '[\"repairs\\/zH59XflsfAO4sqO4AxLcePQOW6Xweynw3gtcxwBM.png\",\"repairs\\/XDbdoa82hqEUuzkg51dnCNIKPDrZTrhxVgAPpenp.png\",\"repairs\\/16Hm76h4gt3VcxpsaiKpgkgB4LxaQDU5PHPy0srq.png\",\"repairs\\/cmbRXpuu0XibFhX5xZaupiqQPnaUvsAXYXf9700i.png\",\"repairs\\/sU9u3EcB8kEg9wbTej9Y1VKBlw4eFCXfJlacJzDq.png\",\"repairs\\/rvGztfKeCtTj33wxHiQUHTV2NTsAwJ3WMSUB0Wm5.png\",\"repairs\\/KzZCeNTAOFQyt0ayyG3GCwBC6kgFFE6Y4RKvYEYM.jpg\"]', 'CE-0023', '2025-07-02 17:11:37', '2025-07-02 18:08:12', '434'),
+(36, 'Kavindu Nelshan', '0765645303', '2025-07-02', 'no power', 'asus', NULL, '234765889995t5', 'in_progress', '[\"repairs\\/9L0MfrLGXAU4OD9I6knhBeE725k7lKfQpjwu8MwS.jpg\"]', 'CE-0025', '2025-07-02 18:13:54', '2025-07-02 18:22:15', '436');
 
 -- --------------------------------------------------------
 
@@ -296,7 +297,38 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (28, '2025_07_01_093155_create_invoices_table', 22),
 (29, '2025_07_01_093159_create_invoice_items_table', 22),
 (30, '2025_07_01_123026_create_shops_table', 23),
-(31, '2025_07_01_123139_create_shop_items_table', 23);
+(31, '2025_07_01_123139_create_shop_items_table', 23),
+(32, '2025_07_02_220045_add_images_to_laptop_repairs_table', 24),
+(33, '2025_07_02_223705_add_images_to_completed_repairs_table', 25),
+(34, '2025_07_03_001122_create_my_shop_details_table', 26);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `my_shop_details`
+--
+
+CREATE TABLE `my_shop_details` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `shop_name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `address` text NOT NULL,
+  `hotline` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `logo_image` varchar(255) DEFAULT NULL,
+  `condition_1` text DEFAULT NULL,
+  `condition_2` text DEFAULT NULL,
+  `condition_3` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `my_shop_details`
+--
+
+INSERT INTO `my_shop_details` (`id`, `shop_name`, `description`, `address`, `hotline`, `email`, `logo_image`, `condition_1`, `condition_2`, `condition_3`, `created_at`, `updated_at`) VALUES
+(1, 'CE laptop repair center', 'Dealers in Desktop Computers, Laptop Accessories, Repairs Service & import wholesale and retail', '254/1/1/6, Baladaksha Mawatha, New Sathipola Road, Mawanella, Sri Lanka', '0756502913', 'chammikaelectronic@gmail.com', 'shop_logos/pZYSGcw9y2zZ42cvTqAPOPWszpZnriDvuTDIoh1z.jpg', 'Warranty for 1 Year Less 21 Working Days for computer hardware.', 'No Warranty for Bum Marks, Scratches, Physical damages and any other damage happened by user activities.', 'Goods sold once can\'t return.', '2025-07-02 19:00:37', '2025-07-02 19:33:06');
 
 -- --------------------------------------------------------
 
@@ -317,7 +349,7 @@ CREATE TABLE `note_counters` (
 --
 
 INSERT INTO `note_counters` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
-(1, 'note_number', 430, '2025-07-01 03:45:36', '2025-07-02 05:51:24');
+(1, 'note_number', 436, '2025-07-01 03:45:36', '2025-07-02 18:13:54');
 
 -- --------------------------------------------------------
 
@@ -351,7 +383,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('GHHfGSbVaJ1tn71Ff0tRYKqnqv2X5QK5HODjuhdT', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiazY4SDR2RnBuWk9MRUxmMTJseUZ4SGYydlhCYkF3VVNkUVBPdzlPciI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1751440216);
+('e41yjcQC177lZVsN0nNFwMmA1Bgfcg7KDEipqUyD', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNXhiTkVEbGlVZmJ0Y3BVZlNpbFZ5eVBpZG9DaHl2eHNCV0JMNW1pRCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9teXNob3AiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1751484794);
 
 -- --------------------------------------------------------
 
@@ -534,6 +566,12 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `my_shop_details`
+--
+ALTER TABLE `my_shop_details`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `note_counters`
 --
 ALTER TABLE `note_counters`
@@ -588,7 +626,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `completed_repairs`
 --
 ALTER TABLE `completed_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `counters`
@@ -624,13 +662,19 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `laptop_repairs`
 --
 ALTER TABLE `laptop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+
+--
+-- AUTO_INCREMENT for table `my_shop_details`
+--
+ALTER TABLE `my_shop_details`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `note_counters`

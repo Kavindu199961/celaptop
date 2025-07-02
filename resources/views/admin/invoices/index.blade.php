@@ -162,7 +162,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Warranty</label>
+                                    <label>Warranty (Optional)</label>
                                     <input type="text" class="form-control" name="warranty[]">
                                 </div>
                             </div>

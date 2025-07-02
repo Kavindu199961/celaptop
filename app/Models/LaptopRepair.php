@@ -20,7 +20,8 @@ class LaptopRepair extends Model
         'serial_number',
         'note_number',
         'status',
-        'customer_number'
+        'customer_number',
+        'images', // This will be a JSON field to store multiple image paths
     ];
 
     protected $casts = [
