@@ -182,14 +182,14 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="create_repair_price">Repair Price</label>
-                                <input type="number" step="0.01" class="form-control" id="create_repair_price" name="repair_price" required>
+                                <label for="create_repair_price">Repair Price (Optional)</label>
+                                <input type="number" step="0.01" class="form-control" id="create_repair_price" name="repair_price">
                             </div>
                             <div class="form-group">
-    <label for="create_note_number">Note Number</label>
-    <input type="text" class="form-control" id="create_note_number_display" disabled>
-    <input type="hidden" name="note_number">
-</div>
+                                <label for="create_note_number">Note Number</label>
+                                <input type="text" class="form-control" id="create_note_number_display" disabled>
+                                <input type="hidden" name="note_number">
+                            </div>
 
                         </div>
                     </div>

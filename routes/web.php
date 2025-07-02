@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LaptopRepairController;
 use App\Http\Controllers\CompleteRepairController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RepairTrackingController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\InvoiceController;
@@ -23,7 +24,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Admin routes
 Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Laptop Repair Routes
     Route::resource('laptop-repair', LaptopRepairController::class)->except(['show']);

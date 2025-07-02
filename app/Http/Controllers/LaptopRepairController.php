@@ -52,7 +52,7 @@ public function index()
             'device' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
             'fault' => 'required|string',
-            'repair_price' => 'required|numeric|min:0',
+            'repair_price' => 'nullable|numeric|min:0',
             'date' => 'required|date',
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
         ]);

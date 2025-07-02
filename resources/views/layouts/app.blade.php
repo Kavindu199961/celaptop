@@ -26,9 +26,9 @@
         <div class="form-inline mr-auto">
           <ul class="navbar-nav mr-3">
             <!-- <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn"> 
-              <i class="fas fa-align-justify"></i></a></li>
-            <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
-                <i class="fas fa-expand"></i>
+              <i class="fas fa-align-justify"></i></a></li> -->
+            <!-- <li><a href="#" class="nav-link nav-link-lg fullscreen-btn color-dark">
+                <i class="fas fa-expand color-dark"></i>
               </a></li> -->
           </ul>
         </div>
@@ -52,6 +52,12 @@
               </a>
             </li>
 
+            <li class="dropdown {{ request()->is('admin/invoices*') ? 'active' : '' }}">
+              <a href="{{ route('admin.invoices.index') }}" class="nav-link">
+                <i class="fas fa-file-invoice-dollar"></i><span>Invoice</span>
+              </a>
+            </li>
+
             <li class="dropdown {{ request()->is('admin/laptop-repair*') ? 'active' : '' }}">
               <a href="{{ route('admin.laptop-repair.index') }}" class="nav-link">
                 <i class="fas fa-laptop-medical"></i><span>Laptop Repair</span>
@@ -70,11 +76,7 @@
               </a>
             </li>
 
-            <li class="dropdown {{ request()->is('admin/invoices*') ? 'active' : '' }}">
-              <a href="{{ route('admin.invoices.index') }}" class="nav-link">
-                <i class="fas fa-file-invoice-dollar"></i><span>Invoice</span>
-              </a>
-            </li>
+            
 
             <li class="dropdown {{ request()->is('admin/shop*') ? 'active' : '' }}">
               <a href="{{ route('admin.shop.index') }}" class="nav-link">

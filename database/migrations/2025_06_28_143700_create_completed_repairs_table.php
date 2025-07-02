@@ -18,7 +18,7 @@ return new class extends Migration
         $table->date('date');
         $table->text('fault');
         $table->string('device');
-        $table->decimal('repair_price', 10, 2);
+        $table->decimal('repair_price', 10, 2)->nullable();
         $table->string('serial_number');
         $table->string('note_number')->nullable();
         $table->string('customer_number');
