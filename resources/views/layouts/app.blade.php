@@ -47,10 +47,21 @@
       <div class="main-sidebar sidebar-style-2">
         <aside id="sidebar-wrapper">
           <div class="sidebar-brand text-center py-3">
-            <a href="{{ route('admin.dashboard') }}">
-              <img src="/assets/logo/logo1.jpg" alt="Logo" class="header-logo" style="width:120px; height: auto;" />
-              <div class="logo-name mt-2" style="font-weight: bold; font-size: 18px; color: #333;">CE-Repair Admin</div>
-            </a>
+           @php
+              $shopDetail = App\Models\MyShopDetail::first();
+          @endphp
+
+          <a href="{{ route('admin.dashboard') }}">
+              @if($shopDetail && $shopDetail->logo_image)
+                  <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
+              @else
+                  <img src="{{ asset('/assets/logo/logo1.jpg') }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
+              @endif
+              
+              <div class="logo-name mt-2" style="font-weight: bold; font-size: 12px; color: #333;">
+                  {{ $shopDetail->shop_name ?? 'CE-Repair Admin' }}
+              </div>
+          </a>
           </div>
           
           <ul class="sidebar-menu mt-4">
