@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Doctor Channeling Center</title>
+    <title>Login | CE Laptop Repair</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -33,8 +33,12 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(5, 150, 105, 0.7)), 
-                        url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            background-image: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(65, 67, 66, 0.7)), 
+                  url('/assets/img/bg.jpg');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             min-height: 100vh;
             color: var(--text-dark);
             line-height: 1.6;
@@ -353,10 +357,10 @@
                         <!-- Brand Section -->
                         <div class="brand-section">
                             <div class="brand-logo">
-                                <i class="bi bi-hospital"></i>
+                               <i class="bi bi-laptop"></i>
                             </div>
-                            <h1 class="brand-title">Micro Channeling Center</h1>
-                            <p class="brand-subtitle">Your Health, Our Priority</p>
+                            <h1 class="brand-title">CE Laptop Repair<h1>
+                            <p class="brand-subtitle">Any Computer Work</p>
                         </div>
 
                         <!-- Login Form -->

@@ -1,381 +1,176 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Laptop Repair Tracking</h4>
-                        <a href="" class="btn btn-light btn-sm">
-                            <i class="fas fa-plus"></i> New Repair
-                        </a>
+<section id="tracking" class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2>Track Your Repair</h2>
+                <p class="lead">Enter your repair tracking number or note number</p>
+                
+                <form method="GET" action="{{ route('web.repair-tracking.index') }}" class="tracking-form">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="tracking_number" class="form-label">Tracking/Note Number</label>
+                        <input type="text" class="form-control" id="tracking_number" name="tracking_number" 
+                               placeholder="e.g. CE-0001 or 425" required value="{{ old('tracking_number', $request->tracking_number ?? '') }}">
                     </div>
-                </div>
-
-                <div class="card-body">
-                    <!-- Search Form -->
-                    <div class="search-section mb-5 p-4 bg-light rounded">
-                        <h5 class="mb-4">Track Your Repair Status</h5>
-                        <form method="GET" action="{{ route('web.repair-tracking.index') }}">
-                            <div class="row g-3">
-                                <div class="col-md-8">
-                                    <div class="input-group">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-search"></i>
-                                        </span>
-                                        <input type="text" name="tracking_number" 
-                                            class="form-control form-control-lg"
-                                            placeholder="Enter your repair ticket number"
-                                            value="{{ request('tracking_number') }}"
-                                            required>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                                        <i class="fas fa-truck"></i> Track Now
-                                    </button>
-                                </div>
-                            </div>
-                            @error('tracking_number')
-                                <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                        </form>
-                    </div>
-
-                    <!-- Results Section -->
-                    @if(isset($repair))
-                        <div class="results-section">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> Showing results for repair ticket: 
-                                <strong>{{ $repair->customer_number }}</strong>
-                            </div>
-
-                            <!-- Status Banner -->
-                            <div class="status-banner mb-4 text-center py-3 rounded">
-                                @if($repair->status == 'pending')
-                                    <div class="status-pending">
-                                        <i class="fas fa-clock fa-2x fa-beat-fade"></i>
-                                        <h3 class="mt-2">Repair Pending</h3>
-                                        <p class="mb-0">Your repair request has been received and is awaiting processing</p>
-                                    </div>
-                                @elseif($repair->status == 'in_progress')
-                                    <div class="status-in-progress">
-                                        <i class="fas fa-tools fa-2x fa-bounce"></i>
-                                        <h3 class="mt-2">Repair In Progress</h3>
-                                        <p class="mb-0">Our technicians are currently working on your device</p>
-                                    </div>
-                                @elseif($repair->status == 'completed')
-                                    <div class="status-completed">
-                                        <i class="fas fa-check-circle fa-2x"></i>
-                                        <h3 class="mt-2">Repair Completed!</h3>
-                                        <p class="mb-0">Your device is ready for pickup/delivery</p>
-                                    </div>
-                                @elseif($repair->status == 'cancelled')
-                                    <div class="status-cancelled">
-                                        <i class="fas fa-times-circle fa-2x"></i>
-                                        <h3 class="mt-2">Repair Cancelled</h3>
-                                        <p class="mb-0">This repair request has been cancelled</p>
-                                    </div>
+                    <button type="submit" class="btn btn-primary">Track Repair</button>
+                </form>
+            </div>
+            
+            <div class="col-lg-6">
+                @if($request->has('tracking_number') || $repair)
+                    @if($repair)
+                        <h3>Repair Status</h3>
+                        <div class="repair-status status-{{ $status }}">
+                            <h4>
+                                <i class="fas fa-ticket-alt me-2"></i>
+                                @if(str_contains($repair->customer_number, 'CE-'))
+                                    Ticket #{{ $repair->customer_number }}
+                                @else
+                                    Note #{{ $repair->note_number }}
                                 @endif
-                            </div>
-
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="card mb-4">
-                                        <div class="card-header bg-light">
-                                            <h6 class="mb-0">Customer Details</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <ul class="list-unstyled">
-                                                <li class="mb-2">
-                                                    <strong>Name:</strong> {{ $repair->customer_name }}
-                                                </li>
-                                                <li class="mb-2">
-                                                    <strong>Contact:</strong> {{ $repair->contact }}
-                                                </li>
-                                                <li class="mb-2">
-                                                    <strong>Repair Number:</strong> 
-                                                    <span class="badge bg-primary">{{ $repair->customer_number }}</span>
-                                                </li>
-                                                <li class="mb-2">
-                                                    <strong>Date Received:</strong> 
-                                                    {{ $repair->date->format('M d, Y') }}
-                                                </li>
-                                            </ul>
-                                        </div>
+                            </h4>
+                            <p class="mb-0"><strong>Customer:</strong> {{ $repair->customer_name }}</p>
+                            <p class="mb-0"><strong>Contact:</strong> {{ $repair->contact }}</p>
+                            <p class="mb-0"><strong>Device:</strong> {{ $repair->device }}</p>
+                            <p class="mb-0"><strong>Serial:</strong> {{ $repair->serial_number }}</p>
+                            <p class="mb-0"><strong>Fault:</strong> {{ $repair->fault }}</p>
+                            @if($repair->repair_price)
+                                <p class="mb-0"><strong>Price:</strong> Rs. {{ number_format($repair->repair_price, 2) }}</p>
+                            @endif
+                        </div>
+                        
+                        <h4 class="mt-4">Repair Progress</h4>
+                        <div class="repair-progress">
+                            @foreach($steps as $step)
+                                <div class="progress-step {{ $step['completed'] ? 'completed' : '' }} {{ $step['active'] ?? false ? 'active' : '' }}">
+                                    <div class="step-icon">
+                                        @if($step['completed'] ?? false)
+                                            <i class="fas fa-check-circle"></i>
+                                        @elseif($step['active'] ?? false)
+                                            <i class="fas fa-spinner fa-pulse"></i>
+                                        @else
+                                            <i class="far fa-circle"></i>
+                                        @endif
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card mb-4">
-                                        <div class="card-header bg-light">
-                                            <h6 class="mb-0">Device Details</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <ul class="list-unstyled">
-                                                <li class="mb-2">
-                                                    <strong>Device:</strong> {{ $repair->device }}
-                                                </li>
-                                                <li class="mb-2">
-                                                    <strong>Serial Number:</strong> {{ $repair->serial_number }}
-                                                </li>
-                                                <li class="mb-2">
-                                                    <strong>Fault Description:</strong> {{ $repair->fault }}
-                                                </li>
-                                                <li class="mb-2">
-                                                    <strong>Repair Price:</strong> 
-                                                    ${{ number_format($repair->repair_price, 2) }}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Status Timeline -->
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0">Repair Progress</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="timeline">
-                                        <div class="timeline-step {{ $repair->status != 'cancelled' ? ($repair->status == 'pending' ? 'active' : 'completed') : '' }}">
-                                            <div class="timeline-icon">
-                                                @if($repair->status == 'pending')
-                                                    <i class="fas fa-clock fa-spin"></i>
-                                                @else
-                                                    <i class="fas fa-check"></i>
-                                                @endif
-                                            </div>
-                                            <div class="timeline-content">
-                                                <h6>Repair Request Received</h6>
-                                                <p class="mb-0 text-muted">We've received your repair request</p>
-                                                @if($repair->status == 'pending')
-                                                    <small class="text-info">
-                                                        <i class="fas fa-info-circle"></i> Current Status
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="timeline-step {{ in_array($repair->status, ['in_progress', 'completed']) ? ($repair->status == 'in_progress' ? 'active' : 'completed') : '' }}">
-                                            <div class="timeline-icon">
-                                                @if($repair->status == 'in_progress')
-                                                    <i class="fas fa-tools fa-bounce"></i>
-                                                @elseif(in_array($repair->status, ['completed']))
-                                                    <i class="fas fa-check"></i>
-                                                @endif
-                                            </div>
-                                            <div class="timeline-content">
-                                                <h6>Repair In Progress</h6>
-                                                <p class="mb-0 text-muted">Technicians are working on your device</p>
-                                                @if($repair->status == 'in_progress')
-                                                    <small class="text-info">
-                                                        <i class="fas fa-info-circle"></i> Current Status
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="timeline-step {{ $repair->status == 'completed' ? 'active' : '' }}">
-                                            <div class="timeline-icon">
-                                                @if($repair->status == 'completed')
-                                                    <i class="fas fa-check-circle"></i>
-                                                @endif
-                                            </div>
-                                            <div class="timeline-content">
-                                                <h6>Repair Completed</h6>
-                                                <p class="mb-0 text-muted">Your device is ready for pickup</p>
-                                                @if($repair->status == 'completed')
-                                                    <small class="text-info">
-                                                        <i class="fas fa-info-circle"></i> Current Status
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        @if($repair->status == 'cancelled')
-                                            <div class="timeline-step cancelled">
-                                                <div class="timeline-icon">
-                                                    <i class="fas fa-times"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h6>Repair Cancelled</h6>
-                                                    <p class="mb-0 text-muted">This repair was cancelled</p>
-                                                    <small class="text-danger">
-                                                        <i class="fas fa-info-circle"></i> Final Status
-                                                    </small>
-                                                </div>
+                                    <div class="step-content">
+                                        <h5>{{ $step['label'] }}</h5>
+                                        <p>{{ $step['description'] }}</p>
+                                        @if($step['active'] ?? false && $status == 'ongoing' && $repair->date)
+                                            <div class="estimated-time">
+                                                <small>Received on: {{ $repair->date->format('M j, Y') }}</small>
                                             </div>
                                         @endif
                                     </div>
                                 </div>
-                            </div>
-
-                            @if($repair->status == 'completed')
-                                <div class="alert alert-success">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-check-circle fa-2x me-3"></i>
-                                        <div>
-                                            <h5 class="mb-1">Repair Completed!</h5>
-                                            <p class="mb-0">Your device was successfully repaired on 
-                                                {{ $repair->completed_at->format('M d, Y h:i A') }}.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <hr>
-                                    <div class="text-center mt-3">
-                                        <button class="btn btn-success me-2">
-                                            <i class="fas fa-print"></i> Print Receipt
-                                        </button>
-                                        <button class="btn btn-primary">
-                                            <i class="fas fa-star"></i> Rate Our Service
-                                        </button>
-                                    </div>
-                                </div>
-                            @elseif($repair->status == 'cancelled')
-                                <div class="alert alert-danger">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-times-circle fa-2x me-3"></i>
-                                        <div>
-                                            <h5 class="mb-1">Repair Cancelled</h5>
-                                            <p class="mb-0">This repair request was cancelled on 
-                                                {{ $repair->updated_at->format('M d, Y h:i A') }}.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+                            @endforeach
                         </div>
-                    @elseif(request()->has('tracking_number'))
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            No repair found with the provided tracking number. Please check and try again.
+                        
+                        @if($status == 'completed')
+                            <div class="alert alert-success mt-3">
+                                <i class="fas fa-check-circle me-2"></i>
+                                This repair was completed successfully.
+                            </div>
+                        @endif
+                    @else
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            No repair found with the provided tracking number. Please check your number and try again.
                         </div>
                     @endif
-                </div>
+                @else
+                    <div id="trackingInfo">
+                        <h3>How Tracking Works</h3>
+                        <p>When you bring your device in for repair, we provide you with either:</p>
+                        <ul>
+                            <li>A customer number (CE-0001 format)</li>
+                            <li>Or a note number (numeric)</li>
+                        </ul>
+                        <p>You can use either number to track your repair status.</p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Can't find your number? Contact us with your phone number used during drop-off.
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
-</div>
+</section>
 @endsection
 
-@section('styles')
+@push('styles')
 <style>
-    .search-section {
-        border-left: 4px solid #0d6efd;
+    .repair-status {
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
     }
     
-    .status-banner {
-        background: rgba(13, 110, 253, 0.1);
-        border-left: 4px solid #0d6efd;
-    }
-    
-    .status-pending {
-        color: #ffc107;
-    }
-    
-    .status-in-progress {
-        color: #0d6efd;
+    .status-ongoing {
+        background-color: #cce5ff;
+        color: #004085;
+        border-left: 5px solid #004085;
     }
     
     .status-completed {
-        color: #198754;
+        background-color: #d4edda;
+        color: #155724;
+        border-left: 5px solid #155724;
     }
     
-    .status-cancelled {
-        color: #dc3545;
-    }
-    
-    .timeline {
+    .repair-progress {
         position: relative;
-        padding-left: 50px;
+        padding-left: 30px;
     }
     
-    .timeline::before {
+    .progress-step {
+        position: relative;
+        padding-bottom: 20px;
+    }
+    
+    .progress-step:not(:last-child):before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 25px;
-        height: 100%;
+        left: 15px;
+        top: 30px;
+        height: calc(100% - 30px);
         width: 2px;
-        background: #e9ecef;
+        background: #dee2e6;
     }
     
-    .timeline-step {
-        position: relative;
-        padding-bottom: 25px;
+    .progress-step.completed:not(:last-child):before {
+        background: #28a745;
     }
     
-    .timeline-icon {
+    .step-icon {
         position: absolute;
-        left: -40px;
+        left: -30px;
         top: 0;
         width: 30px;
         height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        border: 2px solid #e9ecef;
+        text-align: center;
+        line-height: 30px;
         color: #6c757d;
     }
     
-    .timeline-content {
-        padding: 10px 15px;
-        background: #f8f9fa;
-        border-radius: 6px;
-        transition: all 0.3s ease;
+    .progress-step.completed .step-icon {
+        color: #28a745;
     }
     
-    .timeline-step.completed .timeline-icon {
-        border-color: #28a745;
-        background: #28a745;
-        color: white;
+    .progress-step.active .step-icon {
+        color: #007bff;
     }
     
-    .timeline-step.active .timeline-icon {
-        border-color: #0d6efd;
-        background: #0d6efd;
-        color: white;
-        animation: pulse 2s infinite;
+    .step-content {
+        padding: 5px 0 15px 15px;
     }
     
-    .timeline-step.cancelled .timeline-icon {
-        border-color: #dc3545;
-        background: #dc3545;
-        color: white;
-    }
-    
-    .timeline-step.completed .timeline-content {
-        border-left: 3px solid #28a745;
-    }
-    
-    .timeline-step.active .timeline-content {
-        border-left: 3px solid #0d6efd;
-        transform: translateX(5px);
-    }
-    
-    .timeline-step.cancelled .timeline-content {
-        border-left: 3px solid #dc3545;
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-    
-    .fa-beat-fade {
-        animation: beat-fade 2s ease infinite;
-    }
-    
-    @keyframes beat-fade {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.2); opacity: 0.7; }
-        100% { transform: scale(1); opacity: 1; }
+    .estimated-time {
+        font-style: italic;
+        color: #6c757d;
     }
 </style>
-@endsection 
+@endpush

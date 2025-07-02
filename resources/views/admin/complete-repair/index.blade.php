@@ -31,6 +31,7 @@
                         <th>Contact</th>
                         <th>Device</th>
                         <th>Serial Number</th>
+                        <th>Note Number</th>
                         <th>Fault</th>
                         <th>Repair Price</th>
                         <th>Date</th>
@@ -46,6 +47,7 @@
                         <td>{{ $repair->contact }}</td>
                         <td>{{ $repair->device }}</td>
                         <td>{{ $repair->serial_number }}</td>
+                        <td>{{ $repair->note_number }}</td>
                         <td>{{ Str::limit($repair->fault, 30) }}</td>
                         <td>{{ number_format($repair->repair_price, 2) }}</td>
                         <td>{{ $repair->date->format('Y-m-d') }}</td>
