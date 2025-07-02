@@ -32,8 +32,18 @@
               </a></li> -->
           </ul>
         </div>
+        <li class="dropdown">
+            <a href="#" 
+              class="nav-link  nav-link-lg nav-link-user">
+              <img alt="image" src="/assets/img/user.png" class="user-img-radious-style mr-3">
+              <span class="d-sm-none d-lg-inline-block text-dark">Hello Chammika</span>
+            </a>
+            
+            </div>
+          </li>
+
       </nav>
-      
+
       <div class="main-sidebar sidebar-style-2">
         <aside id="sidebar-wrapper">
           <div class="sidebar-brand text-center py-3">

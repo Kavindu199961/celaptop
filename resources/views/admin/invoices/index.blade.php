@@ -116,9 +116,9 @@
             <form id="createInvoiceForm" method="POST" action="{{ route('admin.invoices.store') }}">
                 @csrf
                 <div class="modal-body">
-                    <div class="alert alert-warning">
+                    <!-- <div class="alert alert-warning">
                         <strong>Note:</strong> Maximum 10 items allowed in this invoice.
-                    </div>
+                    </div> -->
                     
                     <div class="row">
                         <div class="col-md-6">
