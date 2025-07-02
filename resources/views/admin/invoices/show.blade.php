@@ -1,12 +1,11 @@
-// resources/views/admin/invoice/show.blade.php
 @extends('layouts.app')
 
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header">
-            <h1 class="card-title">Invoice #{{ $invoice->invoice_number }}</h1>
-            <p class="card-subtitle">Issued on {{ \Carbon\Carbon::parse($invoice->issue_date)->format('Y-m-d') }}</p>
+        <div class="card-header d-flex justify-content-center">
+            <h2 class="card-title ">Invoice  #<strong>{{ $invoice->invoice_number }}</strong></h2>
+            
         </div>
         <div class="card-body">
             <div class="row mb-4">
@@ -14,6 +13,7 @@
                     <h5>Customer Information</h5>
                     <p><strong>Name:</strong> {{ $invoice->customer_name }}</p>
                     <p><strong>Phone:</strong> {{ $invoice->customer_phone }}</p>
+                    <p><strong>Issued on:</strong>  {{ \Carbon\Carbon::parse($invoice->issue_date)->format('Y-m-d') }}</p>
                 </div>
                 <div class="col-md-6 text-end">
                     <h5>Sales Representative</h5>
@@ -53,10 +53,10 @@
             </div>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <a href="{{ route('admin.invoices.print', $invoice->id) }}" class="btn btn-success me-md-2">
+                <a href="{{ route('admin.invoices.print', $invoice->id) }}" class="btn btn-success me-md-2 ">
                     <i class="fas fa-print me-1"></i> Print Invoice
                 </a>
-                <a href="{{ route('admin.invoices.download', $invoice->id) }}" class="btn btn-primary">
+                <a href="{{ route('admin.invoices.download', $invoice->id) }}" class="btn btn-primary ml-1 ">
                     <i class="fas fa-download me-1"></i> Download PDF
                 </a>
             </div>

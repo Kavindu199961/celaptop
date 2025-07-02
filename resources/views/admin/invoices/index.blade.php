@@ -163,7 +163,7 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Warranty</label>
-                                    <input type="text" class="form-control" name="warranty[]" required>
+                                    <input type="text" class="form-control" name="warranty[]">
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -242,8 +242,8 @@
         // Handle Add Item button click
         $(document).on('click', '.add-item', function() {
             const itemCount = $('.item-row').length;
-            if(itemCount >= 10) {
-                alert('Maximum 10 items allowed per invoice');
+            if(itemCount >= 43) {
+                alert('Maximum 43 items allowed per invoice');
                 return;
             }
             
@@ -256,7 +256,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="warranty[]" required>
+                            <input type="text" class="form-control" name="warranty[]">
                         </div>
                     </div>
                     <div class="col-md-2">

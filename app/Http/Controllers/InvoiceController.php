@@ -39,7 +39,7 @@ class InvoiceController extends Controller
         'sales_rep' => 'required|string|max:255',
         'issue_date' => 'required|date',
         'description.*' => 'required|string',
-        'warranty.*' => 'required|string',
+        'warranty.*' => 'nullable|string',
         'qty.*' => 'required|numeric|min:1',
         'unit_price.*' => 'required|numeric|min:0',
     ]);
@@ -65,7 +65,7 @@ class InvoiceController extends Controller
         InvoiceItem::create([
             'invoice_id' => $invoice->id,
             'description' => $request->description[$i],
-            'warranty' => $request->warranty[$i],
+            'warranty' => $request->warranty[$i] ?? null,
             'quantity' => $request->qty[$i],
             'unit_price' => $request->unit_price[$i],
             'amount' => $request->qty[$i] * $request->unit_price[$i],
@@ -97,7 +97,12 @@ class InvoiceController extends Controller
         $logoBase64 = base64_encode($logoData);
     }
 
-    $pdf = PDF::loadView('admin.invoices.pdf', [
+    // Determine which view to use based on the number of items
+    $viewName = ($invoice->items->count() > 10) 
+        ? 'admin.invoices.fullpdf' 
+        : 'admin.invoices.pdf';
+
+    $pdf = PDF::loadView($viewName, [
         'invoice' => $invoice,
         'logoBase64' => $logoBase64
     ]);
@@ -108,7 +113,7 @@ class InvoiceController extends Controller
  public function print(Invoice $invoice)
 {
     // Convert logo to base64
-   $logoPath = public_path('/assets/logo/logo1.jpg');
+    $logoPath = public_path('/assets/logo/logo1.jpg');
     $logoBase64 = null;
 
     if (file_exists($logoPath)) {
@@ -116,8 +121,12 @@ class InvoiceController extends Controller
         $logoBase64 = base64_encode($logoData);
     }
 
-    // Return the HTML view just like blood group print
-    return view('admin.invoices.print', compact('invoice', 'logoBase64'));
+    // Determine which view to use based on item count
+    $viewName = $invoice->items->count() > 10 
+        ? 'admin.invoices.fullprint' 
+        : 'admin.invoices.print';
+
+    return view($viewName, compact('invoice', 'logoBase64'));
 }
 
 
