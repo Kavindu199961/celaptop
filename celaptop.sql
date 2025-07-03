@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 03, 2025 at 10:56 AM
+-- Generation Time: Jul 03, 2025 at 08:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,6 +43,20 @@ CREATE TABLE `cache_locks` (
   `key` varchar(255) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cashiers`
+--
+
+CREATE TABLE `cashiers` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -139,7 +153,9 @@ CREATE TABLE `invoices` (
 --
 
 INSERT INTO `invoices` (`id`, `invoice_number`, `customer_name`, `customer_phone`, `sales_rep`, `issue_date`, `total_amount`, `created_at`, `updated_at`, `user_id`) VALUES
-(19, 'INV-000001', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 75000.00, '2025-07-03 08:09:47', '2025-07-03 08:09:47', 3);
+(19, 'INV-000001', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 75000.00, '2025-07-03 08:09:47', '2025-07-03 08:09:47', 3),
+(20, 'INV-000020', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 75000.00, '2025-07-03 09:16:54', '2025-07-03 09:16:54', 6),
+(21, 'INV-000021', 'Kavindu Nelshan', '0765645303', 'wee', '2025-07-03', 75000.00, '2025-07-03 18:23:10', '2025-07-03 18:23:10', 3);
 
 -- --------------------------------------------------------
 
@@ -165,7 +181,63 @@ CREATE TABLE `invoice_items` (
 --
 
 INSERT INTO `invoice_items` (`id`, `invoice_id`, `description`, `warranty`, `quantity`, `unit_price`, `amount`, `created_at`, `updated_at`, `user_id`) VALUES
-(36, 19, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 08:09:47', '2025-07-03 08:09:47', 3);
+(36, 19, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 08:09:47', '2025-07-03 08:09:47', 3),
+(37, 20, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 09:16:54', '2025-07-03 09:16:54', 6),
+(38, 21, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 18:23:10', '2025-07-03 18:23:10', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invoice_with_stocks`
+--
+
+CREATE TABLE `invoice_with_stocks` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_number` varchar(255) NOT NULL,
+  `customer_name` varchar(255) NOT NULL,
+  `customer_phone` varchar(255) NOT NULL,
+  `sales_rep` varchar(255) NOT NULL,
+  `issue_date` date NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `invoice_with_stocks`
+--
+
+INSERT INTO `invoice_with_stocks` (`id`, `invoice_number`, `customer_name`, `customer_phone`, `sales_rep`, `issue_date`, `total_amount`, `user_id`, `created_at`, `updated_at`) VALUES
+(5, 'INV-000005', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 3250.00, 3, '2025-07-03 16:37:39', '2025-07-03 16:37:39'),
+(6, 'INV-000006', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 3250.00, 3, '2025-07-03 16:38:17', '2025-07-03 16:38:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invoice_with_stock_items`
+--
+
+CREATE TABLE `invoice_with_stock_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_with_stock_id` bigint(20) UNSIGNED NOT NULL,
+  `stock_id` bigint(20) UNSIGNED NOT NULL,
+  `warranty` varchar(255) DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `invoice_with_stock_items`
+--
+
+INSERT INTO `invoice_with_stock_items` (`id`, `invoice_with_stock_id`, `stock_id`, `warranty`, `quantity`, `unit_price`, `amount`, `user_id`, `created_at`, `updated_at`) VALUES
+(4, 5, 6, '6 month', 1, 3250.00, 3250.00, 3, '2025-07-03 16:37:39', '2025-07-03 16:37:39'),
+(5, 6, 6, NULL, 1, 3250.00, 3250.00, 3, '2025-07-03 16:38:17', '2025-07-03 16:38:17');
 
 -- --------------------------------------------------------
 
@@ -294,7 +366,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (45, '2025_07_03_132735_add_user_id_to_my_shop_details_table', 37),
 (46, '2025_07_03_132903_remove_user_id_from_my_shop_items_table', 38),
 (47, '2025_07_03_133909_add_user_id_to_counters_table', 39),
-(48, '2025_07_03_134337_add_user_id_to_counters_table', 40);
+(48, '2025_07_03_134337_add_user_id_to_counters_table', 40),
+(49, '2025_07_03_155219_create_invoice_with_stocks_table', 41),
+(50, '2025_07_03_232535_create_cashiers_table', 42);
 
 -- --------------------------------------------------------
 
@@ -380,7 +454,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('pfVcUF9WZBbtVIWtrV8A1LKDMAl6r1fe6V9f2ln4', 6, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoicFB5aVp3T0lwNjY4NXRMSTNSZnRwUlF1S0d3RXZaTDRFd0NzTFdadSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2Rhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjY7fQ==', 1751532935);
+('rV10a5IrzvrFEptPzTVXq4CeLDZmgrOJphIY3CwB', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiY3BodXluN3YzeFRnM01ITHVSZzFZV0NDMG8xWUFiQjJpR2d5UmJCRCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2ludm9pY2VzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9', 1751567437);
 
 -- --------------------------------------------------------
 
@@ -457,7 +531,7 @@ CREATE TABLE `stock` (
 --
 
 INSERT INTO `stock` (`id`, `user_id`, `item_name`, `description`, `cost`, `whole_sale_price`, `retail_price`, `vender`, `stock_date`, `quantity`, `created_at`, `updated_at`) VALUES
-(6, 3, 'mouse', 'new', 2500.00, 3000.00, 3250.00, 'ce laptop center', '2025-07-03', 3, '2025-07-03 07:38:21', '2025-07-03 07:38:43'),
+(6, 3, 'mouse', 'new', 2500.00, 3000.00, 3250.00, 'ce laptop center', '2025-07-03', 1, '2025-07-03 07:38:21', '2025-07-03 17:01:00'),
 (7, 4, 'dell laptop', 'new', 78500.00, 90275.00, 102050.00, 'ce laptop center', '2025-07-03', 5, '2025-07-03 08:33:40', '2025-07-03 08:33:40');
 
 -- --------------------------------------------------------
@@ -484,7 +558,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `is_active`, `remember_token`, `created_at`, `updated_at`) VALUES
-(3, 'Admin User', 'admin@celaptop.com', NULL, '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-03 05:32:40'),
+(3, 'Admin User', 'admin@celaptop.com', NULL, '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-03 15:52:16'),
 (4, 'Kavindu Nelshan', 'www.kavi1999maxnelshan@gmail.com', NULL, '$2y$12$KbA30O1TvXtNoItQeByiKO3jqq4z3.C4FKTdt8oDOUYBllzZJcSFq', 'user', 1, NULL, '2025-07-03 04:28:19', '2025-07-03 08:31:34'),
 (5, 'Super Admin', 'superadmin@gmail.com', NULL, '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21'),
 (6, 'dark computers', 'kavindunelsan@gmail.com', NULL, '$2y$12$IWPjbNwDwhfWk02LialCB.KvF3vfdtwliI0.io6Zzk52CZGsV8pw2', 'user', 1, NULL, '2025-07-03 08:43:20', '2025-07-03 08:44:00');
@@ -504,6 +578,13 @@ ALTER TABLE `cache`
 --
 ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `cashiers`
+--
+ALTER TABLE `cashiers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cashiers_user_id_foreign` (`user_id`);
 
 --
 -- Indexes for table `completed_repairs`
@@ -543,6 +624,21 @@ ALTER TABLE `invoice_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `invoice_items_invoice_id_foreign` (`invoice_id`),
   ADD KEY `invoice_items_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `invoice_with_stocks`
+--
+ALTER TABLE `invoice_with_stocks`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `invoice_with_stocks_invoice_number_unique` (`invoice_number`),
+  ADD KEY `invoice_with_stocks_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `invoice_with_stock_items`
+--
+ALTER TABLE `invoice_with_stock_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `invoice_with_stock_items_invoice_with_stock_id_foreign` (`invoice_with_stock_id`);
 
 --
 -- Indexes for table `jobs`
@@ -633,6 +729,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `cashiers`
+--
+ALTER TABLE `cashiers`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `completed_repairs`
 --
 ALTER TABLE `completed_repairs`
@@ -654,13 +756,25 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `invoice_items`
 --
 ALTER TABLE `invoice_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT for table `invoice_with_stocks`
+--
+ALTER TABLE `invoice_with_stocks`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `invoice_with_stock_items`
+--
+ALTER TABLE `invoice_with_stock_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -678,7 +792,7 @@ ALTER TABLE `laptop_repairs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `my_shop_details`
@@ -721,6 +835,12 @@ ALTER TABLE `users`
 --
 
 --
+-- Constraints for table `cashiers`
+--
+ALTER TABLE `cashiers`
+  ADD CONSTRAINT `cashiers_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `completed_repairs`
 --
 ALTER TABLE `completed_repairs`
@@ -744,6 +864,18 @@ ALTER TABLE `invoices`
 ALTER TABLE `invoice_items`
   ADD CONSTRAINT `invoice_items_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `invoice_items_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `invoice_with_stocks`
+--
+ALTER TABLE `invoice_with_stocks`
+  ADD CONSTRAINT `invoice_with_stocks_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `invoice_with_stock_items`
+--
+ALTER TABLE `invoice_with_stock_items`
+  ADD CONSTRAINT `invoice_with_stock_items_invoice_with_stock_id_foreign` FOREIGN KEY (`invoice_with_stock_id`) REFERENCES `invoice_with_stocks` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `laptop_repairs`
