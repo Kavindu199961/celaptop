@@ -12,6 +12,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\MyShopController;
 use App\Http\Controllers\InvoiceWithStockController;
+use App\Http\Controllers\CashierController;
 
 
 // Public routes
@@ -100,7 +101,7 @@ Route::prefix('invoices-with-stock')->name('invoices_with_stock.')->group(functi
     // Print/download routes
     Route::get('/{invoice_with_stock}/print', [InvoiceWithStockController::class, 'print'])->name('print');
     Route::get('/{invoice_with_stock}/download', [InvoiceWithStockController::class, 'download'])->name('download');
-    
+
     // Search routes
     Route::get('/search/products', [InvoiceWithStockController::class, 'searchStock'])->name('products.search');
     Route::get('/get/product/{id}', [InvoiceWithStockController::class, 'getProduct'])->name('product.get');
@@ -124,6 +125,17 @@ Route::prefix('myshop')->name('myshop.')->group(function () {
     Route::get('/{id}/edit', [MyShopController::class, 'edit'])->name('edit');
     Route::put('/{id}', [MyShopController::class, 'update'])->name('update');
     Route::delete('/{myshop}', [MyShopController::class, 'destroy'])->name('destroy');
+});
+
+
+Route::prefix('cashier')->name('cashier.')->group(function () {
+    Route::get('/', [CashierController::class, 'index'])->name('index');
+    Route::post('/', [CashierController::class, 'store'])->name('store');
+    Route::get('/create', [CashierController::class, 'create'])->name('create');
+    Route::get('/{id}/edit', [CashierController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CashierController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CashierController::class, 'destroy'])->name('destroy');
+
 });
 
 });

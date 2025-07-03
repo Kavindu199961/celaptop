@@ -134,14 +134,18 @@
                         </div>
                         <div class="col-md-6">
                             <h5>Invoice Details</h5>
+                          
                             <div class="form-group">
                                 <label for="sales_rep">Sales Representative</label>
                                 <select class="form-control" id="sales_rep" name="sales_rep" required>
-                                    <option value="Chammika">Chammika</option>
-                                    <option value="Vidwashan">Vidwashan</option>
-                                    <option value="Gihan">Gihan</option>
+                                    @foreach($cashiers as $cashier)
+                                        <option value="{{ $cashier->name }}">{{ $cashier->name }}</option>
+                                    @endforeach
+                                    <option value="{{ $shopName }}">{{ $shopName }}</option>
                                 </select>
                             </div>
+
+
                             <div class="form-group">
                                 <label for="issue_date">Invoice Date</label>
                                 <input type="date" class="form-control" id="issue_date" name="issue_date" required>

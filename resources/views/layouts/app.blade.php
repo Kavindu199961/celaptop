@@ -82,17 +82,24 @@
               </a>
             </li>
 
-            <li class="dropdown {{ request()->is('user/invoices*') ? 'active' : '' }}">
+            <li class="dropdown {{ request()->is('user/cashier*') ? 'active' : '' }}">
+              <a href="{{ route('user.cashier.index') }}" class="nav-link">
+              <i class="fas fa-cash-register"></i><span>Cashier</span>
+              </a>
+            </li>
+
+            <li class="dropdown {{ request()->is('user/invoices') ? 'active' : '' }}">
               <a href="{{ route('user.invoices.index') }}" class="nav-link">
                 <i class="fas fa-file-invoice-dollar"></i><span>Invoice</span>
               </a>
             </li>
 
-            <li class="dropdown {{ request()->is('user/invoices-with-stock*') ? 'active' : '' }}">
+            <li class="dropdown {{ request()->is('user/invoices-with-stock')  ? 'active' : '' }}">
               <a href="{{ route('user.invoices_with_stock.index') }}" class="nav-link">
                 <i class="fas fa-file-invoice-dollar"></i><span>Invoice With Stock</span>
               </a>
             </li>
+
 
             <li class="dropdown {{ request()->is('user/laptop-repair*') ? 'active' : '' }}">
               <a href="{{ route('user.laptop-repair.index') }}" class="nav-link">

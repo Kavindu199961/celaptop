@@ -9,6 +9,7 @@ use App\Models\MyShopDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Cashier;
 
 class InvoiceWithStockController extends Controller
 {
@@ -32,7 +33,11 @@ class InvoiceWithStockController extends Controller
             ->orderBy('item_name')
             ->get();
 
-        return view('user.invoices_with_stock.index', compact('invoices', 'stocks'));
+            $cashiers = Cashier::where('user_id', Auth::id())->get();
+            $shopDetail = MyShopDetail::where('user_id', $userId)->first();
+            $shopName = $shopDetail ? $shopDetail->shop_name : 'My Shop';
+
+        return view('user.invoices_with_stock.index', compact('invoices', 'stocks', 'cashiers', 'shopName'));
     }
 
     public function store(Request $request)
@@ -97,33 +102,33 @@ class InvoiceWithStockController extends Controller
     }
 
     public function download(InvoiceWithStock $invoiceWithStock)
-    {
-        $this->authorizeAccess($invoiceWithStock);
+{
+    $this->authorizeAccess($invoiceWithStock);
 
-        $user = auth()->user();
-        $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
+    $user = auth()->user();
+    $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
 
-        $logoPath = null;
+    $logoPath = null;
 
-        if ($shopDetail && $shopDetail->logo_image) {
-            $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
-            if (!file_exists($logoPath) || !is_readable($logoPath)) {
-                $logoPath = null;
-            }
+    if ($shopDetail && $shopDetail->logo_image) {
+        $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
+        if (!file_exists($logoPath) || !is_readable($logoPath)) {
+            $logoPath = null;
         }
-
-        $viewName = $invoiceWithStock->items->count() > 10 
-            ? 'user.invoices_with_stock.fullpdf' 
-            : 'user.invoices_with_stock.pdf';
-
-        $pdf = PDF::loadView($viewName, [
-            'invoice' => $invoiceWithStock,
-            'logoPath' => $logoPath,
-            'shopDetail' => $shopDetail,
-        ]);
-
-        return $pdf->download('invoice-with-stock-' . $invoiceWithStock->invoice_number . '.pdf');
     }
+
+    $viewName = $invoiceWithStock->items->count() > 10 
+        ? 'user.invoices_with_stock.fullpdf' 
+        : 'user.invoices_with_stock.pdf';
+
+    $pdf = PDF::loadView($viewName, [
+        'invoiceWithStock' => $invoiceWithStock, // Changed from 'invoice' to 'invoiceWithStock'
+        'logoPath' => $logoPath,
+        'shopDetail' => $shopDetail,
+    ]);
+
+    return $pdf->download( $invoiceWithStock->invoice_number . '.pdf');
+}
 
     public function print(InvoiceWithStock $invoiceWithStock)
     {

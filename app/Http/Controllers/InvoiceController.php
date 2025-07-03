@@ -5,29 +5,38 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\MyShopDetail;
+use App\Models\Cashier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
-    public function index()
-    {
-        $search = request('search');
-        $userId = Auth::id();
 
-        $invoices = Invoice::where('user_id', $userId)
-            ->when($search, function ($query) use ($search) {
-                $query->where('invoice_number', 'like', '%' . $search . '%')
-                    ->orWhere('customer_name', 'like', '%' . $search . '%')
-                    ->orWhere('customer_phone', 'like', '%' . $search . '%')
-                    ->orWhere('sales_rep', 'like', '%' . $search . '%');
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+public function index()
+{
+    $search = request('search');
+    $userId = Auth::id();
 
-        return view('user.invoices.index', compact('invoices'));
-    }
+    $invoices = Invoice::where('user_id', $userId)
+        ->when($search, function ($query) use ($search) {
+            $query->where('invoice_number', 'like', '%' . $search . '%')
+                ->orWhere('customer_name', 'like', '%' . $search . '%')
+                ->orWhere('customer_phone', 'like', '%' . $search . '%')
+                ->orWhere('sales_rep', 'like', '%' . $search . '%');
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    // Get the cashier details for the logged-in user
+    $cashiers = Cashier::where('user_id', Auth::id())->get();
+    $shopDetail = MyShopDetail::where('user_id', $userId)->first();
+    $shopName = $shopDetail ? $shopDetail->shop_name : 'My Shop';
+
+
+    return view('user.invoices.index', compact('invoices', 'cashiers', 'shopName'));
+}
+
 
     public function create()
     {
