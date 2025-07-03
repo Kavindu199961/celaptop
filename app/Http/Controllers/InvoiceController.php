@@ -84,55 +84,60 @@ class InvoiceController extends Controller
         return view('user.invoices.show', compact('invoice'));
     }
 
-    public function download(Invoice $invoice)
-    {
-        $this->authorizeAccess($invoice);
+   public function download(Invoice $invoice)
+{
+    $this->authorizeAccess($invoice);
 
-        $shopDetail = MyShopDetail::first();
-        $logoPath = null;
+   $user = auth()->user();
+    $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
 
-        if ($shopDetail && $shopDetail->logo_image) {
-            $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
-            if (!file_exists($logoPath) || !is_readable($logoPath)) {
-                \Log::error("Logo file not found or not readable: " . $logoPath);
-                $logoPath = null;
-            }
+    $logoPath = null;
+
+    if ($shopDetail && $shopDetail->logo_image) {
+        $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
+        if (!file_exists($logoPath) || !is_readable($logoPath)) {
+            \Log::error("Logo file not found or not readable: " . $logoPath);
+            $logoPath = null;
         }
-
-        $viewName = $invoice->items->count() > 10 
-            ? 'user.invoices.fullpdf' 
-            : 'user.invoices.pdf';
-
-        $pdf = PDF::loadView($viewName, [
-            'invoice' => $invoice,
-            'logoPath' => $logoPath,
-            'shopDetail' => $shopDetail,
-        ]);
-
-        return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
     }
+
+    $viewName = $invoice->items->count() > 10 
+        ? 'user.invoices.fullpdf' 
+        : 'user.invoices.pdf';
+
+    $pdf = PDF::loadView($viewName, [
+        'invoice' => $invoice,
+        'logoPath' => $logoPath,
+        'shopDetail' => $shopDetail,
+    ]);
+
+    return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
+}
 
     public function print(Invoice $invoice)
-    {
-        $this->authorizeAccess($invoice);
+{
+    $this->authorizeAccess($invoice);
 
-        $shopDetail = MyShopDetail::first();
-        $logoBase64 = null;
+    $user = auth()->user();
+    // Assuming a relationship: $user->shopDetail
+    $shopDetail =  MyShopDetail::where('user_id', $user->id)->first();
 
-        if ($shopDetail && $shopDetail->logo_image) {
-            $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
-            if (file_exists($logoPath)) {
-                $logoData = file_get_contents($logoPath);
-                $logoBase64 = base64_encode($logoData);
-            }
+    $logoBase64 = null;
+
+    if ($shopDetail && $shopDetail->logo_image) {
+        $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
+        if (file_exists($logoPath)) {
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = base64_encode($logoData);
         }
-
-        $viewName = $invoice->items->count() > 10 
-            ? 'user.invoices.fullprint' 
-            : 'user.invoices.print';
-
-        return view($viewName, compact('invoice', 'logoBase64', 'shopDetail'));
     }
+
+    $viewName = $invoice->items->count() > 10 
+        ? 'user.invoices.fullprint' 
+        : 'user.invoices.print';
+
+    return view($viewName, compact('invoice', 'logoBase64', 'shopDetail'));
+}
 
     public function destroy(Invoice $invoice)
     {
