@@ -11,6 +11,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\MyShopController;
+use App\Http\Controllers\InvoiceWithStockController;
 
 
 // Public routes
@@ -89,6 +90,22 @@ Route::prefix('invoices')->name('invoices.')->group(function () {
     // Customer routes (similar to your vendor routes)
     Route::get('/customer/{customer}', [InvoiceController::class, 'customerShow'])->name('customer.show');
 });
+
+Route::prefix('invoices-with-stock')->name('invoices_with_stock.')->group(function () {
+    Route::get('/', [InvoiceWithStockController::class, 'index'])->name('index');
+    Route::post('/', [InvoiceWithStockController::class, 'store'])->name('store');
+    Route::get('/{invoice_with_stock}', [InvoiceWithStockController::class, 'show'])->name('show');
+    Route::delete('/{invoice_with_stock}', [InvoiceWithStockController::class, 'destroy'])->name('destroy');
+    
+    // Print/download routes
+    Route::get('/{invoice_with_stock}/print', [InvoiceWithStockController::class, 'print'])->name('print');
+    Route::get('/{invoice_with_stock}/download', [InvoiceWithStockController::class, 'download'])->name('download');
+    
+    // Search routes
+    Route::get('/search/products', [InvoiceWithStockController::class, 'searchStock'])->name('products.search');
+    Route::get('/get/product/{id}', [InvoiceWithStockController::class, 'getProduct'])->name('product.get');
+});
+
 
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/', [ShopController::class, 'index'])->name('index');
