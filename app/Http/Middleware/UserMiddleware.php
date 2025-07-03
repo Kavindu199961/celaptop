@@ -15,8 +15,12 @@ class UserMiddleware
         }
 
         if (!Auth::user()->isActive()) {
-            Auth::logout();
-            return redirect()->route('login')->with('error', 'Your account has been deactivated.');
+            // Allow login but show message
+            return redirect()->route('login')->with('error', 'You are not approved yet. Please contact admin - 0707645303');
+            
+            // Alternatively, if you want to show this on every page until they're approved:
+            // $response = $next($request);
+            // return $response->with('error', 'You are not approved yet. Please contact admin - 0707645303');
         }
 
         return $next($request);

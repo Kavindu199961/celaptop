@@ -21,9 +21,21 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::prefix('super-admin')->middleware('auth')->group(function () {
+    Route::get('/users', [AdminController::class, 'dashboard'])->name('super-admin.users.index');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('super-admin.users.store');
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser']); // Add this line
+    Route::patch('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('super-admin.toggle-status');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('super-admin.users.update');
+    Route::delete('/users/{user}/delete', [AdminController::class, 'deleteUser'])->name('delete-user');
+});
+// Auth routes (including password reset)
 
 // Admin routes
-Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['user'])->prefix('user')->name('user.')->group(function () {
     // Admin Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     

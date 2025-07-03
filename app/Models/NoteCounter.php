@@ -3,21 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class NoteCounter extends Model
 {
-    protected $fillable = ['key', 'value'];
+    protected $fillable = ['user_id', 'key', 'value'];
 
     public static function incrementAndGet($key)
     {
-        return DB::transaction(function () use ($key) {
-            $counter = self::lockForUpdate()->firstOrCreate(['key' => $key], ['value' => 1]);
+        $userId = Auth::id(); // Get currently logged-in user's ID
+
+        return DB::transaction(function () use ($key, $userId) {
+            $counter = self::lockForUpdate()->firstOrCreate(
+                ['user_id' => $userId, 'key' => $key],
+                ['value' => 1]
+            );
+
             $counter->value += 1;
             $counter->save();
+
             return $counter->value;
         });
     }
-
-    
 }
+

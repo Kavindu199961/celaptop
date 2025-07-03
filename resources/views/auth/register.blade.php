@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | CE Laptop Repair</title>
+    <title>Register | CE Laptop Repair</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -46,7 +46,7 @@
             line-height: 1.6;
         }
         
-        .login-wrapper {
+        .register-wrapper {
             width: 100%;
             max-width: 450px;
             margin: 20px;
@@ -64,7 +64,7 @@
             }
         }
         
-        .login-card {
+        .register-card {
             background: var(--bg-light);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -74,7 +74,7 @@
             transition: all 0.3s ease;
         }
         
-        .login-card:hover {
+        .register-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 25px 50px var(--shadow-medium);
         }
@@ -154,7 +154,7 @@
             font-size: 1.1rem;
         }
         
-        .btn-login {
+        .btn-register {
             width: 100%;
             padding: 0.875rem;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
@@ -169,112 +169,36 @@
             overflow: hidden;
         }
         
-        .btn-login:hover {
+        .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
         }
         
-        .btn-login:active {
+        .btn-register:active {
             transform: translateY(0);
         }
         
-        .btn-login .spinner-border {
+        .btn-register .spinner-border {
             width: 1rem;
             height: 1rem;
             margin-right: 0.5rem;
         }
         
-        .forgot-link {
-            text-align: right;
-            margin-top: -0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .forgot-link a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        
-        .forgot-link a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-        
-        .divider {
-            position: relative;
-            margin: 1.5rem 0;
-            text-align: center;
-        }
-        
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e5e7eb;
-        }
-        
-        .divider span {
-            background: var(--bg-light);
-            padding: 0 1rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        
-        .social-login {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            background: white;
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-        
-        .social-btn:hover {
-            background: #f9fafb;
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-        
-        .social-btn i {
-            margin-right: 0.5rem;
-            font-size: 1.1rem;
-        }
-        
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid #e5e7eb;
         }
         
-        .register-link a {
+        .login-link a {
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s ease;
         }
         
-        .register-link a:hover {
+        .login-link a:hover {
             color: var(--primary-dark);
             text-decoration: underline;
         }
@@ -318,20 +242,16 @@
         
         /* Mobile Responsive */
         @media (max-width: 576px) {
-            .login-wrapper {
+            .register-wrapper {
                 margin: 15px;
             }
             
-            .login-card {
+            .register-card {
                 padding: 2rem 1.5rem;
             }
             
             .brand-title {
                 font-size: 1.3rem;
-            }
-            
-            .social-login {
-                grid-template-columns: 1fr;
             }
         }
         
@@ -343,30 +263,30 @@
     </style>
 </head>
 <body>
-    <!-- Floating Medical Icons -->
+    <!-- Floating Elements -->
     <div class="floating-elements">
-        <i class="bi bi-heart-pulse floating-icon" style="font-size: 3rem;"></i>
-        <i class="bi bi-capsule floating-icon" style="font-size: 2.5rem;"></i>
-        <i class="bi bi-hospital floating-icon" style="font-size: 2.8rem;"></i>
-        <i class="bi bi-shield-check floating-icon" style="font-size: 2.6rem;"></i>
+        <i class="bi bi-cpu floating-icon" style="font-size: 3rem;"></i>
+        <i class="bi bi-motherboard floating-icon" style="font-size: 2.5rem;"></i>
+        <i class="bi bi-device-hdd floating-icon" style="font-size: 2.8rem;"></i>
+        <i class="bi bi-tools floating-icon" style="font-size: 2.6rem;"></i>
     </div>
 
     <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
         <div class="row justify-content-center w-100">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
-                <div class="login-wrapper">
-                    <div class="login-card">
+                <div class="register-wrapper">
+                    <div class="register-card">
                         <!-- Brand Section -->
                         <div class="brand-section">
                             <div class="brand-logo">
                                <i class="bi bi-laptop"></i>
                             </div>
-                            <h1 class="brand-title">Laptop Repair System<h1>
-                            <p class="brand-subtitle">Any Computer Work</p>
+                            <h1 class="brand-title">Create Account</h1>
+                            <p class="brand-subtitle">Join our laptop repair community</p>
                         </div>
 
-                        <!-- Login Form -->
-                        <form method="POST" action="{{ route('login') }}" id="loginForm">
+                        <!-- Register Form -->
+                        <form method="POST" action="{{ route('register') }}" id="registerForm">
                             @csrf
                             
                             <!-- Error Messages -->
@@ -376,6 +296,32 @@
                                     {{ $errors->first() }}
                                 </div>
                             @endif
+                            
+                            <!-- Name Field -->
+                            <div class="form-group">
+                                <label for="name" class="form-label">
+                                    <i class="bi bi-person me-1"></i>
+                                    Full Name
+                                </label>
+                                <div class="input-group">
+                                    <i class="bi bi-person input-icon"></i>
+                                    <input type="text" 
+                                           id="name" 
+                                           name="name" 
+                                           class="form-control @error('name') is-invalid @enderror" 
+                                           placeholder="Enter your full name"
+                                           value="{{ old('name') }}" 
+                                           required 
+                                           autocomplete="name" 
+                                           autofocus>
+                                </div>
+                                @error('name')
+                                    <div class="text-danger mt-1" style="font-size: 0.85rem;">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
                             
                             <!-- Email Field -->
                             <div class="form-group">
@@ -388,10 +334,11 @@
                                     <input type="email" 
                                            id="email" 
                                            name="email" 
-                                           class="form-control" 
+                                           class="form-control @error('email') is-invalid @enderror" 
                                            placeholder="Enter your email address"
                                            value="{{ old('email') }}" 
-                                           required>
+                                           required 
+                                           autocomplete="email">
                                 </div>
                                 @error('email')
                                     <div class="text-danger mt-1" style="font-size: 0.85rem;">
@@ -412,9 +359,10 @@
                                     <input type="password" 
                                            id="password" 
                                            name="password" 
-                                           class="form-control" 
-                                           placeholder="Enter your password"
-                                           required>
+                                           class="form-control @error('password') is-invalid @enderror" 
+                                           placeholder="Create a password"
+                                           required 
+                                           autocomplete="new-password">
                                 </div>
                                 @error('password')
                                     <div class="text-danger mt-1" style="font-size: 0.85rem;">
@@ -424,21 +372,41 @@
                                 @enderror
                             </div>
                             
-                            <!-- Login Button -->
-                            <button type="submit" class="btn btn-login" id="loginBtn">
+                            <!-- Confirm Password Field -->
+                            <div class="form-group">
+                                <label for="password-confirm" class="form-label">
+                                    <i class="bi bi-lock-fill me-1"></i>
+                                    Confirm Password
+                                </label>
+                                <div class="input-group">
+                                    <i class="bi bi-lock-fill input-icon"></i>
+                                    <input type="password" 
+                                           id="password-confirm" 
+                                           name="password_confirmation" 
+                                           class="form-control" 
+                                           placeholder="Confirm your password"
+                                           required 
+                                           autocomplete="new-password">
+                                </div>
+                            </div>
+                            
+                            <!-- Register Button -->
+                            <button type="submit" class="btn btn-register" id="registerBtn">
                                 <span class="btn-text">
-                                    <i class="bi bi-box-arrow-in-right me-2"></i>
-                                    Sign In
+                                    <i class="bi bi-person-plus me-2"></i>
+                                    Create Account
                                 </span>
                             </button>
+                            
+                            <!-- Login Link -->
+                            <div class="login-link">
+                                Already have an account? 
+                                <a href="{{ route('login') }}">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>
+                                    Sign In
+                                </a>
+                            </div>
                         </form>
-
-                        <a href="{{ route('register') }}" class="btn btn-login" >
-                                <span class="btn-text">
-                                    <i class="bi bi-box-arrow-in-right me-2"></i>
-                                    Your Shop Register
-                                </span>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -452,18 +420,18 @@
     
     <script>
         // Form Animation and Validation
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('loginBtn');
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('registerBtn');
             const btnText = btn.querySelector('.btn-text');
             
             // Add loading state
-            btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing In...';
+            btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
             btn.disabled = true;
             
             // Remove loading state after 3 seconds if form doesn't submit
             setTimeout(() => {
                 if (btn.disabled) {
-                    btnText.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Sign In';
+                    btnText.innerHTML = '<i class="bi bi-person-plus me-2"></i>Create Account';
                     btn.disabled = false;
                 }
             }, 3000);
@@ -503,7 +471,7 @@
         @if(session('error'))
             Swal.fire({
                 icon: 'error',
-                title: 'Access Denied',
+                title: 'Registration Error',
                 text: '{{ session('error') }}',
                 showConfirmButton: true,
                 confirmButtonColor: '#0d6efd',
@@ -516,7 +484,7 @@
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
-                title: '',
+                title: 'Registration Successful',
                 text: '{{ session('success') }}',
                 showConfirmButton: true,
                 confirmButtonColor: '#0d6efd',

@@ -14,32 +14,59 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+   public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        $credentials = $request->only('email', 'password');
-        
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            
-            if (!$user->isActive()) {
-                Auth::logout();
-                return back()->with('error', 'Your account has been deactivated.');
-            }
+    $credentials = $request->only('email', 'password');
 
-            if ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard');
-            } else {
-                return redirect()->route('user.dashboard');
-            }
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+
+        if (!$user->isActive()) {
+            Auth::logout();
+            return back()->with('error', 'Your account has been deactivated.');
         }
 
-        return back()->with('error', 'Invalid credentials');
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('super-admin.users.index');
+        } elseif ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('user.dashboard');
+        }
     }
+
+    return back()->with('error', 'Invalid credentials');
+}
+
+    public function showRegister()
+{
+    return view('auth.register');
+}
+
+public function register(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'user',       // default role
+        'is_active' => 0,       // default inactive
+    ]);
+
+    return redirect()->route('login')->with('success', 'Registered successfully. Please wait for admin approval.');
+}
+
 
     public function logout()
     {

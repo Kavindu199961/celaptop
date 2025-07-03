@@ -11,13 +11,12 @@ class AdminController extends Controller
     public function dashboard()
     {
         $users = User::paginate(10);
-        return view('admin.dashboard', compact('users'));
+        return view('super-admin.users.index', compact('users'));
     }
-
-    public function createUser()
-    {
-        return view('admin.create-user');
-    }
+public function editUser(User $user)
+{
+    return response()->json($user);
+}
 
     public function storeUser(Request $request)
     {
@@ -37,12 +36,13 @@ class AdminController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('admin.dashboard')->with('success', 'User created successfully!');
+        return redirect()->route('super-admin.users.index')->with('success', 'User created successfully!');
     }
 
-    public function editUser(User $user)
+    public function toggleStatus(User $user)
     {
-        return view('admin.edit-user', compact('user'));
+        $user->update(['is_active' => !$user->is_active]);
+        return response()->json(['success' => true, 'is_active' => $user->is_active]);
     }
 
     public function updateUser(Request $request, User $user)
@@ -68,12 +68,12 @@ class AdminController extends Controller
             $user->update(['password' => Hash::make($request->password)]);
         }
 
-        return redirect()->route('admin.dashboard')->with('success', 'User updated successfully!');
+        return redirect()->route('super-admin.users.index')->with('success', 'User updated successfully!');
     }
 
     public function deleteUser(User $user)
     {
         $user->delete();
-        return redirect()->route('admin.dashboard')->with('success', 'User deleted successfully!');
+        return redirect()->route('super-admin.users.index')->with('success', 'User deleted successfully!');
     }
 }

@@ -30,7 +30,7 @@
 
         <div class="card-body">
             <!-- Search Form -->
-            <form action="{{ route('admin.shop.index') }}" method="GET" class="mb-4">
+            <form action="{{ route('user.shop.index') }}" method="GET" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Search by shop name, phone or items..." value="{{ request('search') }}">
                     <div class="input-group-append">
@@ -38,7 +38,7 @@
                             <i class="fas fa-search"></i> Search
                         </button>
                         @if(request('search'))
-                            <a href="{{ route('admin.shop.index') }}" class="btn btn-outline-danger">Clear</a>
+                            <a href="{{ route('user.shop.index') }}" class="btn btn-outline-danger">Clear</a>
                         @endif
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                             <td>{{ $shop->items->count() }}</td>
                             <td>{{ $shop->items->max('date') ? \Carbon\Carbon::parse($shop->items->max('date'))->format('Y-m-d') : 'N/A' }}</td>
                             <td>
-                                <a href="{{ route('admin.shop.show', $shop->id) }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('user.shop.show', $shop->id) }}" class="btn btn-sm btn-info">
         <i class="fas fa-eye"></i>
     </a>
                                 <button class="btn btn-sm btn-warning edit-shop" 
@@ -105,7 +105,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createShopForm" method="POST" action="{{ route('admin.shop.store') }}">
+            <form id="createShopForm" method="POST" action="{{ route('user.shop.store') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -333,7 +333,7 @@
             var shopId = $(this).data('id');
             
             // Fetch shop data via AJAX
-            $.get("{{ route('admin.shop.edit', ':id') }}".replace(':id', shopId), function(data) {
+            $.get("{{ route('user.shop.edit', ':id') }}".replace(':id', shopId), function(data) {
                 // Populate the edit form
                 $('#edit_shop_name').val(data.shop_name);
                 $('#edit_phone_number').val(data.phone_number);
@@ -396,7 +396,7 @@
                 }
                 
                 // Set the form action URL
-                var actionUrl = "{{ route('admin.shop.update', ':id') }}";
+                var actionUrl = "{{ route('user.shop.update', ':id') }}";
                 actionUrl = actionUrl.replace(':id', shopId);
                 $('#editShopForm').attr('action', actionUrl);
                 
@@ -474,7 +474,7 @@
             $('#delete_shop_name').text(shopName);
             
             // Set the form action URL with the correct shop ID
-            var actionUrl = "{{ route('admin.shop.destroy', ':id') }}";
+            var actionUrl = "{{ route('user.shop.destroy', ':id') }}";
             actionUrl = actionUrl.replace(':id', shopId);
             $('#deleteShopForm').attr('action', actionUrl);
             

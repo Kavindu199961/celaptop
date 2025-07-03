@@ -28,7 +28,7 @@
 
         <div class="card-body">
             <!-- Search Form -->
-            <form action="{{ route('admin.invoices.index') }}" method="GET" class="mb-4">
+            <form action="{{ route('user.invoices.index') }}" method="GET" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Search by invoice number, customer name or phone..." value="{{ request('search') }}">
                     <div class="input-group-append">
@@ -36,7 +36,7 @@
                             <i class="fas fa-search"></i> Search
                         </button>
                         @if(request('search'))
-                            <a href="{{ route('admin.invoices.index') }}" class="btn btn-outline-danger">Clear</a>
+                            <a href="{{ route('user.invoices.index') }}" class="btn btn-outline-danger">Clear</a>
                         @endif
                     </div>
                 </div>
@@ -65,15 +65,15 @@
                             <td>{{ number_format($invoice->total_amount, 2) }}</td>
                             <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
                             <td>
-                                <a href="{{ route('admin.invoices.show', $invoice->id)}}" class="btn btn-sm btn-info">
+                                <a href="{{ route('user.invoices.show', $invoice->id)}}" class="btn btn-sm btn-info">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.invoices.print', $invoice->id) }}" 
+                                <a href="{{ route('user.invoices.print', $invoice->id) }}" 
                                 class="btn btn-sm btn-success" 
                                 target="_blank">
                                     <i class="fas fa-print"></i>
                                 </a>
-                                <a href="{{ route('admin.invoices.download', $invoice->id) }}" 
+                                <a href="{{ route('user.invoices.download', $invoice->id) }}" 
                                 class="btn btn-sm btn-primary" 
                                 target="_blank">
                                     <i class="fas fa-download"></i>
@@ -113,7 +113,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createInvoiceForm" method="POST" action="{{ route('admin.invoices.store') }}">
+            <form id="createInvoiceForm" method="POST" action="{{ route('user.invoices.store') }}">
                 @csrf
                 <div class="modal-body">
                     <!-- <div class="alert alert-warning">
@@ -310,7 +310,7 @@
             
             $('#delete_invoice_name').text(invoiceName);
             
-            const actionUrl = "{{ route('admin.invoices.destroy', ':id') }}".replace(':id', invoiceId);
+            const actionUrl = "{{ route('user.invoices.destroy', ':id') }}".replace(':id', invoiceId);
             $('#deleteInvoiceForm').attr('action', actionUrl);
             
             $('#deleteInvoiceModal').modal('show');

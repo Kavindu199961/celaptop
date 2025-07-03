@@ -8,7 +8,7 @@
         </div>
     <div class="card-body">
         <!-- Search Form -->
-        <form action="{{ route('admin.complete-repair.index') }}" method="GET" class="mb-4">
+        <form action="{{ route('user.complete-repair.index') }}" method="GET" class="mb-4">
             <div class="input-group">
                 <input type="text" name="search" class="form-control" placeholder="Search by customer number, name, serial number or device..." value="{{ request('search') }}">
                 <div class="input-group-append">
@@ -16,7 +16,7 @@
                         <i class="fas fa-search"></i> Search
                     </button>
                     @if(request('search'))
-                        <a href="{{ route('admin.complete-repair.index') }}" class="btn btn-outline-danger">Clear</a>
+                        <a href="{{ route('user.complete-repair.index') }}" class="btn btn-outline-danger">Clear</a>
                     @endif
                 </div>
             </div>
@@ -121,7 +121,7 @@ $(document).ready(function() {
         $('#delete_repair_name').text(repairName);
         
         // Set the form action URL with the correct repair ID
-        var actionUrl = "{{ route('admin.complete-repair.destroy', ':id') }}";
+        var actionUrl = "{{ route('user.complete-repair.destroy', ':id') }}";
         actionUrl = actionUrl.replace(':id', repairId);
         $('#deleteRepairForm').attr('action', actionUrl);
         
@@ -193,7 +193,7 @@ $(document).ready(function() {
 
     // Add new repair button click handler
     $('#addRepairBtn').click(function() {
-        window.location.href = "{{ route('admin.complete-repair.create') }}";
+        window.location.href = "{{ route('user.complete-repair.create') }}";
     });
 });
 

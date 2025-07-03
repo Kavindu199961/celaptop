@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\MyShopDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class MyShopController extends Controller
 {
     public function index()
     {
-        $shop = MyShopDetail::first();
+        $shop = MyShopDetail::where('user_id', Auth::id())->first();
         $hasShop = $shop !== null;
-        
-        return view('admin.myshop.index', compact('shop', 'hasShop'));
+
+        return view('user.myshop.index', compact('shop', 'hasShop'));
     }
 
     public function store(Request $request)
@@ -32,6 +32,7 @@ class MyShopController extends Controller
         ]);
 
         $data = $request->except('logo_image');
+        $data['user_id'] = Auth::id();
 
         if ($request->hasFile('logo_image')) {
             $path = $request->file('logo_image')->store('shop_logos', 'public');
@@ -40,19 +41,15 @@ class MyShopController extends Controller
 
         MyShopDetail::create($data);
 
-        return redirect()->route('admin.myshop.index')
+        return redirect()->route('user.myshop.index')
             ->with('success', 'Shop details created successfully.');
     }
 
-    /**
-     * Display the specified shop detail (for AJAX requests)
-     */
     public function show($id)
     {
         try {
-            $shop = MyShopDetail::findOrFail($id);
-            
-            // Return JSON response for AJAX requests
+            $shop = MyShopDetail::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'id' => $shop->id,
@@ -67,18 +64,17 @@ class MyShopController extends Controller
                     'condition_3' => $shop->condition_3,
                 ]);
             }
-            
-            // For regular requests, redirect to index
-            return redirect()->route('admin.myshop.index');
-            
+
+            return redirect()->route('user.myshop.index');
+
         } catch (\Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'error' => 'Shop details not found'
                 ], 404);
             }
-            
-            return redirect()->route('admin.myshop.index')
+
+            return redirect()->route('user.myshop.index')
                 ->with('error', 'Shop details not found.');
         }
     }
@@ -97,22 +93,21 @@ class MyShopController extends Controller
             'condition_3' => 'nullable|string',
         ]);
 
-        $shop = MyShopDetail::findOrFail($id);
+        $shop = MyShopDetail::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $data = $request->except('logo_image');
 
         if ($request->hasFile('logo_image')) {
-            // Delete old logo if exists
             if ($shop->logo_image) {
                 Storage::disk('public')->delete($shop->logo_image);
             }
-            
+
             $path = $request->file('logo_image')->store('shop_logos', 'public');
             $data['logo_image'] = $path;
         }
 
         $shop->update($data);
 
-        return redirect()->route('admin.myshop.index')
+        return redirect()->route('user.myshop.index')
             ->with('success', 'Shop details updated successfully.');
     }
 }

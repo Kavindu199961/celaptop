@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('cost', 10, 2);
             $table->decimal('whole_sale_price', 10, 2);
             $table->decimal('retail_price', 10, 2);
-            $table->string('vender');
+            $table->string('vender')->nullable();
             $table->date('stock_date')->default(DB::raw('CURRENT_DATE'));
             $table->integer('quantity');
             $table->timestamps();

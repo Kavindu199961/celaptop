@@ -72,7 +72,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createShopForm" method="POST" action="{{ route('admin.myshop.store') }}" enctype="multipart/form-data">
+            <form id="createShopForm" method="POST" action="{{ route('user.myshop.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -287,7 +287,7 @@ $(document).ready(function() {
         $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
         
         $.ajax({
-            url: '{{ route("admin.myshop.show", ":id") }}'.replace(':id', shopId),
+            url: '{{ route("user.myshop.show", ":id") }}'.replace(':id', shopId),
             type: 'GET',
             success: function(data) {
                 // Reset button state
@@ -316,7 +316,7 @@ $(document).ready(function() {
                 $('#edit_logo_image').val('');
                 
                 // Set form action
-                $('#editShopForm').attr('action', '{{ route("admin.myshop.update", ":id") }}'.replace(':id', shopId));
+                $('#editShopForm').attr('action', '{{ route("user.myshop.update", ":id") }}'.replace(':id', shopId));
                 
                 // Show modal
                 $('#editShopModal').modal('show');

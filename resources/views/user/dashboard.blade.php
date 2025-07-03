@@ -5,7 +5,7 @@
    <div class="row mb-3">
     <!-- Total Repairs -->
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-        <a href="{{ route('admin.laptop-repair.index') }}" style="text-decoration: none; color: inherit;">
+        <a href="{{ route('user.laptop-repair.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card p-3">
                 <div class="row align-items-center">
                     <div class="col-6">
@@ -23,7 +23,7 @@
 
     <!-- Completed Repairs -->
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-        <a href="{{ route('admin.complete-repair.index') }}" style="text-decoration: none; color: inherit;">
+        <a href="{{ route('user.complete-repair.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card p-3">
                 <div class="row align-items-center">
                     <div class="col-6">
@@ -41,7 +41,7 @@
 
     <!-- Stock Items -->
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-        <a href="{{ route('admin.stock.index') }}" style="text-decoration: none; color: inherit;">
+        <a href="{{ route('user.stock.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card p-3">
                 <div class="row align-items-center">
                     <div class="col-6">
@@ -59,7 +59,7 @@
 
     <!-- Total Shops -->
     <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
-        <a href="{{ route('admin.shop.index') }}" style="text-decoration: none; color: inherit;">
+        <a href="{{ route('user.shop.index') }}" style="text-decoration: none; color: inherit;">
             <div class="card p-3">
                 <div class="row align-items-center">
                     <div class="col-6">

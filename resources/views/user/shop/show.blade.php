@@ -6,10 +6,10 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4>Shop Details: {{ $shop->shop_name }}</h4>
             <div>
-                <!-- <a href="{{ route('admin.shop.edit', $shop->id) }}" class="btn btn-warning">
+                <!-- <a href="{{ route('user.shop.edit', $shop->id) }}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Edit
                 </a> -->
-                <a href="{{ route('admin.shop.index') }}" class="btn btn-info">
+                <a href="{{ route('user.shop.index') }}" class="btn btn-info">
                     <i class="fas fa-arrow-left"></i> Back to Shops
                 </a>
             </div>

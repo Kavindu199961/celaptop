@@ -36,8 +36,7 @@
             <a href="#" 
               class="nav-link  nav-link-lg nav-link-user">
               <img alt="image" src="/assets/img/user.png" class="user-img-radious-style mr-3">
-              <span class="d-sm-none d-lg-inline-block text-dark">Hello {{ auth()->user()->name ?? 'CeylonGIT' }}</span>
-
+              <span class="d-sm-none d-lg-inline-block text-dark">Hello Super Admin</span>
             </a>
             
             </div>
@@ -45,79 +44,25 @@
 
       </nav>
 
-    <div class="main-sidebar sidebar-style-2">
-      <aside id="sidebar-wrapper">
-        <div class="sidebar-brand text-center py-3">
-          @php
-              $user = auth()->user();
-              $shopDetail = $user ? App\Models\MyShopDetail::where('user_id', $user->id)->first() : null;
-          @endphp
-
-          <a href="{{ route('user.dashboard') }}">
-              @if($shopDetail && $shopDetail->logo_image)
-                  <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
-              @else
-                  <img src="{{ asset('/assets/logo/logo1.jpg') }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
-              @endif
-              
-              <div class="logo-name mt-2" style="font-weight: bold; font-size: 12px; color: #333;">
-                  {{ $shopDetail->shop_name ?? 'User ID: ' . ($user->id ?? 'CeylonGIT') }}
+      <div class="main-sidebar sidebar-style-2">
+        <aside id="sidebar-wrapper">
+          <div class="sidebar-brand text-center py-3">
+            <div class="logo-name mt-2" style="font-weight: bold; font-size: 18px; color: #333;">
+                 <span class="text-dark">Super Admin</span>
               </div>
-          
-          </a>
-        </div>
-
+          </div>
           
           <ul class="sidebar-menu mt-4">
             <li class="menu-header">Navigations</li>
 
-            <li class="dropdown {{ request()->is('user/dashboard') ? 'active' : '' }}">
-              <a href="{{ route('user.dashboard') }}" class="nav-link">
-                <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-              </a>
-            </li>
-            <li class="dropdown {{ request()->is('user/myshop*') ? 'active' : '' }}">
-              <a href="{{ route('user.myshop.index') }}" class="nav-link">
-                <i class="fas fa-home"></i><span>My Shop Details</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/invoices*') ? 'active' : '' }}">
-              <a href="{{ route('user.invoices.index') }}" class="nav-link">
-                <i class="fas fa-file-invoice-dollar"></i><span>Invoice</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/laptop-repair*') ? 'active' : '' }}">
-              <a href="{{ route('user.laptop-repair.index') }}" class="nav-link">
-                <i class="fas fa-laptop-medical"></i><span>Laptop Repair</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/complete-repair*') ? 'active' : '' }}">
-              <a href="{{ route('user.complete-repair.index') }}" class="nav-link">
-                <i class="fas fa-check-circle"></i><span>Completed Repair</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/stock*') ? 'active' : '' }}">
-              <a href="{{ route('user.stock.index') }}" class="nav-link">
-                <i class="fas fa-boxes"></i><span>Stock</span>
+            <li class="dropdown {{ request()->is('super-admin/user*') ? 'active' : '' }}">
+              <a href="{{ route('super-admin.users.index') }}" class="nav-link">
+                <i class="fas fa-user"></i><span>User</span>
               </a>
             </li>
 
             
 
-            <li class="dropdown {{ request()->is('user/shop*') ? 'active' : '' }}">
-              <a href="{{ route('user.shop.index') }}" class="nav-link">
-                <i class="fas fa-store"></i><span>Shop Details</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
-              <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">
-                <i class="fas fa-search-location"></i><span>Laptop Tracking</span>
-              </a>
             </li>
 
             <li class="dropdown">

@@ -44,7 +44,7 @@
 
         <div class="card-body">
             <!-- Search Form -->
-            <form action="{{ route('admin.laptop-repair.index') }}" method="GET" class="mb-4">
+            <form action="{{ route('user.laptop-repair.index') }}" method="GET" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Search by customer number, name or serial number..." value="{{ request('search') }}">
                     <div class="input-group-append">
@@ -52,7 +52,7 @@
                             <i class="fas fa-search"></i> Search
                         </button>
                         @if(request('search'))
-                            <a href="{{ route('admin.laptop-repair.index') }}" class="btn btn-outline-danger">Clear</a>
+                            <a href="{{ route('user.laptop-repair.index') }}" class="btn btn-outline-danger">Clear</a>
                         @endif
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                             </td>
                             <td>{{ $repair->date->format('Y-m-d') }}</td>
                             <td>
-                                <a href="{{ route('admin.laptop-repair.show', $repair->id) }}" class="btn btn-sm btn-info" title="View Details">
+                                <a href="{{ route('user.laptop-repair.show', $repair->id) }}" class="btn btn-sm btn-info" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <button class="btn btn-sm btn-danger delete-repair" 
@@ -149,7 +149,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createRepairForm" enctype="multipart/form-data"  method="POST" action="{{ route('admin.laptop-repair.store') }}">
+            <form id="createRepairForm" enctype="multipart/form-data"  method="POST" action="{{ route('user.laptop-repair.store') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -364,7 +364,7 @@
     $('#createRepairModal').modal('show');
 
     // Now fetch note number asynchronously
-    $.get("{{ route('admin.laptop-repair.get-note-number') }}")
+    $.get("{{ route('user.laptop-repair.get-note-number') }}")
         .done(function(response) {
             if (response.note_number) {
                 $('#create_note_number_display').val(response.note_number);
@@ -384,7 +384,7 @@
             
             $('#delete_repair_name').text(repairName);
             
-            var actionUrl = "{{ route('admin.laptop-repair.destroy', ':id') }}";
+            var actionUrl = "{{ route('user.laptop-repair.destroy', ':id') }}";
             actionUrl = actionUrl.replace(':id', repairId);
             $('#deleteRepairForm').attr('action', actionUrl);
             
@@ -414,7 +414,7 @@
             }
             
             $.ajax({
-                url: "{{ route('admin.laptop-repair.update-status', ':id') }}".replace(':id', repairId),
+                url: "{{ route('user.laptop-repair.update-status', ':id') }}".replace(':id', repairId),
                 method: 'PATCH',
                 data: {
                     status: newStatus,
@@ -446,7 +446,7 @@
                                     }
                                     
                                     return $.ajax({
-                                        url: "{{ route('admin.laptop-repair.complete', ':id') }}".replace(':id', repairId),
+                                        url: "{{ route('user.laptop-repair.complete', ':id') }}".replace(':id', repairId),
                                         method: 'PATCH',
                                         data: {
                                             repair_price: price,
@@ -491,7 +491,7 @@
                                     });
                                     
                                     $.ajax({
-                                        url: "{{ route('admin.laptop-repair.update-status', ':id') }}".replace(':id', repairId),
+                                        url: "{{ route('user.laptop-repair.update-status', ':id') }}".replace(':id', repairId),
                                         method: 'PATCH',
                                         data: {
                                             status: currentStatus,
@@ -589,7 +589,7 @@
             }
 
             $.ajax({
-                url: "{{ route('admin.laptop-repair.update-price', ':id') }}".replace(':id', repairId),
+                url: "{{ route('user.laptop-repair.update-price', ':id') }}".replace(':id', repairId),
                 method: 'PATCH',
                 data: {
                     repair_price: newPrice,

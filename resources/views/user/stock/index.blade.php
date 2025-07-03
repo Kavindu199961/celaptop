@@ -25,15 +25,12 @@
                 <button type="button" class="btn btn-primary" id="addStockBtn">
                     <i class="fas fa-plus"></i> Add New Item
                 </button>
-                <!-- <a href="" class="btn btn-info ml-2">
-                    <i class="fas fa-store"></i> View Vendors
-                </a> -->
             </div>
         </div>
 
         <div class="card-body">
             <!-- Search Form -->
-            <form action="{{ route('admin.stock.index') }}" method="GET" class="mb-4">
+            <form action="{{ route('user.stock.index') }}" method="GET" class="mb-4">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Search by item name or vendor..." value="{{ request('search') }}">
                     <div class="input-group-append">
@@ -41,7 +38,7 @@
                             <i class="fas fa-search"></i> Search
                         </button>
                         @if(request('search'))
-                            <a href="{{ route('admin.stock.index') }}" class="btn btn-outline-danger">Clear</a>
+                            <a href="{{ route('user.stock.index') }}" class="btn btn-outline-danger">Clear</a>
                         @endif
                     </div>
                 </div>
@@ -71,18 +68,19 @@
                             <td>{{ number_format($stock->whole_sale_price, 2) }}</td>
                             <td>{{ number_format($stock->retail_price, 2) }}</td>
                             <td>
-                                <a href="{{ route('admin.stock.vendor.show', $stock->vender) }}" 
+                                @if($stock->vender)
+                                <a href="{{ route('user.stock.vendor.show', $stock->vender) }}" 
                                    class="btn btn-sm btn-outline-primary vendor-link"
                                    data-vendor="{{ $stock->vender }}">
                                     {{ $stock->vender }}
                                 </a>
+                                @else
+                                <span class="text-muted">No vendor</span>
+                                @endif
                             </td>
                             <td>{{ $stock->quantity }}</td>
                             <td>{{ \Carbon\Carbon::parse($stock->stock_date)->format('Y-m-d') }}</td>
                             <td>
-                                <!-- <a href="{{ route('admin.stock.show', $stock->id)}}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i>
-                                </a> -->
                                 <button class="btn btn-sm btn-warning edit-stock" 
                                         data-id="{{ $stock->id }}">
                                     <i class="fas fa-edit"></i>
@@ -122,7 +120,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createStockForm" method="POST" action="{{ route('admin.stock.store') }}">
+            <form id="createStockForm" method="POST" action="{{ route('user.stock.store') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -136,9 +134,9 @@
                                 <textarea class="form-control" id="create_description" name="description" rows="3"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="create_vender">Vendor *</label>
-                                <input type="text" class="form-control" id="create_vender" name="vender" required>
-                                <small class="text-muted">Click vendor name to view all items from same vendor</small>
+                                <label for="create_vender">Vendor (optional)</label>
+                                <input type="text" class="form-control" id="create_vender" name="vender">
+                                <small class="text-muted">Leave blank if no vendor</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -205,8 +203,9 @@
                                 <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="edit_vender">Vendor *</label>
-                                <input type="text" class="form-control" id="edit_vender" name="vender" required>
+                                <label for="edit_vender">Vendor (optional)</label>
+                                <input type="text" class="form-control" id="edit_vender" name="vender">
+                                <small class="text-muted">Leave blank to remove vendor</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -326,19 +325,19 @@
             var stockId = $(this).data('id');
             
             // Fetch stock data via AJAX
-            $.get("{{ route('admin.stock.edit', ':id') }}".replace(':id', stockId), function(data) {
+            $.get("{{ route('user.stock.edit', ':id') }}".replace(':id', stockId), function(data) {
                 // Populate the edit form
                 $('#edit_item_name').val(data.item_name);
                 $('#edit_description').val(data.description);
                 $('#edit_cost').val(data.cost);
                 $('#edit_whole_sale_price').val(data.whole_sale_price);
                 $('#edit_retail_price').val(data.retail_price);
-                $('#edit_vender').val(data.vender);
+                $('#edit_vender').val(data.vender || '');
                 $('#edit_quantity').val(data.quantity);
                 $('#edit_stock_date').val(data.stock_date.split('T')[0]);
                 
                 // Set the form action URL
-                var actionUrl = "{{ route('admin.stock.update', ':id') }}";
+                var actionUrl = "{{ route('user.stock.update', ':id') }}";
                 actionUrl = actionUrl.replace(':id', stockId);
                 $('#editStockForm').attr('action', actionUrl);
                 
@@ -359,11 +358,21 @@
             e.preventDefault();
             var vendor = $(this).data('vendor');
             
+            if (!vendor) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Vendor',
+                    text: 'This item has no vendor associated',
+                    confirmButtonColor: '#0d6efd'
+                });
+                return;
+            }
+            
             // Set vendor name in modal title
             $('#vendorNameTitle').text(vendor);
             
             // Load items via AJAX
-            $.get("{{ route('admin.stock.vendor.show', ':vendor') }}".replace(':vendor', vendor), function(data) {
+            $.get("{{ route('user.stock.vendor.show', ':vendor') }}".replace(':vendor', vendor), function(data) {
                 var itemsHtml = '';
                 
                 if(data.length > 0) {
@@ -404,7 +413,7 @@
             $('#delete_stock_name').text(stockName);
             
             // Set the form action URL with the correct stock ID
-            var actionUrl = "{{ route('admin.stock.destroy', ':id') }}";
+            var actionUrl = "{{ route('user.stock.destroy', ':id') }}";
             actionUrl = actionUrl.replace(':id', stockId);
             $('#deleteStockForm').attr('action', actionUrl);
             
@@ -439,22 +448,25 @@
             $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
         });
 
-        // Auto-calculate prices if needed (example: set retail price as 30% above cost)
+        // Auto-calculate prices if needed
         $('#create_cost, #edit_cost').on('change', function() {
             var cost = parseFloat($(this).val());
             if (!isNaN(cost)) {
                 var retailPrice = cost * 1.3; // 30% markup
                 var wholeSalePrice = cost * 1.15; // 15% markup
                 
-                // Update the fields if they're empty or confirm with user
-                if ($('#create_retail_price').val() === '' || confirm('Update prices based on cost?')) {
-                    $('#create_retail_price').val(retailPrice.toFixed(2));
-                    $('#create_whole_sale_price').val(wholeSalePrice.toFixed(2));
+                // Get the current form context
+                var formContext = $(this).closest('form');
+                
+                // Only auto-fill if the fields are empty
+                if (formContext.find('#create_retail_price').length && formContext.find('#create_retail_price').val() === '') {
+                    formContext.find('#create_retail_price').val(retailPrice.toFixed(2));
+                    formContext.find('#create_whole_sale_price').val(wholeSalePrice.toFixed(2));
                 }
                 
-                if ($('#edit_retail_price').val() === '' || confirm('Update prices based on cost?')) {
-                    $('#edit_retail_price').val(retailPrice.toFixed(2));
-                    $('#edit_whole_sale_price').val(wholeSalePrice.toFixed(2));
+                if (formContext.find('#edit_retail_price').length && formContext.find('#edit_retail_price').val() === '') {
+                    formContext.find('#edit_retail_price').val(retailPrice.toFixed(2));
+                    formContext.find('#edit_whole_sale_price').val(wholeSalePrice.toFixed(2));
                 }
             }
         });

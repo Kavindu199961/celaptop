@@ -5,14 +5,15 @@
     <title>Invoice #{{ $invoice->invoice_number }}</title>
     <style>
         @page {
-            size: A5 landscape; /* Half A4 size (210mm x 148.5mm) */
+            size: A4;
             margin: 0;
         }
 
         body {
             font-family: Arial, sans-serif;
             font-size: 9px;
-            padding: 10px;
+      
+            padding: 10px 5px 15px 5px; /* top    right   bottom  left */
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -158,7 +159,6 @@
                             </strong>
                         </p>
                     </td>
-
                 </tr>
             </table>
         </div>
@@ -195,7 +195,7 @@
             </thead>
             <tbody>
                 @php
-                    $maxRows = 10;
+                    $maxRows = 43;
                     $items = $invoice->items;
                 @endphp
                 @for($i = 0; $i < $maxRows; $i++)
@@ -266,7 +266,7 @@
         }
 
         function closeReport() {
-            window.location.href = "{{ route('admin.invoices.index') }}";
+            window.location.href = "{{ route('user.invoices.index') }}";
         }
     </script>
 </body>

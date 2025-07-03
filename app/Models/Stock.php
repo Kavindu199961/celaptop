@@ -19,7 +19,8 @@ class Stock extends Model
         'retail_price',
         'vender',
         'stock_date',
-        'quantity'
+        'quantity',
+        'user_id' // Added user_id to track the owner of the stock item
     ];
 
     protected $dates = [
@@ -27,4 +28,9 @@ class Stock extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

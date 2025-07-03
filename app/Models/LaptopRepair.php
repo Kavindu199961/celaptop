@@ -22,6 +22,7 @@ class LaptopRepair extends Model
         'status',
         'customer_number',
         'images', // This will be a JSON field to store multiple image paths
+        'user_id', // Foreign key to the users table
     ];
 
     protected $casts = [
@@ -59,18 +60,7 @@ class LaptopRepair extends Model
     /**
      * Generate unique note number starting from 425
      */
-    public static function generateNoteNumber()
-    {
-        $start = 425;
-        $noteNumber = NoteCounter::incrementAndGet('note_number');
-
-        // If it's the first time ever, set base
-        if ($noteNumber < $start) {
-            $noteNumber = $start;
-        }
-
-        return $noteNumber;
-    }
+  
 
     /**
      * Scope for filtering by status
@@ -87,4 +77,10 @@ class LaptopRepair extends Model
     {
         return $query->whereBetween('date', [$startDate, $endDate]);
     }
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

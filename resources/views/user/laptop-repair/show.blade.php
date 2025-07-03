@@ -4,7 +4,7 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold">Repair Details #{{ $repair->customer_number }}</h4>
-        <a href="{{ route('admin.laptop-repair.index') }}" class="btn btn-outline-success">
+        <a href="{{ route('user.laptop-repair.index') }}" class="btn btn-outline-success">
             <i class="fas fa-arrow-left me-2"></i> Back to List
         </a>
     </div>

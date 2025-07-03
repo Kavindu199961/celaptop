@@ -53,10 +53,10 @@
             </div>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <a href="{{ route('admin.invoices.print', $invoice->id) }}" class="btn btn-success me-md-2 ">
+                <a href="{{ route('user.invoices.print', $invoice->id) }}" class="btn btn-success me-md-2 ">
                     <i class="fas fa-print me-1"></i> Print Invoice
                 </a>
-                <a href="{{ route('admin.invoices.download', $invoice->id) }}" class="btn btn-primary ml-1 ">
+                <a href="{{ route('user.invoices.download', $invoice->id) }}" class="btn btn-primary ml-1 ">
                     <i class="fas fa-download me-1"></i> Download PDF
                 </a>
             </div>

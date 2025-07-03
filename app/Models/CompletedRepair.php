@@ -34,7 +34,10 @@ class CompletedRepair extends Model
         'status',
         'completed_at',
         'images', // This will be a JSON field to store multiple image paths
+        'user_id' // Assuming you want to track which user completed the repair
     ];
+
+
 
     /**
      * The attributes that should be cast.
@@ -69,5 +72,10 @@ class CompletedRepair extends Model
     public function scopeWithStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -17,6 +17,7 @@ class ShopItem extends Model
         'serial_number',
         'price',
         'date'
+        
     ];
 
     protected $casts = [
@@ -24,8 +25,6 @@ class ShopItem extends Model
         'price' => 'decimal:2'
     ];
 
-    public function shop()
-    {
-        return $this->belongsTo(Shop::class);
-    }
+   
+
 }

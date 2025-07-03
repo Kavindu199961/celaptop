@@ -15,7 +15,8 @@ class Invoice extends Model
         'customer_phone',
         'sales_rep',
         'issue_date',
-        'total_amount'
+        'total_amount',
+        'user_id', // Foreign key to the users table
     ];
 
     public function items()
@@ -30,5 +31,10 @@ class Invoice extends Model
         static::creating(function ($invoice) {
             $invoice->invoice_number = 'INV-' . str_pad(static::max('id') + 1, 6, '0', STR_PAD_LEFT);
         });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

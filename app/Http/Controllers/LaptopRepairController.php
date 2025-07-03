@@ -5,122 +5,115 @@ namespace App\Http\Controllers;
 use App\Models\LaptopRepair;
 use App\Models\CompletedRepair;
 use Illuminate\Http\Request;
-use App\Models\NoteCounter; // Assuming you have a NoteCounter model for managing note numbers
+use App\Models\NoteCounter;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class LaptopRepairController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-public function index()
-{
-    $search = request('search');
+    public function index()
+    {
+        $search = request('search');
 
+        // Get repairs for the authenticated user
+        $repairs = LaptopRepair::where('user_id', Auth::id())
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('customer_number', 'like', '%'.$search.'%')
+                      ->orWhere('customer_name', 'like', '%'.$search.'%')
+                      ->orWhere('serial_number', 'like', '%'.$search.'%')
+                      ->orWhere('note_number', 'like', '%'.$search.'%')
+                      ->orWhere('device', 'like', '%'.$search.'%');
+                });
+            })
+            ->latest()
+            ->paginate(10);
 
-
-    $repairs = LaptopRepair::when($search, function($query) use ($search) {
-            $query->where('customer_number', 'like', '%'.$search.'%')
-                  ->orWhere('customer_name', 'like', '%'.$search.'%')
-                  ->orWhere('serial_number', 'like', '%'.$search.'%')
-                  ->orWhere('note_number', 'like', '%'.$search.'%')
-                  ->orWhere('device', 'like', '%'.$search.'%');
-        })
-        ->latest() // Assuming you have a scope for latest repairs
-        ->paginate(10);
-
-    return view('admin.laptop-repair.index', compact('repairs', ));
-}
+        return view('user.laptop-repair.index', compact('repairs'));
+    }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('admin.laptop-repair.create');
+        return view('user.laptop-repair.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
- public function store(Request $request)
-{
-    try {
-        // ✅ Validate all inputs, including images array
-        $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'contact' => 'required|string|max:255',
-            'device' => 'required|string|max:255',
-            'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
-            'fault' => 'required|string',
-            'repair_price' => 'nullable|numeric|min:0',
-            'date' => 'required|date',
-            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+    public function store(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'contact' => 'required|string|max:255',
+                'device' => 'required|string|max:255',
+                'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
+                'fault' => 'required|string',
+                'repair_price' => 'nullable|numeric|min:0',
+                'date' => 'required|date',
+                'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+                'images' => 'nullable|array',
+                'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            ]);
 
-            // ✅ These two lines are important:
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-        ]);
+            // Set default status
+            if (!isset($validated['status'])) {
+                $validated['status'] = 'pending';
+            }
 
-        // ✅ Set default status
-        if (!isset($validated['status'])) {
-            $validated['status'] = 'pending';
-        }
+            // Generate note number
+            $noteNumber = NoteCounter::incrementAndGet('note_number');
+            $validated['note_number'] = $noteNumber;
 
-        // ✅ Generate note number
-        $noteNumber = NoteCounter::incrementAndGet('note_number');
-        $validated['note_number'] = $noteNumber;
+            // Associate with authenticated user
+            $validated['user_id'] = Auth::id();
 
-        // ✅ Handle image uploads if present
-        if ($request->hasFile('images')) {
-            $imagePaths = [];
-
-            foreach ($request->file('images') as $image) {
-                if ($image && $image->isValid()) {
-                    $path = $image->store('repairs', 'public'); // stores in storage/app/public/repairs
-                    $imagePaths[] = $path;
+            // Handle image uploads
+            if ($request->hasFile('images')) {
+                $imagePaths = [];
+                foreach ($request->file('images') as $image) {
+                    if ($image && $image->isValid()) {
+                        $path = $image->store('repairs', 'public');
+                        $imagePaths[] = $path;
+                    }
+                }
+                if (!empty($imagePaths)) {
+                    $validated['images'] = json_encode($imagePaths);
                 }
             }
 
-            if (!empty($imagePaths)) {
-                $validated['images'] = json_encode($imagePaths); // store as JSON in DB
-            }
+            $repair = LaptopRepair::create($validated);
+            session()->forget('note_number');
+
+            return redirect()->route('user.laptop-repair.index')
+                             ->with('success', 'Repair record created successfully. Customer Number: ' . $repair->customer_number);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                             ->withErrors($e->validator)
+                             ->withInput()
+                             ->with('error', 'Validation failed. Please check the form fields.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                             ->withInput()
+                             ->with('error', 'An error occurred. Please try again.');
         }
-
-        // ✅ Create the repair record
-        $repair = LaptopRepair::create($validated);
-
-        // ✅ Clear session note number
-        session()->forget('note_number');
-
-        // ✅ Redirect with success
-        return redirect()->route('admin.laptop-repair.index')
-                         ->with('success', 'Repair record created successfully. Customer Number: ' . $repair->customer_number);
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return redirect()->back()
-                         ->withErrors($e->validator)
-                         ->withInput()
-                         ->with('error', 'Validation failed. Please check the form fields.');
-    } catch (\Illuminate\Database\QueryException $e) {
-        return redirect()->back()
-                         ->withInput()
-                         ->with('error', 'Database error occurred. Please try again.');
-    } catch (\Exception $e) {
-        return redirect()->back()
-                         ->withInput()
-                         ->with('error', 'An error occurred. Please try again.');
     }
-}
 
-/**
+    /**
      * Display the specified resource.
      */
     public function show($id)
     {
-        $repair = LaptopRepair::findOrFail($id);
+        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
         $repair->images = json_decode($repair->images, true);
-        return view('admin.laptop-repair.show', compact('repair'));
+        return view('user.laptop-repair.show', compact('repair'));
     }
 
     /**
@@ -128,8 +121,8 @@ public function index()
      */
     public function edit($id)
     {
-        $repair = LaptopRepair::findOrFail($id);
-        return view('admin.laptop-repair.edit', compact('repair'));
+        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
+        return view('user.laptop-repair.edit', compact('repair'));
     }
 
     /**
@@ -137,7 +130,7 @@ public function index()
      */
     public function update(Request $request, $id)
     {
-        $repair = LaptopRepair::findOrFail($id);
+        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
         
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
@@ -153,7 +146,7 @@ public function index()
 
         $repair->update($validated);
 
-        return redirect()->route('admin.laptop-repair.index')
+        return redirect()->route('user.laptop-repair.index')
                          ->with('success', 'Repair record updated successfully.');
     }
 
@@ -169,13 +162,10 @@ public function index()
         DB::beginTransaction();
 
         try {
-            $repair = LaptopRepair::findOrFail($id);
+            $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
             $oldStatus = $repair->status;
             
-            // If status is being changed to completed, handle the completion flow
             if ($request->status == 'completed' && $repair->status != 'completed') {
-                // Don't move to completed table yet, just update status
-                // The frontend will handle price confirmation, then call the completion method
                 $repair->update(['status' => 'completed']);
                 
                 DB::commit();
@@ -184,12 +174,11 @@ public function index()
                     'success' => true,
                     'message' => 'Repair marked as completed',
                     'new_status' => 'completed',
-                    'show_price_modal' => true, // Flag to show price confirmation modal
+                    'show_price_modal' => true,
                     'old_status' => $oldStatus
                 ]);
             }
             
-            // For other status changes
             $repair->update(['status' => $request->status]);
 
             DB::commit();
@@ -221,7 +210,7 @@ public function index()
         DB::beginTransaction();
 
         try {
-            $repair = LaptopRepair::findOrFail($id);
+            $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
             
             // Update the price first
             $repair->update(['repair_price' => $request->repair_price]);
@@ -229,6 +218,7 @@ public function index()
             // Now move to completed_repairs table
             $completedRepair = $repair->replicate();
             $completedRepair->completed_at = now();
+            $completedRepair->user_id = Auth::id(); // Keep user association
             $completedRepair->setTable('completed_repairs');
             $completedRepair->save();
             
@@ -262,7 +252,7 @@ public function index()
         ]);
 
         try {
-            $repair = LaptopRepair::findOrFail($id);
+            $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
             $repair->update(['repair_price' => $request->repair_price]);
 
             return response()->json([
@@ -279,18 +269,18 @@ public function index()
     }
 
     /**
-     * Get repair statistics
+     * Get repair statistics for the authenticated user
      */
     public function getStats()
     {
         try {
             $stats = [
-                'total' => LaptopRepair::count(),
-                'pending' => LaptopRepair::where('status', 'pending')->count(),
-                'in_progress' => LaptopRepair::where('status', 'in_progress')->count(),
-                'completed' => LaptopRepair::where('status', 'completed')->count(),
-                'cancelled' => LaptopRepair::where('status', 'cancelled')->count(),
-                'total_revenue' => LaptopRepair::where('status', 'completed')->sum('repair_price')
+                'total' => LaptopRepair::where('user_id', Auth::id())->count(),
+                'pending' => LaptopRepair::where('user_id', Auth::id())->where('status', 'pending')->count(),
+                'in_progress' => LaptopRepair::where('user_id', Auth::id())->where('status', 'in_progress')->count(),
+                'completed' => LaptopRepair::where('user_id', Auth::id())->where('status', 'completed')->count(),
+                'cancelled' => LaptopRepair::where('user_id', Auth::id())->where('status', 'cancelled')->count(),
+                'total_revenue' => LaptopRepair::where('user_id', Auth::id())->where('status', 'completed')->sum('repair_price')
             ];
 
             return response()->json($stats);
@@ -308,26 +298,26 @@ public function index()
     public function destroy($id)
     {
         try {
-            $repair = LaptopRepair::findOrFail($id);
+            $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
             $customerNumber = $repair->customer_number;
             $repair->delete();
 
-            return redirect()->route('admin.laptop-repair.index')
+            return redirect()->route('user.laptop-repair.index')
                              ->with('success', 'Repair record (' . $customerNumber . ') deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.laptop-repair.index')
+            return redirect()->route('user.laptop-repair.index')
                              ->with('error', 'Failed to delete repair record: ' . $e->getMessage());
         }
     }
 
- public function getNextNoteNumber()
-{
-    $currentValue = NoteCounter::where('key', 'note_number')->value('value');
+    /**
+     * Get next note number
+     */
+    public function getNextNoteNumber()
+    {
+        $currentValue = NoteCounter::where('key', 'note_number')->value('value');
+        $nextNoteNumber = $currentValue ? $currentValue + 1 : 1;
 
-    // If no record exists yet, default to 1
-    $nextNoteNumber = $currentValue ? $currentValue + 1 : 1;
-
-    return response()->json(['note_number' => $nextNoteNumber]);
-}
-
+        return response()->json(['note_number' => $nextNoteNumber]);
+    }
 }

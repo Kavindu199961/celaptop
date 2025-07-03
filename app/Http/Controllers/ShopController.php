@@ -2,31 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use App\Models\ShopItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Shop::with('items')->latest();
-        
+        $userId = Auth::id();
+        $query = Shop::with('items')
+                    ->where('user_id', $userId)
+                    ->latest();
+
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('shop_name', 'like', "%$search%")
-                  ->orWhere('phone_number', 'like', "%$search%")
-                  ->orWhereHas('items', function($q) use ($search) {
-                      $q->where('item_name', 'like', "%$search%")
-                        ->orWhere('serial_number', 'like', "%$search%");
-                  });
+                    ->orWhere('phone_number', 'like', "%$search%")
+                    ->orWhereHas('items', function ($q) use ($search) {
+                        $q->where('item_name', 'like', "%$search%")
+                            ->orWhere('serial_number', 'like', "%$search%");
+                    });
             });
         }
-        
+
         $shops = $query->paginate(10);
-        return view('admin.shop.index', compact('shops'));
+        return view('user.shop.index', compact('shops'));
     }
 
     public function store(Request $request)
@@ -40,6 +43,7 @@ class ShopController extends Controller
         ]);
 
         $shop = Shop::create([
+            'user_id' => Auth::id(),
             'shop_name' => $request->shop_name,
             'phone_number' => $request->phone_number,
         ]);
@@ -55,15 +59,20 @@ class ShopController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.shop.index')->with('success', 'Shop and items added successfully');
+        return redirect()->route('user.shop.index')->with('success', 'Shop and items added successfully');
     }
 
-    public function edit(Shop $shop)
+    public function edit($id)
     {
-        return response()->json($shop->load('items'));
+        $shop = Shop::with('items')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return response()->json($shop);
     }
 
-    public function update(Request $request, Shop $shop)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'shop_name' => 'required|string|max:255',
@@ -73,14 +82,18 @@ class ShopController extends Controller
             'items.*.price' => 'required|numeric|min:0',
         ]);
 
+        $shop = Shop::where('id', $id)
+                    ->where('user_id', Auth::id())
+                    ->firstOrFail();
+
         $shop->update([
             'shop_name' => $request->shop_name,
             'phone_number' => $request->phone_number,
         ]);
 
-        // Delete all existing items and create new ones
+        // Delete old items and create new ones
         $shop->items()->delete();
-        
+
         foreach ($request->items as $item) {
             $shop->items()->create([
                 'item_name' => $item['item_name'],
@@ -92,17 +105,26 @@ class ShopController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.shop.index')->with('success', 'Shop and items updated successfully');
+        return redirect()->route('user.shop.index')->with('success', 'Shop and items updated successfully');
     }
 
-    public function destroy(Shop $shop)
+    public function destroy($id)
     {
+        $shop = Shop::where('id', $id)
+                    ->where('user_id', Auth::id())
+                    ->firstOrFail();
+
         $shop->delete();
-        return redirect()->route('admin.shop.index')->with('success', 'Shop and items deleted successfully');
+        return redirect()->route('user.shop.index')->with('success', 'Shop and items deleted successfully');
     }
 
-    public function show(Shop $shop)
-{
-    return view('admin.shop.show', compact('shop'));
-}
+    public function show($id)
+    {
+        $shop = Shop::with('items')
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return view('user.shop.show', compact('shop'));
+    }
 }
