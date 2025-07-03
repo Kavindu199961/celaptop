@@ -57,7 +57,7 @@
               @if($shopDetail && $shopDetail->logo_image)
                   <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
               @else
-                  <img src="{{ asset('/assets/logo/logo1.jpg') }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
+                  <img src="{{ asset('/assets/logo/logo.png') }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
               @endif
               
               <div class="logo-name mt-2" style="font-weight: bold; font-size: 12px; color: #333;">
