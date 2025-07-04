@@ -67,7 +67,6 @@ class InvoiceWithStockController extends Controller
 
     // Create invoice
     $invoice = InvoiceWithStock::create([
-        'invoice_number' => 'INV-' . str_pad(InvoiceWithStock::max('id') + 1, 6, '0', STR_PAD_LEFT),
         'customer_name' => $request->customer_name,
         'customer_phone' => $request->customer_phone,
         'sales_rep' => $request->sales_rep,

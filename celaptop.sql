@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 03, 2025 at 08:31 PM
+-- Generation Time: Jul 04, 2025 at 10:47 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -111,7 +111,9 @@ CREATE TABLE `counters` (
 --
 
 INSERT INTO `counters` (`id`, `user_id`, `key`, `value`, `created_at`, `updated_at`) VALUES
-(2, 3, 'customer_number', 1, '2025-07-03 08:14:12', '2025-07-03 08:14:12');
+(2, 3, 'customer_number', 1, '2025-07-03 08:14:12', '2025-07-03 08:14:12'),
+(3, 3, 'customer_number_3', 1, '2025-07-04 07:12:47', '2025-07-04 07:12:47'),
+(4, 3, 'customer_number_user_3', 3, '2025-07-04 07:14:41', '2025-07-04 07:16:37');
 
 -- --------------------------------------------------------
 
@@ -153,9 +155,31 @@ CREATE TABLE `invoices` (
 --
 
 INSERT INTO `invoices` (`id`, `invoice_number`, `customer_name`, `customer_phone`, `sales_rep`, `issue_date`, `total_amount`, `created_at`, `updated_at`, `user_id`) VALUES
-(19, 'INV-000001', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 75000.00, '2025-07-03 08:09:47', '2025-07-03 08:09:47', 3),
-(20, 'INV-000020', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 75000.00, '2025-07-03 09:16:54', '2025-07-03 09:16:54', 6),
-(21, 'INV-000021', 'Kavindu Nelshan', '0765645303', 'wee', '2025-07-03', 75000.00, '2025-07-03 18:23:10', '2025-07-03 18:23:10', 3);
+(24, 'INV-0001', 'Kavindu Nelshan', '0765645303', 'CE laptop repair center', '2025-07-04', 75000.00, '2025-07-04 07:54:04', '2025-07-04 07:54:04', 3),
+(26, 'INV-0003', 'Kavindu Nelshan', '0765645303', 'CE laptop repair center', '2025-07-04', 75000.00, '2025-07-04 07:57:10', '2025-07-04 07:57:10', 3),
+(31, 'XX-INV-0001', 'Kavindu Nelshan', '0765645303', 'My Shop', '2025-07-04', 75000.00, '2025-07-04 08:45:30', '2025-07-04 08:45:30', 9);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invoice_counters`
+--
+
+CREATE TABLE `invoice_counters` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `last_number` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `invoice_counters`
+--
+
+INSERT INTO `invoice_counters` (`id`, `user_id`, `last_number`, `created_at`, `updated_at`) VALUES
+(1, 3, 3, '2025-07-04 07:54:04', '2025-07-04 07:57:10'),
+(5, 9, 2, '2025-07-04 08:45:30', '2025-07-04 08:46:39');
 
 -- --------------------------------------------------------
 
@@ -181,9 +205,9 @@ CREATE TABLE `invoice_items` (
 --
 
 INSERT INTO `invoice_items` (`id`, `invoice_id`, `description`, `warranty`, `quantity`, `unit_price`, `amount`, `created_at`, `updated_at`, `user_id`) VALUES
-(36, 19, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 08:09:47', '2025-07-03 08:09:47', 3),
-(37, 20, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 09:16:54', '2025-07-03 09:16:54', 6),
-(38, 21, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-03 18:23:10', '2025-07-03 18:23:10', 3);
+(41, 24, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-04 07:54:04', '2025-07-04 07:54:04', 3),
+(43, 26, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-04 07:57:10', '2025-07-04 07:57:10', 3),
+(45, 31, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-04 08:45:30', '2025-07-04 08:45:30', 9);
 
 -- --------------------------------------------------------
 
@@ -209,8 +233,11 @@ CREATE TABLE `invoice_with_stocks` (
 --
 
 INSERT INTO `invoice_with_stocks` (`id`, `invoice_number`, `customer_name`, `customer_phone`, `sales_rep`, `issue_date`, `total_amount`, `user_id`, `created_at`, `updated_at`) VALUES
-(5, 'INV-000005', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 3250.00, 3, '2025-07-03 16:37:39', '2025-07-03 16:37:39'),
-(6, 'INV-000006', 'Kavindu Nelshan', '0765645303', 'Chammika', '2025-07-03', 3250.00, 3, '2025-07-03 16:38:17', '2025-07-03 16:38:17');
+(14, 'INV-000001', 'Kavindu Nelshan', '0765645303', 'CE laptop repair center', '2025-07-04', 2800.00, 3, '2025-07-04 05:30:20', '2025-07-04 05:30:20'),
+(15, 'INV-000015', 'janith', '0774512775', 'CE laptop repair center', '2025-07-04', 2200.00, 3, '2025-07-04 05:30:57', '2025-07-04 05:30:57'),
+(16, 'INV-000016', 'janith', '0774512775', 'CE laptop repair center', '2025-07-04', 3000.00, 3, '2025-07-04 06:00:02', '2025-07-04 06:00:02'),
+(17, 'INV-000017', 'janith', '0774512775', 'CE laptop repair center', '2025-07-04', 3000.00, 3, '2025-07-04 07:39:01', '2025-07-04 07:39:01'),
+(19, 'XX-INV-0002', 'janith', '0774512775', 'My Shop', '2025-07-04', 2800.00, 9, '2025-07-04 08:46:39', '2025-07-04 08:46:40');
 
 -- --------------------------------------------------------
 
@@ -225,6 +252,7 @@ CREATE TABLE `invoice_with_stock_items` (
   `warranty` varchar(255) DEFAULT NULL,
   `quantity` int(11) NOT NULL,
   `unit_price` decimal(10,2) NOT NULL,
+  `cost_price` decimal(10,2) DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -235,9 +263,12 @@ CREATE TABLE `invoice_with_stock_items` (
 -- Dumping data for table `invoice_with_stock_items`
 --
 
-INSERT INTO `invoice_with_stock_items` (`id`, `invoice_with_stock_id`, `stock_id`, `warranty`, `quantity`, `unit_price`, `amount`, `user_id`, `created_at`, `updated_at`) VALUES
-(4, 5, 6, '6 month', 1, 3250.00, 3250.00, 3, '2025-07-03 16:37:39', '2025-07-03 16:37:39'),
-(5, 6, 6, NULL, 1, 3250.00, 3250.00, 3, '2025-07-03 16:38:17', '2025-07-03 16:38:17');
+INSERT INTO `invoice_with_stock_items` (`id`, `invoice_with_stock_id`, `stock_id`, `warranty`, `quantity`, `unit_price`, `cost_price`, `amount`, `user_id`, `created_at`, `updated_at`) VALUES
+(13, 14, 11, '3 month', 1, 2800.00, 1500.00, 2800.00, 3, '2025-07-04 05:30:20', '2025-07-04 05:30:20'),
+(14, 15, 10, NULL, 1, 2200.00, 2000.00, 2200.00, 3, '2025-07-04 05:30:57', '2025-07-04 05:30:57'),
+(15, 16, 11, NULL, 1, 3000.00, 1500.00, 3000.00, 3, '2025-07-04 06:00:02', '2025-07-04 06:00:02'),
+(16, 17, 11, NULL, 1, 3000.00, 1000.00, 3000.00, 3, '2025-07-04 07:39:01', '2025-07-04 07:39:01'),
+(18, 19, 13, NULL, 1, 2800.00, 1000.00, 2800.00, 9, '2025-07-04 08:46:39', '2025-07-04 08:46:39');
 
 -- --------------------------------------------------------
 
@@ -303,7 +334,7 @@ CREATE TABLE `laptop_repairs` (
 --
 
 INSERT INTO `laptop_repairs` (`id`, `customer_name`, `contact`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `status`, `images`, `customer_number`, `created_at`, `updated_at`, `note_number`, `user_id`) VALUES
-(41, 'Kavindu Nelshan', '0765645303', '2025-07-03', 'njjjjj', 'asus', NULL, '234765889995t5tr', 'pending', '[\"repairs\\/FKkxwzHXIGz2wr8so5NwqdWtDohgk3alFVx5LO0v.jpg\"]', 'CE-0001', '2025-07-03 08:14:12', '2025-07-03 08:14:12', '5', 3);
+(45, 'Kavindu Nelshan', '0765645303', '2025-07-04', 'no power', 'asus', NULL, 'rert64t3345er', 'pending', '[\"repairs\\/XfAfxIhcFctSqeUbMIGkL49kvQuGCG1YFXhbI0o2.png\"]', 'CE-3-0003', '2025-07-04 07:16:37', '2025-07-04 07:16:37', '9', 3);
 
 -- --------------------------------------------------------
 
@@ -368,7 +399,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (47, '2025_07_03_133909_add_user_id_to_counters_table', 39),
 (48, '2025_07_03_134337_add_user_id_to_counters_table', 40),
 (49, '2025_07_03_155219_create_invoice_with_stocks_table', 41),
-(50, '2025_07_03_232535_create_cashiers_table', 42);
+(50, '2025_07_03_232535_create_cashiers_table', 42),
+(51, '2025_07_04_102840_add_cost_price_to_invoice_with_stock_items_table', 43),
+(52, '2025_07_04_131722_create_invoice_counters_table', 44);
 
 -- --------------------------------------------------------
 
@@ -398,7 +431,7 @@ CREATE TABLE `my_shop_details` (
 
 INSERT INTO `my_shop_details` (`id`, `shop_name`, `description`, `address`, `hotline`, `email`, `logo_image`, `condition_1`, `condition_2`, `condition_3`, `created_at`, `updated_at`, `user_id`) VALUES
 (3, 'CE laptop repair center', 'Dealers in Desktop Computers, Laptop Accessories, Repairs Service & import wholesale and retail', '254/1/1/6, Baladaksha Mawatha, New Sathipola Road, Mawanella, Sri Lanka', '0756502913', 'chammikaelectronic@gmail.com', 'shop_logos/HqBIVX2YUwXm1TTrAiF4aB6p2zZxzCnpZws2jLe8.jpg', 'Warranty for 1 Year Less 21 Working Days for computer hardware.', 'No Warranty for Bum Marks, Scratches, Physical damages and any other damage happened by user activities.', 'Goods sold once can\'t return.', '2025-07-03 08:04:04', '2025-07-03 08:18:02', 3),
-(4, 'Dark computer', 'all computer part', 'kegalle', '0756502913', 'darkcomputer@gmail.com', 'shop_logos/F3MYg36voYz7Sdn96PkoiCT4alQGCICWmrXNJdq1.png', '21 days change', 'all warrwnty compy', 'safe delevey', '2025-07-03 08:46:29', '2025-07-03 08:46:29', 6);
+(5, 'New Born Computers', 'all computer accer and repair', 'mawanalla', '0756502913', 'newborn@gmail.com', 'shop_logos/hb4KnOIE5l6m9HMrsQMtiXOF9qflwBgbnWWWAFZE.png', 'new', 'nwe2', 'new3', '2025-07-03 18:39:13', '2025-07-03 18:39:13', 4);
 
 -- --------------------------------------------------------
 
@@ -420,7 +453,7 @@ CREATE TABLE `note_counters` (
 --
 
 INSERT INTO `note_counters` (`id`, `user_id`, `key`, `value`, `created_at`, `updated_at`) VALUES
-(2, 3, 'note_number', 5, '2025-07-03 07:08:02', '2025-07-03 08:14:12');
+(2, 3, 'note_number', 9, '2025-07-03 07:08:02', '2025-07-04 07:16:37');
 
 -- --------------------------------------------------------
 
@@ -454,7 +487,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('rV10a5IrzvrFEptPzTVXq4CeLDZmgrOJphIY3CwB', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiY3BodXluN3YzeFRnM01ITHVSZzFZV0NDMG8xWUFiQjJpR2d5UmJCRCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2ludm9pY2VzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9', 1751567437);
+('cMs9qhILp6zhJ5duvcyrKJh1k4Qgo2QTTHKo5otF', 9, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYWYzb2F4aWc5ZGtmUktIemlQUlZ3QkJ5R3dCWVJ1ZlVEdWdmWGdkTyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2ludm9pY2VzLXdpdGgtc3RvY2siO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo5O30=', 1751618804);
 
 -- --------------------------------------------------------
 
@@ -531,8 +564,11 @@ CREATE TABLE `stock` (
 --
 
 INSERT INTO `stock` (`id`, `user_id`, `item_name`, `description`, `cost`, `whole_sale_price`, `retail_price`, `vender`, `stock_date`, `quantity`, `created_at`, `updated_at`) VALUES
-(6, 3, 'mouse', 'new', 2500.00, 3000.00, 3250.00, 'ce laptop center', '2025-07-03', 1, '2025-07-03 07:38:21', '2025-07-03 17:01:00'),
-(7, 4, 'dell laptop', 'new', 78500.00, 90275.00, 102050.00, 'ce laptop center', '2025-07-03', 5, '2025-07-03 08:33:40', '2025-07-03 08:33:40');
+(9, 3, 'Jdell mouse', 'new', 1500.00, 2000.00, 2500.00, NULL, '2025-07-04', 20, '2025-07-04 03:54:47', '2025-07-04 05:02:47'),
+(10, 3, 'Keyboard', 'new', 2000.00, 2500.00, 3000.00, 'ce laptop center', '2025-07-04', 13, '2025-07-04 03:55:26', '2025-07-04 07:56:56'),
+(11, 3, 'dell mouse', 'new', 1000.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 12, '2025-07-04 04:08:47', '2025-07-04 07:39:01'),
+(12, 3, 'rgb mouse', 'new', 1500.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 14, '2025-07-04 04:09:27', '2025-07-04 04:10:45'),
+(13, 9, 'dell mouse', 'nrw', 1000.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 12, '2025-07-04 08:46:13', '2025-07-04 08:46:39');
 
 -- --------------------------------------------------------
 
@@ -561,7 +597,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `ro
 (3, 'Admin User', 'admin@celaptop.com', NULL, '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-03 15:52:16'),
 (4, 'Kavindu Nelshan', 'www.kavi1999maxnelshan@gmail.com', NULL, '$2y$12$KbA30O1TvXtNoItQeByiKO3jqq4z3.C4FKTdt8oDOUYBllzZJcSFq', 'user', 1, NULL, '2025-07-03 04:28:19', '2025-07-03 08:31:34'),
 (5, 'Super Admin', 'superadmin@gmail.com', NULL, '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21'),
-(6, 'dark computers', 'kavindunelsan@gmail.com', NULL, '$2y$12$IWPjbNwDwhfWk02LialCB.KvF3vfdtwliI0.io6Zzk52CZGsV8pw2', 'user', 1, NULL, '2025-07-03 08:43:20', '2025-07-03 08:44:00');
+(9, 'Jayathissa', 'kavindunelsan@gmail.com', NULL, '$2y$12$7LuA7gPzQoEbZk.zCdImmuaWvbhPH1MYBJhUtLW.CXKaDlMLiC67C', 'user', 1, NULL, '2025-07-04 08:44:45', '2025-07-04 08:44:59');
 
 --
 -- Indexes for dumped tables
@@ -616,6 +652,13 @@ ALTER TABLE `invoices`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `invoices_invoice_number_unique` (`invoice_number`),
   ADD KEY `invoices_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `invoice_counters`
+--
+ALTER TABLE `invoice_counters`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `invoice_counters_user_id_unique` (`user_id`);
 
 --
 -- Indexes for table `invoice_items`
@@ -744,7 +787,7 @@ ALTER TABLE `completed_repairs`
 -- AUTO_INCREMENT for table `counters`
 --
 ALTER TABLE `counters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -756,25 +799,31 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT for table `invoice_counters`
+--
+ALTER TABLE `invoice_counters`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `invoice_items`
 --
 ALTER TABLE `invoice_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `invoice_with_stocks`
 --
 ALTER TABLE `invoice_with_stocks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `invoice_with_stock_items`
 --
 ALTER TABLE `invoice_with_stock_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -786,25 +835,25 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `laptop_repairs`
 --
 ALTER TABLE `laptop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `my_shop_details`
 --
 ALTER TABLE `my_shop_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `note_counters`
 --
 ALTER TABLE `note_counters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `shops`
@@ -822,13 +871,13 @@ ALTER TABLE `shop_items`
 -- AUTO_INCREMENT for table `stock`
 --
 ALTER TABLE `stock`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
@@ -857,6 +906,12 @@ ALTER TABLE `counters`
 --
 ALTER TABLE `invoices`
   ADD CONSTRAINT `invoices_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `invoice_counters`
+--
+ALTER TABLE `invoice_counters`
+  ADD CONSTRAINT `invoice_counters_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `invoice_items`

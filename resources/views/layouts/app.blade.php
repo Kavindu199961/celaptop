@@ -105,13 +105,13 @@
 
           <li class="dropdown {{ request()->is('user/invoices-with-stock') || request()->is('user/invoices-with-stock/*') ? 'active' : '' }}">
               <a href="{{ route('user.invoices_with_stock.index') }}" class="nav-link">
-                  <i class="fas fa-file-invoice-dollar"></i><span>Invoice With Stock</span>
+                  <i class="fas fa-clipboard-list"></i><span>Invoice With Stock</span>
               </a>
           </li>
 
           <li class="dropdown {{ request()->is('user/total-amount*') ? 'active' : '' }}">
               <a href="{{ route('user.total_amount.index') }}" class="nav-link">
-                <i class="fas fa-laptop-medical"></i><span>Invoice Report</span>
+                <i class="fas fa-chart-line"></i><span>Invoice Report</span>
               </a>
             </li>
 

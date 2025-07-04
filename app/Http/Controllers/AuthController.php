@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Counter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\InvoiceCounter;
+use App\Models\NoteCounter;
 
 class AuthController extends Controller
 {
@@ -63,6 +66,7 @@ public function register(Request $request)
         'role' => 'user',       // default role
         'is_active' => 0,       // default inactive
     ]);
+
 
     return redirect()->route('login')->with('success', 'Registered successfully. Please wait for admin approval.');
 }
