@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4bb8a9;
-            --secondary-color: #3a9a8d;
+            --primary-color:rgb(6, 6, 132);
+            --secondary-color:rgb(43, 133, 121);
             --accent-color: #2c8577;
             --success-color: #28a745;
             --warning-color: #ffc107;
@@ -25,11 +25,15 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: 
+                linear-gradient(135deg, rgba(169, 176, 207, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%),
+                url('your-image-path.jpg') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             padding-top: 76px;
         }
+
         
         /* Navbar Styles */
         .navbar {
@@ -609,7 +613,9 @@
                                     <i class="fas fa-headset fa-2x text-success mb-3"></i>
                                     <h5>Contact Admin</h5>
                                     <p class="text-muted">Need help with registration? Our admin team is here to assist you.</p>
-                                    <button class="btn btn-success">Contact Admin</button>
+                                    <a href="https://wa.me/94765645303" target="_blank" class="btn btn-success">
+                                        <i class="fab fa-whatsapp"></i> Contact Admin
+                                        </a>
                                 </div>
                             </div>
                         </div>
@@ -618,10 +624,13 @@
                     <div class="mt-4 p-3 bg-light rounded">
                         <h6><i class="fas fa-star me-2"></i>Benefits of Joining:</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i>Online repair tracking system</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Customer management tools</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Automated notifications</li>
                             <li><i class="fas fa-check text-success me-2"></i>Professional dashboard</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Online repair tracking system</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Customer management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>All Repair management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Invoice management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Stock management</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Shop management</li>
                         </ul>
                     </div>
                 </div>

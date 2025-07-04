@@ -39,7 +39,7 @@ class ShopController extends Controller
             'phone_number' => 'required|string|max:20',
             'items' => 'required|array|min:1',
             'items.*.item_name' => 'required|string|max:255',
-            'items.*.price' => 'required|numeric|min:0',
+            'items.*.price' => 'nullable|numeric|min:0',
         ]);
 
         $shop = Shop::create([
@@ -54,7 +54,7 @@ class ShopController extends Controller
                 'description' => $item['description'] ?? null,
                 'warranty' => $item['warranty'] ?? null,
                 'serial_number' => $item['serial_number'] ?? null,
-                'price' => $item['price'],
+                'price' => $item['price'] ?? null,
                 'date' => $item['date'] ?? now(),
             ]);
         }
@@ -79,7 +79,7 @@ class ShopController extends Controller
             'phone_number' => 'required|string|max:20',
             'items' => 'required|array|min:1',
             'items.*.item_name' => 'required|string|max:255',
-            'items.*.price' => 'required|numeric|min:0',
+            'items.*.price' => 'nullable|numeric|min:0',
         ]);
 
         $shop = Shop::where('id', $id)
@@ -100,7 +100,7 @@ class ShopController extends Controller
                 'description' => $item['description'] ?? null,
                 'warranty' => $item['warranty'] ?? null,
                 'serial_number' => $item['serial_number'] ?? null,
-                'price' => $item['price'],
+                'price' => $item['price'] ?? null,
                 'date' => $item['date'] ?? now(),
             ]);
         }

@@ -135,13 +135,13 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>Price *</label>
-                                        <input type="number" step="0.01" min="0" class="form-control" name="items[0][price]" required>
+                                        <label>Price (Optional)</label>
+                                        <input type="number" step="0.01" min="0" class="form-control" name="items[0][price]">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Serial Number</label>
+                                        <label>Serial Number (Optional)</label>
                                         <input type="text" class="form-control" name="items[0][serial_number]">
                                     </div>
                                 </div>
@@ -155,7 +155,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>Warranty</label>
+                                        <label>Warranty (Optional)</label>
                                         <input type="text" class="form-control" name="items[0][warranty]">
                                     </div>
                                 </div>
@@ -283,13 +283,13 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Price *</label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="items[${itemCount}][price]" required>
+                                <label>Price (Optional)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" name="items[${itemCount}][price]">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Serial Number</label>
+                                <label>Serial Number (Optional)</label>
                                 <input type="text" class="form-control" name="items[${itemCount}][serial_number]">
                             </div>
                         </div>
@@ -303,7 +303,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Warranty</label>
+                                <label>Warranty (Optional)</label>
                                 <input type="text" class="form-control" name="items[${itemCount}][warranty]">
                             </div>
                         </div>
@@ -358,13 +358,13 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label>Price *</label>
-                                            <input type="number" step="0.01" min="0" class="form-control" name="items[${index}][price]" value="${item.price}" required>
+                                            <label>Price (Optional)</label>
+                                            <input type="number" step="0.01" min="0" class="form-control" name="items[${index}][price]" value="${item.price}">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label>Serial Number</label>
+                                            <label>Serial Number (Optional)</label>
                                             <input type="text" class="form-control" name="items[${index}][serial_number]" value="${item.serial_number || ''}">
                                         </div>
                                     </div>
@@ -378,7 +378,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label>Warranty</label>
+                                            <label>Warranty (Optional)</label>
                                             <input type="text" class="form-control" name="items[${index}][warranty]" value="${item.warranty || ''}">
                                         </div>
                                     </div>
