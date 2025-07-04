@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    public function dashboard()
-    {
-        $users = User::paginate(10);
-        return view('super-admin.users.index', compact('users'));
-    }
+   public function dashboard()
+{
+    $users = User::where('role', '!=', 'super-admin')->paginate(10);
+    return view('super-admin.users.index', compact('users'));
+}
+
 public function editUser(User $user)
 {
     return response()->json($user);

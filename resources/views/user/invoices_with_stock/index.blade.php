@@ -492,7 +492,8 @@
                            value="${item.warranty}" 
                            placeholder="Enter warranty details">
                 </td>
-                <td>${itemTotal}</td>
+                <td class="item-total">${itemTotal}</td>
+
                 <td>
                     <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-index="${index}">
                         <i class="fas fa-trash"></i>
@@ -515,15 +516,16 @@
     calculateTotal();
 }
 
+        
         // Handle quantity, price, and warranty changes
-        $(document).on('input', '.quantity-input, .price-input, .warranty-input', function() {
+        $(document).on('input', '.quantity-input, .price-input, .warranty-input', function () {
             const index = $(this).data('index');
             const value = $(this).val();
-            
+
             if ($(this).hasClass('quantity-input')) {
                 const maxQty = selectedItems[index].maxQuantity;
                 let qty = parseInt(value) || 1;
-                
+
                 if (qty > maxQty) {
                     qty = maxQty;
                     $(this).val(maxQty);
@@ -534,26 +536,27 @@
                         confirmButtonColor: '#0d6efd'
                     });
                 }
-                
+
                 selectedItems[index].quantity = qty;
-                $(this).closest('.selected-item-body').find('.quantity-hidden').val(qty);
+                $(this).closest('tr').find('.quantity-hidden').val(qty);
             } 
             else if ($(this).hasClass('price-input')) {
                 const price = parseFloat(value) || 0;
                 selectedItems[index].price = price;
-                $(this).closest('.selected-item-body').find('.price-hidden').val(price);
+                $(this).closest('tr').find('.price-hidden').val(price);
             }
             else if ($(this).hasClass('warranty-input')) {
                 selectedItems[index].warranty = value;
-                $(this).closest('.selected-item-body').find('.warranty-hidden').val(value);
+                $(this).closest('tr').find('.warranty-hidden').val(value);
             }
-            
-            // Update the item total display
+
+            // ✅ Update the total for the row
             const itemTotal = (selectedItems[index].quantity * selectedItems[index].price).toFixed(2);
-            $(this).closest('.selected-item-body').find('.item-total').val('$' + itemTotal);
-            
+            $(this).closest('tr').find('.item-total').text(itemTotal);
+
             calculateTotal();
         });
+
 
         // Handle item removal
         $(document).on('click', '.remove-item-btn', function() {
