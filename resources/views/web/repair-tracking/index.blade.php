@@ -1,176 +1,653 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Repair - CE Laptop Repair Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4bb8a9;
+            --secondary-color: #3a9a8d;
+            --accent-color: #2c8577;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-top: 76px;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+        
+        .register-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(75, 184, 169, 0.3);
+        }
+        
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(75, 184, 169, 0.4);
+            color: white;
+        }
+        
+        /* Main Container */
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+        
+        /* Search Section */
+        .search-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .search-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .search-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-btn {
+            background: var(--white);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Content Area */
+        .content-area {
+            padding: 40px;
+            min-height: 500px;
+        }
+        
+        /* Cards */
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        /* Progress Section */
+        .progress-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 29px;
+            bottom: -10px;
+            width: 2px;
+            height: 20px;
+            background: var(--border-color);
+        }
+        
+        .step-completed::after {
+            background: var(--success-color) !important;
+        }
+        
+        .step-active::after {
+            background: var(--primary-color) !important;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-pending .step-icon {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+        
+        .step-active .step-icon {
+            background: var(--primary-color);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .step-completed .step-icon {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .step-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        
+        .step-active .step-title {
+            color: var(--primary-color);
+        }
+        
+        .step-completed .step-title {
+            color: var(--success-color);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-in-progress {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        /* Contact Button */
+        .contact-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(75, 184, 169, 0.3);
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(75, 184, 169, 0.4);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .search-title {
+                font-size: 2rem;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .info-card, .progress-card {
+                padding: 20px;
+            }
+            
+            .progress-card {
+                position: static;
+                margin-top: 20px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        /* Shop info styling */
+        .shop-contact {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        
+        .shop-contact i {
+            width: 20px;
+            color: var(--primary-color);
+        }
+        
+        .device-info, .customer-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            margin-bottom: 12px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-tools me-2"></i>Repair Center
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    
+                    <li class="nav-item">
+                        <button class="btn register-btn ms-2" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            <i class="fas fa-store me-2"></i>Register Your Shop
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-@section('content')
-<section id="tracking" class="py-5 bg-light">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h2>Track Your Repair</h2>
-                <p class="lead">Enter your repair tracking number or note number</p>
+    <!-- Main Container -->
+    <div class="container mt-4">
+        <div class="main-container">
+            <!-- Search Section -->
+            <div class="search-section">
+                <h1 class="search-title">
+                    <i class="fas fa-search me-3"></i>Track Your Repair
+                </h1>
+                <p class="search-subtitle">Enter your customer number to check repair status</p>
                 
-                <form method="GET" action="{{ route('web.repair-tracking.index') }}" class="tracking-form">
-                    @csrf
+                <form class="search-form" method="GET">
                     <div class="mb-3">
-                        <label for="tracking_number" class="form-label">Tracking/Note Number</label>
-                        <input type="text" class="form-control" id="tracking_number" name="tracking_number" 
-                               placeholder="e.g. CE-0001 or 425" required value="{{ old('tracking_number', $request->tracking_number ?? '') }}">
+                        <input type="text" class="form-control search-input" 
+                               name="tracking_number" placeholder="Enter Customer Number (e.g., XX-0-0000)" 
+                               value="{{ request('tracking_number') }}" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Track Repair</button>
+                    <button type="submit" class="btn search-btn w-100">
+                        <i class="fas fa-search me-2"></i>Track My Repair
+                    </button>
                 </form>
             </div>
-            
-            <div class="col-lg-6">
-                @if($request->has('tracking_number') || $repair)
-                    @if($repair)
-                        <h3>Repair Status</h3>
-                        <div class="repair-status status-{{ $status }}">
-                            <h4>
-                                <i class="fas fa-ticket-alt me-2"></i>
-                                @if(str_contains($repair->customer_number, 'CE-'))
-                                    Ticket #{{ $repair->customer_number }}
-                                @else
-                                    Note #{{ $repair->note_number }}
-                                @endif
-                            </h4>
-                            <p class="mb-0"><strong>Customer:</strong> {{ $repair->customer_name }}</p>
-                            <p class="mb-0"><strong>Contact:</strong> {{ $repair->contact }}</p>
-                            <p class="mb-0"><strong>Device:</strong> {{ $repair->device }}</p>
-                            <p class="mb-0"><strong>Serial:</strong> {{ $repair->serial_number }}</p>
-                            <p class="mb-0"><strong>Fault:</strong> {{ $repair->fault }}</p>
-                            @if($repair->repair_price)
-                                <p class="mb-0"><strong>Price:</strong> Rs. {{ number_format($repair->repair_price, 2) }}</p>
-                            @endif
+
+            <!-- Content Area -->
+            <div class="content-area">
+                @if(request()->has('tracking_number'))
+                    @if(!$repair)
+                        <div class="alert alert-danger fade-in">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            No repair found with customer number: {{ request('tracking_number') }}
                         </div>
-                        
-                        <h4 class="mt-4">Repair Progress</h4>
-                        <div class="repair-progress">
-                            @foreach($steps as $step)
-                                <div class="progress-step {{ $step['completed'] ? 'completed' : '' }} {{ $step['active'] ?? false ? 'active' : '' }}">
-                                    <div class="step-icon">
-                                        @if($step['completed'] ?? false)
-                                            <i class="fas fa-check-circle"></i>
-                                        @elseif($step['active'] ?? false)
-                                            <i class="fas fa-spinner fa-pulse"></i>
-                                        @else
-                                            <i class="far fa-circle"></i>
-                                        @endif
-                                    </div>
-                                    <div class="step-content">
-                                        <h5>{{ $step['label'] }}</h5>
-                                        <p>{{ $step['description'] }}</p>
-                                        @if($step['active'] ?? false && $status == 'ongoing' && $repair->date)
-                                            <div class="estimated-time">
-                                                <small>Received on: {{ $repair->date->format('M j, Y') }}</small>
+                    @else
+                        <div class="row">
+                            <!-- Left Side - Repair Progress -->
+                            <div class="col-lg-6 col-md-12">
+                                <div class="progress-card fade-in">
+                                    <h4 class="card-title">
+                                        <i class="fas fa-tasks me-2"></i>Repair Progress
+                                    </h4>
+                                    
+                                    @foreach($steps as $step)
+                                        <div class="progress-step 
+                                            {{ $step['completed'] ? 'step-completed' : '' }}
+                                            {{ $step['active'] ? 'step-active' : '' }}
+                                            {{ (!$step['completed'] && !$step['active']) ? 'step-pending' : '' }}">
+                                            <div class="step-icon">
+                                                @if($step['completed'])
+                                                    <i class="fas fa-check"></i>
+                                                @else
+                                                    {{ $loop->iteration }}
+                                                @endif
                                             </div>
-                                        @endif
+                                            <div class="step-content">
+                                                <div class="step-title">{{ $step['label'] }}</div>
+                                                <div class="step-description">{{ $step['description'] }}</div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    
+                                    @if($shopDetails)
+                                        <button class="contact-btn" onclick="window.location.href='tel:{{ $shopDetails->hotline }}'">
+                                            <i class="fas fa-phone me-2"></i>Contact Shop
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <!-- Right Side - Shop Info & Repair Details -->
+                            <div class="col-lg-6 col-md-12">
+                                <!-- Shop Information -->
+                                @if($shopDetails)
+                                    <div class="info-card fade-in">
+                                        <h4 class="card-title">
+                                            <i class="fas fa-store me-2"></i>{{ $shopDetails->shop_name ?? 'CE Laptop Repair Center' }}
+                                        </h4>
+                                        <div class="shop-contact">
+                                            <i class="fas fa-map-marker-alt me-2"></i>
+                                            <span>{{ $shopDetails->address }}</span>
+                                        </div>
+                                        <div class="shop-contact">
+                                            <i class="fas fa-phone me-2"></i>
+                                            <span>{{ $shopDetails->hotline }}</span>
+                                        </div>
+                                        <div class="shop-contact">
+                                            <i class="fas fa-envelope me-2"></i>
+                                            <span>{{ $shopDetails->email }}</span>
+                                        </div>
+                                    </div>
+                                @endif
+                                
+                                <!-- Repair Details -->
+                                <div class="info-card fade-in">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="card-title mb-0">
+                                            <i class="fas fa-ticket-alt me-2"></i>Repair Ticket #{{ $repair->customer_number }}
+                                        </h4>
+                                        <span class="status-badge 
+                                            @if($status === 'completed') status-completed
+                                            @elseif($repair->status === 'ready') status-completed
+                                            @else status-in-progress @endif">
+                                            @if($status === 'completed' || $repair->status === 'ready')
+                                                <i class="fas fa-check-circle me-1"></i>Completed
+                                            @else
+                                                <i class="fas fa-cog me-1"></i>In Progress
+                                            @endif
+                                        </span>
+                                    </div>
+                                    
+                                    <p class="text-muted mb-3">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        Received on {{ $repair->created_at->format('M j, Y') }}
+                                    </p>
+                                    
+                                    <div class="device-info">
+                                        <h5 class="mb-3">
+                                            <i class="fas fa-laptop me-2"></i>Device Information
+                                        </h5>
+                                        <div class="info-item">
+                                            <div class="info-label">Device</div>
+                                            <div class="info-value">{{ $repair->device }}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Serial Number</div>
+                                            <div class="info-value">{{ $repair->serial_number }}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Reported Issue</div>
+                                            <div class="info-value">{{ $repair->fault }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="customer-info">
+                                        <h5 class="mb-3">
+                                            <i class="fas fa-user me-2"></i>Customer Information
+                                        </h5>
+                                        <div class="info-item">
+                                            <div class="info-label">Name</div>
+                                            <div class="info-value">{{ $repair->customer_name }}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Contact</div>
+                                            <div class="info-value">{{ $repair->contact }}</div>
+                                        </div>
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
-                        
-                        @if($status == 'completed')
-                            <div class="alert alert-success mt-3">
-                                <i class="fas fa-check-circle me-2"></i>
-                                This repair was completed successfully.
                             </div>
-                        @endif
-                    @else
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            No repair found with the provided tracking number. Please check your number and try again.
                         </div>
                     @endif
                 @else
-                    <div id="trackingInfo">
-                        <h3>How Tracking Works</h3>
-                        <p>When you bring your device in for repair, we provide you with either:</p>
-                        <ul>
-                            <li>A customer number (CE-0001 format)</li>
-                            <li>Or a note number (numeric)</li>
-                        </ul>
-                        <p>You can use either number to track your repair status.</p>
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Can't find your number? Contact us with your phone number used during drop-off.
-                        </div>
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-4" style="opacity: 0.5;"></i>
+                        <h4 class="text-muted">Enter your customer number to track your repair</h4>
+                        <p class="text-muted">Check the status of your device repair in real-time</p>
                     </div>
                 @endif
             </div>
         </div>
     </div>
-</section>
-@endsection
 
-@push('styles')
-<style>
-    .repair-status {
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
-    
-    .status-ongoing {
-        background-color: #cce5ff;
-        color: #004085;
-        border-left: 5px solid #004085;
-    }
-    
-    .status-completed {
-        background-color: #d4edda;
-        color: #155724;
-        border-left: 5px solid #155724;
-    }
-    
-    .repair-progress {
-        position: relative;
-        padding-left: 30px;
-    }
-    
-    .progress-step {
-        position: relative;
-        padding-bottom: 20px;
-    }
-    
-    .progress-step:not(:last-child):before {
-        content: '';
-        position: absolute;
-        left: 15px;
-        top: 30px;
-        height: calc(100% - 30px);
-        width: 2px;
-        background: #dee2e6;
-    }
-    
-    .progress-step.completed:not(:last-child):before {
-        background: #28a745;
-    }
-    
-    .step-icon {
-        position: absolute;
-        left: -30px;
-        top: 0;
-        width: 30px;
-        height: 30px;
-        text-align: center;
-        line-height: 30px;
-        color: #6c757d;
-    }
-    
-    .progress-step.completed .step-icon {
-        color: #28a745;
-    }
-    
-    .progress-step.active .step-icon {
-        color: #007bff;
-    }
-    
-    .step-content {
-        padding: 5px 0 15px 15px;
-    }
-    
-    .estimated-time {
-        font-style: italic;
-        color: #6c757d;
-    }
-</style>
-@endpush
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                    <h5 class="modal-title" id="registerModalLabel">
+                        <i class="fas fa-store me-2"></i>Register Your Repair Shop
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-tools fa-3x text-primary mb-3"></i>
+                        <h4>Do you have a repair shop?</h4>
+                        <p class="text-muted">Join our network of trusted repair professionals and start managing your repairs online.</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user-plus fa-2x text-primary mb-3"></i>
+                                    <h5>New Registration</h5>
+                                    <p class="text-muted">Register your repair shop and get access to our management system.</p>
+                                    <button class="btn btn-primary">Register Now</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-headset fa-2x text-success mb-3"></i>
+                                    <h5>Contact Admin</h5>
+                                    <p class="text-muted">Need help with registration? Our admin team is here to assist you.</p>
+                                    <button class="btn btn-success">Contact Admin</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6><i class="fas fa-star me-2"></i>Benefits of Joining:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Online repair tracking system</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Customer management tools</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Automated notifications</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Professional dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add smooth scrolling and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.info-card, .progress-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

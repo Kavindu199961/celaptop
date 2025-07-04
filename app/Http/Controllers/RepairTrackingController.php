@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LaptopRepair;
 use App\Models\CompletedRepair;
+use App\Models\MyShopDetail;
 use Illuminate\Http\Request;
 
 class RepairTrackingController extends Controller
@@ -13,6 +14,7 @@ class RepairTrackingController extends Controller
         $repair = null;
         $steps = [];
         $status = null;
+        $shopDetails = null;
 
         if ($request->has('tracking_number')) {
             $trackingNumber = $request->input('tracking_number');
@@ -21,6 +23,9 @@ class RepairTrackingController extends Controller
             if ($repair) {
                 $status = $repair instanceof CompletedRepair ? 'completed' : 'ongoing';
                 $steps = $this->getRepairSteps($repair, $status);
+                
+                // Get shop details for the user who created this repair
+                $shopDetails = MyShopDetail::where('user_id', $repair->user_id)->first();
             }
         }
 
@@ -28,22 +33,18 @@ class RepairTrackingController extends Controller
             'repair' => $repair,
             'steps' => $steps,
             'status' => $status,
-            'request' => $request
+            'request' => $request,
+            'shopDetails' => $shopDetails
         ]);
     }
 
     protected function findRepair($trackingNumber)
     {
-        // Check in ongoing repairs first
-        $repair = LaptopRepair::where('customer_number', $trackingNumber)
-                    ->orWhere('note_number', $trackingNumber)
-                    ->first();
+        // Check only by customer_number now (removed note_number)
+        $repair = LaptopRepair::where('customer_number', $trackingNumber)->first();
         
         if (!$repair && class_exists(CompletedRepair::class)) {
-            // Check in completed repairs if not found in ongoing
-            $repair = CompletedRepair::where('customer_number', $trackingNumber)
-                        ->orWhere('note_number', $trackingNumber)
-                        ->first();
+            $repair = CompletedRepair::where('customer_number', $trackingNumber)->first();
         }
         
         return $repair;
@@ -52,7 +53,7 @@ class RepairTrackingController extends Controller
     protected function getRepairSteps($repair, $status)
     {
         if ($status === 'completed') {
-            return $this->getCompletedSteps();
+            return $this->getCompletedSteps($repair);
         }
         
         return $this->getOngoingSteps($repair->status, $repair);
@@ -91,14 +92,14 @@ class RepairTrackingController extends Controller
         $steps = [];
         $foundCurrent = false;
 
-        foreach ($allSteps as $status => $step) {
+        foreach ($allSteps as $statusKey => $step) {
             $steps[] = array_merge($step, [
-                'status' => $status,
-                'active' => $status === $currentStatus,
-                'completed' => !$foundCurrent && $status !== $currentStatus
+                'status' => $statusKey,
+                'active' => $statusKey === $currentStatus,
+                'completed' => !$foundCurrent && $statusKey !== $currentStatus
             ]);
 
-            if ($status === $currentStatus) {
+            if ($statusKey === $currentStatus) {
                 $foundCurrent = true;
             }
         }
@@ -106,33 +107,39 @@ class RepairTrackingController extends Controller
         return $steps;
     }
 
-    protected function getCompletedSteps()
+    protected function getCompletedSteps($repair)
     {
         return [
             [
                 'label' => 'Device Received',
-                'description' => 'Your device was received at our service center.',
-                'completed' => true
+                'description' => 'Your device was received at our service center on ' . $repair->date->format('M j, Y'),
+                'completed' => true,
+                'active' => false
             ],
             [
                 'label' => 'Diagnosis Completed',
-                'description' => 'Our technicians diagnosed the issue with your device.',
-                'completed' => true
+                'description' => 'Our technicians diagnosed: ' . ($repair->fault ?? 'N/A'),
+                'completed' => true,
+                'active' => false
             ],
             [
                 'label' => 'Repair Completed',
-                'description' => 'Your device was successfully repaired by our technicians.',
-                'completed' => true
+                'description' => 'Device was successfully repaired' . 
+                                ($repair->repair_price ? ' for Rs. ' . number_format($repair->repair_price, 2) : ''),
+                'completed' => true,
+                'active' => false
             ],
             [
                 'label' => 'Quality Testing Passed',
-                'description' => 'Device passed all quality assurance tests.',
-                'completed' => true
+                'description' => 'Device passed all quality assurance tests',
+                'completed' => true,
+                'active' => false
             ],
             [
                 'label' => 'Device Delivered',
-                'description' => 'Your device was successfully delivered/collected.',
-                'completed' => true
+                'description' => 'Device was successfully delivered/collected',
+                'completed' => true,
+                'active' => false
             ]
         ];
     }

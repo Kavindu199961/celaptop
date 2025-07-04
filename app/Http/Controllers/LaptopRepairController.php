@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\NoteCounter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MyShopDetail;
+use App\Models\Counter;
 
 class LaptopRepairController extends Controller
 {
@@ -15,96 +17,131 @@ class LaptopRepairController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $search = request('search');
+{
+    $search = request('search');
 
-        // Get repairs for the authenticated user
-        $repairs = LaptopRepair::where('user_id', Auth::id())
-            ->when($search, function($query) use ($search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('customer_number', 'like', '%'.$search.'%')
-                      ->orWhere('customer_name', 'like', '%'.$search.'%')
-                      ->orWhere('serial_number', 'like', '%'.$search.'%')
-                      ->orWhere('note_number', 'like', '%'.$search.'%')
-                      ->orWhere('device', 'like', '%'.$search.'%');
-                });
-            })
-            ->latest()
-            ->paginate(10);
+    // Get the current note counter value
+    $noteCounter = NoteCounter::where('user_id', Auth::id())->first();
+    $lastNoteNumber = $noteCounter ? $noteCounter->last_number : 0;
+    $nextNoteNumber = $lastNoteNumber + 1;
 
-        return view('user.laptop-repair.index', compact('repairs'));
-    }
+    // Get repairs for the authenticated user
+    $repairs = LaptopRepair::where('user_id', Auth::id())
+        ->when($search, function($query) use ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('customer_number', 'like', '%'.$search.'%')
+                  ->orWhere('customer_name', 'like', '%'.$search.'%')
+                  ->orWhere('serial_number', 'like', '%'.$search.'%')
+                  ->orWhere('note_number', 'like', '%'.$search.'%')
+                  ->orWhere('device', 'like', '%'.$search.'%');
+            });
+        })
+        ->latest()
+        ->paginate(10);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('user.laptop-repair.create');
-    }
+    return view('user.laptop-repair.index', compact('repairs', 'lastNoteNumber', 'nextNoteNumber'));
+}
 
-    /**
-     * Store a newly created resource in storage.
-     */
+/**
+ * Generate a unique customer number for a new repair.
+ */
+protected function generateCustomerNumber()
+{
+    // Example: Use current timestamp and user ID for uniqueness
+    $userId = auth()->id();
+
+    // Fetch shop details for the current user
+    $shop = MyShopDetail::where('user_id', $userId)->first();
+
+    // Get first 2 letters of shop name as prefix, fallback to 'XX'
+    $prefix = $shop && $shop->shop_name 
+                ? strtoupper(substr(preg_replace('/\s+/', '', $shop->shop_name), 0, 2)) 
+                : 'XX';
+
+    // Get unique counter for this user
+    $newNumber = Counter::incrementAndGet('customer_number_user_' . $userId);
+
+    // Format: [SHOPPREFIX]-[USERID]-[SEQUENCE]
+    return $prefix . '-' . $userId . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+}
+
+   
     public function store(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'customer_name' => 'required|string|max:255',
-                'contact' => 'required|string|max:255',
-                'device' => 'required|string|max:255',
-                'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
-                'fault' => 'required|string',
-                'repair_price' => 'nullable|numeric|min:0',
-                'date' => 'required|date',
-                'status' => 'nullable|in:pending,in_progress,completed,cancelled',
-                'images' => 'nullable|array',
-                'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            ]);
+{
+    try {
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'contact' => 'required|string|max:255',
+            'device' => 'required|string|max:255',
+            'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
+            'fault' => 'required|string',
+            'repair_price' => 'nullable|numeric|min:0',
+            'date' => 'required|date',
+            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+        ]);
 
-            // Set default status
-            if (!isset($validated['status'])) {
-                $validated['status'] = 'pending';
-            }
+        // Set default status
+        $validated['status'] = $validated['status'] ?? 'pending';
+        
+        // Associate with authenticated user
+        $validated['user_id'] = Auth::id();
 
-            // Generate note number
-            $noteNumber = NoteCounter::incrementAndGet('note_number');
-            $validated['note_number'] = $noteNumber;
+        // Generate customer number
+        $validated['customer_number'] = $this->generateCustomerNumber();
 
-            // Associate with authenticated user
-            $validated['user_id'] = Auth::id();
+        // Handle note counter in a transaction to prevent race conditions
+        DB::transaction(function () use (&$validated) {
+            $noteCounter = NoteCounter::firstOrCreate(
+                ['user_id' => Auth::id()],
+                ['last_number' => 0]
+            );
+            
+            // Increment and get the new number atomically
+            $newNumber = $noteCounter->last_number + 1;
+            $noteCounter->last_number = $newNumber;
+            $noteCounter->save();
+            
+            $validated['note_number'] = $newNumber;
+        });
 
-            // Handle image uploads
-            if ($request->hasFile('images')) {
-                $imagePaths = [];
-                foreach ($request->file('images') as $image) {
-                    if ($image && $image->isValid()) {
-                        $path = $image->store('repairs', 'public');
-                        $imagePaths[] = $path;
-                    }
+        // Handle image uploads
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                if ($image && $image->isValid()) {
+                    $path = $image->store('repairs', 'public');
+                    $imagePaths[] = $path;
                 }
-                if (!empty($imagePaths)) {
-                    $validated['images'] = json_encode($imagePaths);
-                }
             }
-
-            $repair = LaptopRepair::create($validated);
-            session()->forget('note_number');
-
-            return redirect()->route('user.laptop-repair.index')
-                             ->with('success', 'Repair record created successfully. Customer Number: ' . $repair->customer_number);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()
-                             ->withErrors($e->validator)
-                             ->withInput()
-                             ->with('error', 'Validation failed. Please check the form fields.');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                             ->withInput()
-                             ->with('error', 'An error occurred. Please try again.');
+            if (!empty($imagePaths)) {
+                $validated['images'] = json_encode($imagePaths);
+            }
         }
+
+        // Create the repair record
+        $repair = LaptopRepair::create($validated);
+
+
+        return redirect()->route('user.laptop-repair.index')
+        ->with('success', 'Repair record created successfully. Note Number: ' . $repair->note_number);
+   
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()
+                         ->withErrors($e->validator)
+                         ->withInput()
+                         ->with('error', 'Validation failed. Please check the form fields.');
+    } catch (\Exception $e) {
+        // Log the actual error for debugging
+        \Log::error('Repair creation error: ' . $e->getMessage());
+        
+        return redirect()->back()
+                         ->withInput()
+                         ->with('error', 'An error occurred: ' . $e->getMessage());
     }
+}
 
     /**
      * Display the specified resource.
@@ -310,14 +347,5 @@ class LaptopRepairController extends Controller
         }
     }
 
-    /**
-     * Get next note number
-     */
-    public function getNextNoteNumber()
-    {
-        $currentValue = NoteCounter::where('key', 'note_number')->value('value');
-        $nextNoteNumber = $currentValue ? $currentValue + 1 : 1;
-
-        return response()->json(['note_number' => $nextNoteNumber]);
-    }
+   
 }

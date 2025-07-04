@@ -44,7 +44,7 @@ class InvoiceWithStockController extends Controller
 {
     $request->validate([
         'customer_name' => 'required|string|max:255',
-        'customer_phone' => 'required|string|max:20',
+        'customer_phone' => 'nullable|string|max:20',
         'sales_rep' => 'required|string|max:255',
         'issue_date' => 'required|date',
         'stock_id.*' => 'required|exists:stock,id',

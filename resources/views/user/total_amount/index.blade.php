@@ -48,8 +48,8 @@
                                         <th>Date</th>
                                         <th>Invoice Count</th>
                                         <th>Invoice Numbers</th>
-                                        <th>Total Amount</th>
-                                        <th>Actions</th>
+                                        <th>Total Amount (LKR)</th>
+                                       
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,13 +77,7 @@
                                             <td>
                                                 <strong>{{ number_format($dayTotal, 2) }}</strong>
                                             </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-info view-details" 
-                                                        data-date="{{ $date }}" 
-                                                        data-type="standard">
-                                                    <i class="fas fa-eye"></i> View
-                                                </button>
-                                            </td>
+                                          
                                         </tr>
                                     @empty
                                         <tr>
@@ -95,7 +89,7 @@
                                     <tr>
                                         <th colspan="3">Total Standard Invoices</th>
                                         <th>{{ number_format($standardTotalAmount, 2) }}</th>
-                                        <th></th>
+                                       
                                     </tr>
                                 </tfoot>
                             </table>
@@ -112,11 +106,11 @@
                                         <th>Date</th>
                                         <th>Invoice Count</th>
                                         <th>Invoice Numbers</th>
-                                        <th>Total Amount</th>
-                                        <th>Total Cost</th>
-                                        <th>Profit</th>
+                                        <th>Total Amount (LKR)</th>
+                                        <th>Total Cost (LKR)</th>
+                                        <th>Profit (LKR)</th>
                                         <th>Margin %</th>
-                                        <th>Actions</th>
+                                      
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -163,13 +157,7 @@
                                                     {{ number_format($dayMargin, 1) }}%
                                                 </span>
                                             </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-info view-details" 
-                                                        data-date="{{ $date }}" 
-                                                        data-type="stock">
-                                                    <i class="fas fa-eye"></i> View
-                                                </button>
-                                            </td>
+                                            
                                         </tr>
                                     @empty
                                         <tr>
@@ -188,7 +176,7 @@
                                                 {{ $stockTotalAmount > 0 ? number_format(($stockTotalProfit / $stockTotalAmount) * 100, 1) : 0 }}%
                                             </span>
                                         </th>
-                                        <th></th>
+                                        
                                     </tr>
                                 </tfoot>
                             </table>
@@ -200,7 +188,7 @@
                         <div class="col-md-3">
                             <div class="card bg-primary text-white">
                                 <div class="card-body">
-                                    <h5>Standard Total</h5>
+                                    <h5>Standard Invoices Total</h5>
                                     <h3>{{ number_format($standardTotalAmount, 2) }}</h3>
                                 </div>
                             </div>
@@ -208,7 +196,7 @@
                         <div class="col-md-3">
                             <div class="card bg-success text-white">
                                 <div class="card-body">
-                                    <h5>Stock Total</h5>
+                                    <h5>Stock Invoices Total</h5>
                                     <h3>{{ number_format($stockTotalAmount, 2) }}</h3>
                                 </div>
                             </div>

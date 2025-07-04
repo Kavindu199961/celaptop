@@ -61,7 +61,7 @@
                     </thead>
                     <tbody>
                         @forelse($stocks as $stock)
-                        <tr>
+                        <tr class="{{ $stock->quantity <= 2 ? 'table-danger' : '' }}">
                             <td>{{ $stock->item_name }}</td>
                             <td>{{ Str::limit($stock->description, 20) }}</td>
                             <td>{{ number_format($stock->cost, 2) }}</td>

@@ -128,8 +128,8 @@
                                 <input type="text" class="form-control" id="customer_name" name="customer_name" required>
                             </div>
                             <div class="form-group">
-                                <label for="customer_phone">Phone Number</label>
-                                <input type="text" class="form-control" id="customer_phone" name="customer_phone" required>
+                                <label for="customer_phone">Phone Number (Optional)</label>
+                                <input type="text" class="form-control" id="customer_phone" name="customer_phone">
                             </div>
                         </div>
                         <div class="col-md-6">

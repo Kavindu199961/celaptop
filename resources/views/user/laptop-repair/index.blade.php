@@ -3,20 +3,26 @@
 @section('content')
 <div class="col-12 col-md-12 col-lg-12">
     <!-- Success Message -->
-    @if(session('success'))
+   @if(session('success'))
     <script>
+        // Show SweetAlert
         Swal.fire({
             icon: 'success',
             title: '',
-            text: '{{ session('success') }}',
+            text: @json(session('success')),
             showConfirmButton: true,
             confirmButtonColor: '#0d6efd',
             confirmButtonText: 'OK',
             background: '#f8f9fa',
             iconColor: '#28a745'
         });
+
+        // Clear history state to prevent message on back
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
     </script>
-    @endif 
+@endif
 
     <!-- Error Message -->
     @if(session('error'))
@@ -46,7 +52,7 @@
             <!-- Search Form -->
             <form action="{{ route('user.laptop-repair.index') }}" method="GET" class="mb-4">
                 <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Search by customer number, name or serial number..." value="{{ request('search') }}">
+                    <input type="text" name="search" class="form-control" placeholder="Search by customer number, name or Note number..." value="{{ request('search') }}">
                     <div class="input-group-append">
                         <button class="btn btn-primary" type="submit">
                             <i class="fas fa-search"></i> Search
@@ -199,9 +205,10 @@
                             </div>
                             <div class="form-group">
                                 <label for="create_note_number">Note Number</label>
-                                <input type="text" class="form-control" id="create_note_number_display" disabled>
-                                <input type="hidden" name="note_number">
+                                <input type="text" class="form-control"  value="{{ $nextNoteNumber }}" disabled>
+                                <input type="hidden" name="note_number" value="">
                             </div>
+
 
                         </div>
                     </div>
@@ -356,25 +363,10 @@
     // Set today's date
     $('#create_date').val(new Date().toISOString().split('T')[0]);
 
-    // Clear previous note number (optional)
-    $('#create_note_number_display').val('');
-    $('input[name="note_number"]').val('');
 
     // Always show modal immediately to avoid "not opening" issues
     $('#createRepairModal').modal('show');
 
-    // Now fetch note number asynchronously
-    $.get("{{ route('user.laptop-repair.get-note-number') }}")
-        .done(function(response) {
-            if (response.note_number) {
-                $('#create_note_number_display').val(response.note_number);
-                $('input[name="note_number"]').val(response.note_number);
-            }
-        })
-        .fail(function() {
-            // If the request fails, show a message (optional)
-            alert('Failed to fetch note number');
-        });
 });
 
         // Handle Delete button click
