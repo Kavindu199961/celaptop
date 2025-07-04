@@ -13,6 +13,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\MyShopController;
 use App\Http\Controllers\InvoiceWithStockController;
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\TotalAmountController;
 
 
 // Public routes
@@ -137,6 +138,9 @@ Route::prefix('cashier')->name('cashier.')->group(function () {
     Route::delete('/{id}', [CashierController::class, 'destroy'])->name('destroy');
 
 });
+
+Route::get('/total-amount', [TotalAmountController::class, 'index'])->name('total_amount.index');
+
 
 });
 

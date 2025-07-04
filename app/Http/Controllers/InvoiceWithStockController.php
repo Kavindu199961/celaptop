@@ -41,59 +41,71 @@ class InvoiceWithStockController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'required|string|max:20',
-            'sales_rep' => 'required|string|max:255',
-            'issue_date' => 'required|date',
-            'stock_id.*' => 'required|exists:stock,id',
-            'qty.*' => 'required|numeric|min:1',
-            'unit_price.*' => 'required|numeric|min:0',
-        ]);
+{
+    $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'customer_phone' => 'required|string|max:20',
+        'sales_rep' => 'required|string|max:255',
+        'issue_date' => 'required|date',
+        'stock_id.*' => 'required|exists:stock,id',
+        'qty.*' => 'required|numeric|min:1',
+        'unit_price.*' => 'required|numeric|min:0',
+        // No need to validate cost_price since we'll get it from Stock
+    ]);
 
-        // Calculate total amount
-        $totalAmount = 0;
-        for ($i = 0; $i < count($request->stock_id); $i++) {
-            $totalAmount += $request->qty[$i] * $request->unit_price[$i];
+    // Calculate total amount and total cost
+    $totalAmount = 0;
+    $totalCost = 0; // Added to track total cost for potential profit calculation
+    
+    // First pass to validate all stock quantities
+    foreach ($request->stock_id as $index => $stockId) {
+        $stock = Stock::findOrFail($stockId);
+        if ($stock->quantity < $request->qty[$index]) {
+            return back()->with('error', "Not enough stock for {$stock->item_name}. Available: {$stock->quantity}");
         }
+    }
 
-        // Create invoice
-        $invoice = InvoiceWithStock::create([
-            'invoice_number' => 'INV-' . str_pad(InvoiceWithStock::max('id') + 1, 6, '0', STR_PAD_LEFT),
-            'customer_name' => $request->customer_name,
-            'customer_phone' => $request->customer_phone,
-            'sales_rep' => $request->sales_rep,
-            'issue_date' => $request->issue_date,
-            'total_amount' => $totalAmount,
+    // Create invoice
+    $invoice = InvoiceWithStock::create([
+        'invoice_number' => 'INV-' . str_pad(InvoiceWithStock::max('id') + 1, 6, '0', STR_PAD_LEFT),
+        'customer_name' => $request->customer_name,
+        'customer_phone' => $request->customer_phone,
+        'sales_rep' => $request->sales_rep,
+        'issue_date' => $request->issue_date,
+        'total_amount' => $totalAmount,
+        'user_id' => Auth::id(),
+    ]);
+
+    // Create invoice items and update stock
+    foreach ($request->stock_id as $index => $stockId) {
+        $stock = Stock::findOrFail($stockId);
+        
+        $itemAmount = $request->qty[$index] * $request->unit_price[$index];
+        $itemCost = $request->qty[$index] * $stock->cost; // Calculate item cost
+        
+        InvoiceWithStockItem::create([
+            'invoice_with_stock_id' => $invoice->id,
+            'stock_id' => $stockId,
+            'warranty' => $request->warranty[$index] ?? null,
+            'quantity' => $request->qty[$index],
+            'unit_price' => $request->unit_price[$index],
+            'cost_price' => $stock->cost, // Using stock's cost column
+            'amount' => $itemAmount,
             'user_id' => Auth::id(),
         ]);
 
-        // Create invoice items and update stock
-        for ($i = 0; $i < count($request->stock_id); $i++) {
-            $stock = Stock::findOrFail($request->stock_id[$i]);
-            
-            if ($stock->quantity < $request->qty[$i]) {
-                $invoice->delete();
-                return back()->with('error', "Not enough stock for {$stock->item_name}. Available: {$stock->quantity}");
-            }
-
-            InvoiceWithStockItem::create([
-                'invoice_with_stock_id' => $invoice->id,
-                'stock_id' => $request->stock_id[$i],
-                'warranty' => $request->warranty[$i] ?? null,
-                'quantity' => $request->qty[$i],
-                'unit_price' => $request->unit_price[$i],
-                'amount' => $request->qty[$i] * $request->unit_price[$i],
-                'user_id' => Auth::id(),
-            ]);
-
-            $stock->decrement('quantity', $request->qty[$i]);
-        }
-
-        return redirect()->route('user.invoices_with_stock.print', $invoice->id)
-            ->with('success', 'Invoice created successfully and stock updated');
+        $stock->decrement('quantity', $request->qty[$index]);
+        
+        $totalAmount += $itemAmount;
+        $totalCost += $itemCost;
     }
+
+    // Update invoice with final total amount
+    $invoice->update(['total_amount' => $totalAmount]);
+
+    return redirect()->route('user.invoices_with_stock.print', $invoice->id)
+        ->with('success', 'Invoice created successfully and stock updated');
+}
 
     public function show(InvoiceWithStock $invoiceWithStock)
     {

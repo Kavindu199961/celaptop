@@ -32,16 +32,25 @@
               </a></li> -->
           </ul>
         </div>
-        <li class="dropdown">
-            <a href="#" 
-              class="nav-link  nav-link-lg nav-link-user">
-              <img alt="image" src="/assets/img/user.png" class="user-img-radious-style mr-3">
-              <span class="d-sm-none d-lg-inline-block text-dark">Hello {{ auth()->user()->name ?? 'CeylonGIT' }}</span>
+        <ul class="navbar-nav navbar-right ml-auto">
+  <li class="dropdown">
+    <a href="#" class="nav-link dropdown-toggle nav-link-lg nav-link-user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+      <img alt="image" src="/assets/img/user.png" class="user-img-radious-style mr-2">
+      <span class="d-sm-none d-lg-inline-block text-dark">Hello {{ auth()->user()->name ?? 'CeylonGIT' }}</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right">
+      <a href="{{ route('logout') }}" class="dropdown-item has-icon text-danger"
+         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+      </form>
+    </div>
+  </li>
+</ul>
 
-            </a>
-            
-            </div>
-          </li>
+
 
       </nav>
 
@@ -100,6 +109,11 @@
               </a>
           </li>
 
+          <li class="dropdown {{ request()->is('user/total-amount*') ? 'active' : '' }}">
+              <a href="{{ route('user.total_amount.index') }}" class="nav-link">
+                <i class="fas fa-laptop-medical"></i><span>Invoice Report</span>
+              </a>
+            </li>
 
 
             <li class="dropdown {{ request()->is('user/laptop-repair*') ? 'active' : '' }}">
@@ -180,6 +194,8 @@
   <script src="{{ asset('assets/js/scripts.js') }}"></script>
   <!-- Custom JS File -->
   <script src="{{ asset('assets/js/custom.js') }}"></script>
+
+  
   
   @stack('scripts')
 </body>

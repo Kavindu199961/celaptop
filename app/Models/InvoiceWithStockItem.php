@@ -17,7 +17,8 @@ class InvoiceWithStockItem extends Model
         'quantity',
         'unit_price',
         'amount',
-        'user_id'
+        'user_id',
+        'cost_price', // Added to track cost price for potential profit calculation
     ];
 
     public function invoice()
@@ -34,4 +35,5 @@ class InvoiceWithStockItem extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }
