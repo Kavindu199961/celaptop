@@ -55,18 +55,46 @@ public function register(Request $request)
 {
     $request->validate([
         'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:6|confirmed',
+
+        // Validate only real-looking email addresses (no fake domains like test.com, mailinator, etc.)
+        'email' => [
+            'required',
+            'string',
+            'email',
+            'max:255',
+            'unique:users,email',
+            function ($attribute, $value, $fail) {
+                $disposableDomains = ['mailinator.com', 'tempmail.com', '10minutemail.com', 'example.com', 'test.com'];
+                $domain = substr(strrchr($value, "@"), 1);
+
+                if (in_array(strtolower($domain), $disposableDomains)) {
+                    $fail('Please use a valid, non-disposable email address.');
+                }
+            },
+        ],
+
+        // Strong password validation
+        'password' => [
+            'required',
+            'string',
+            'min:8',             // Minimum 8 characters
+            'regex:/[a-z]/',      // At least one lowercase letter
+            'regex:/[A-Z]/',      // At least one uppercase letter
+            'regex:/[0-9]/',      // At least one digit
+            'regex:/[@$!%*#?&]/', // At least one special character
+            'confirmed',
+        ],
+    ], [
+        'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
     ]);
 
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-        'role' => 'user',       // default role
-        'is_active' => 0,       // default inactive
+        'role' => 'user',
+        'is_active' => 0,
     ]);
-
 
     return redirect()->route('login')->with('success', 'Registered successfully. Please wait for admin approval.');
 }

@@ -3,9 +3,8 @@
 @section('content')
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-            <h4>Completed Repairs</h4>
-            
-        </div>
+        <h4>Completed Repairs</h4>
+    </div>
     <div class="card-body">
         <!-- Search Form -->
         <form action="{{ route('user.complete-repair.index') }}" method="GET" class="mb-4">
@@ -64,7 +63,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="text-center">No completed repairs found</td>
+                        <td colspan="11" class="text-center">No completed repairs found</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -92,7 +91,7 @@
             <div class="modal-body">
                 <p>Are you sure you want to delete this repair record for <strong id="delete_repair_name"></strong>? This action cannot be undone.</p>
             </div>
-            <div class="modal-footer bg-whitesmoke br">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <form id="deleteRepairForm" method="POST" style="display: inline;">
                     @csrf
@@ -117,16 +116,11 @@ $(document).ready(function() {
         var repairId = $(this).data('id');
         var repairName = $(this).data('name');
         
-        // Update the modal content
         $('#delete_repair_name').text(repairName);
         
-        // Set the form action URL with the correct repair ID
         var actionUrl = "{{ route('user.complete-repair.destroy', ':id') }}";
         actionUrl = actionUrl.replace(':id', repairId);
         $('#deleteRepairForm').attr('action', actionUrl);
-        
-        // Show the modal
-        $('#deleteRepairModal').modal('show');
     });
 
     // Handle form submission
@@ -149,6 +143,8 @@ $(document).ready(function() {
             data: form.serialize(),
             success: function(response) {
                 $('#deleteRepairModal').modal('hide');
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
                 
                 Swal.fire({
                     icon: 'success',
@@ -189,27 +185,22 @@ $(document).ready(function() {
     $('#deleteRepairModal').on('hidden.bs.modal', function () {
         $('#deleteRepairButton').prop('disabled', false).find('.button-text').text('Delete');
         $('#deleteRepairButton').find('.spinner-border').addClass('d-none');
-    });
-
-    // Add new repair button click handler
-    $('#addRepairBtn').click(function() {
-        window.location.href = "{{ route('user.complete-repair.create') }}";
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
     });
 });
 
 @if(session('success'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: '',
-            text: '{{ session('success') }}',
-            showConfirmButton: true,
-            confirmButtonColor: '#0d6efd',
-            confirmButtonText: 'OK',
-            background: '#f8f9fa',
-            iconColor: '#28a745'
-        });
-    </script>
+    Swal.fire({
+        icon: 'success',
+        title: '',
+        text: '{{ session('success') }}',
+        showConfirmButton: true,
+        confirmButtonColor: '#0d6efd',
+        confirmButtonText: 'OK',
+        background: '#f8f9fa',
+        iconColor: '#28a745'
+    });
 @endif
 </script>
 @endpush
