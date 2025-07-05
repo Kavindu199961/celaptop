@@ -16,13 +16,13 @@
 
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary-color: #059669;
+            --primary-color: rgb(6, 6, 132);
+            --primary-dark: rgb(3, 3, 78);
+            --secondary-color: rgb(49, 46, 63);
             --accent-color: #f59e0b;
             --text-dark: #1f2937;
             --text-muted: #6b7280;
-            --bg-light: rgba(255, 255, 255, 0.95);
+            --bg-light: rgba(255, 255, 255, 0.98);
             --shadow-light: rgba(0, 0, 0, 0.1);
             --shadow-medium: rgba(0, 0, 0, 0.15);
         }
@@ -35,7 +35,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-image: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(65, 67, 66, 0.7)),
+            background-image: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(49, 46, 63, 0.85)),
                   url('/assets/img/bg.jpg');
             background-position: center;
             background-size: cover;
@@ -48,7 +48,7 @@
 
         .register-wrapper {
             width: 100%;
-            max-width: 450px;
+            max-width: 900px; /* Increased width for two columns */
             margin: 20px;
             animation: fadeInUp 0.8s ease-out;
         }
@@ -93,7 +93,7 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 1rem;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 8px 25px rgba(6, 6, 132, 0.3);
         }
 
         .brand-logo i {
@@ -140,7 +140,7 @@
 
         .input-group .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 0.2rem rgba(6, 6, 132, 0.1);
             outline: none;
         }
 
@@ -171,7 +171,7 @@
 
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 8px 25px rgba(6, 6, 132, 0.4);
         }
 
         .btn-register:active {
@@ -212,7 +212,178 @@
             font-size: 0.85rem;
         }
 
+        /* Payment Section */
+        .payment-section {
+            background: rgba(6, 6, 132, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px dashed var(--primary-color);
+        }
+
+        .payment-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-title i {
+            margin-right: 0.5rem;
+        }
+
+        .bank-details {
+            background: rgba(6, 6, 132, 0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bank-details-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .bank-details-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .bank-details-list li {
+            margin-bottom: 0.5rem;
+            display: flex;
+        }
+
+        .bank-details-list li strong {
+            min-width: 120px;
+            display: inline-block;
+        }
+
+        .contact-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* File Upload */
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Payment Method Tabs */
+        .payment-method-tabs {
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method-tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            background: #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .payment-method-content {
+            display: none;
+        }
+
+        .payment-method-content.active {
+            display: block;
+        }
+
+        /* Two Column Layout */
+        .payment-container {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .payment-info {
+            flex: 1;
+            background: rgba(6, 6, 132, 0.03);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .payment-details {
+            flex: 1;
+        }
+
+        .payment-summary {
+            background: rgba(6, 6, 132, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-item.total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-top: 1px solid rgba(6, 6, 132, 0.1);
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
         /* Responsive */
+        @media (max-width: 768px) {
+            .payment-container {
+                flex-direction: column;
+            }
+        }
+
         @media (max-width: 576px) {
             .register-wrapper {
                 margin: 15px;
@@ -226,6 +397,33 @@
                 font-size: 1.3rem;
             }
         }
+
+        .password-requirements {
+    background-color: rgba(6, 6, 132, 0.03);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.password-requirements ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.password-requirements .req-item {
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.password-requirements .req-item.valid {
+    color: #28a745;
+}
+
+.password-requirements .req-item.valid i {
+    color: #28a745 !important;
+}
     </style>
 </head>
 <body>
@@ -241,7 +439,7 @@
                     <p class="brand-subtitle">Join our laptop repair community</p>
                 </div>
 
-                <form method="POST" action="{{ route('register') }}" id="registerForm">
+                <form method="POST" action="{{ route('register') }}" id="registerForm" enctype="multipart/form-data">
                     @csrf
 
                     @if ($errors->any())
@@ -301,6 +499,18 @@
                         @enderror
                     </div>
 
+                    <!-- Password Requirements -->
+                    <div class="password-requirements mb-2">
+                        <small class="text-muted">Password must contain:</small>
+                        <ul class="list-unstyled" id="passwordRequirements">
+                            <li class="req-item" data-req="length"><i class="bi bi-x-circle-fill text-danger me-1"></i> <span>At least 8 characters</span></li>
+                            <li class="req-item" data-req="lowercase"><i class="bi bi-x-circle-fill text-danger me-1"></i> <span>1 lowercase letter</span></li>
+                            <li class="req-item" data-req="uppercase"><i class="bi bi-x-circle-fill text-danger me-1"></i> <span>1 uppercase letter</span></li>
+                            <li class="req-item" data-req="number"><i class="bi bi-x-circle-fill text-danger me-1"></i> <span>1 number</span></li>
+                            <li class="req-item" data-req="special"><i class="bi bi-x-circle-fill text-danger me-1"></i> <span>1 special character (@$!%*#?&)</span></li>
+                        </ul>
+                    </div>
+
                     <!-- Confirm Password -->
                     <div class="form-group">
                         <label for="password-confirm" class="form-label">
@@ -313,9 +523,146 @@
                         </div>
                     </div>
 
+                    <!-- Payment Section -->
+                    <div class="payment-section">
+                        <h3 class="payment-title">
+                            <i class="bi bi-credit-card"></i> Payment Information
+                        </h3>
+
+                        <div class="payment-container">
+                            <!-- Left Column - Payment Details -->
+                            <div class="payment-info">
+                                <div class="payment-summary">
+                                    <h5 class="mb-3"><i class="bi bi-receipt me-2"></i>Order Summary</h5>
+                                    <div class="summary-item">
+                                        <span>Registration Fee</span>
+                                        <span>LKR 50,000.00</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Service Charge</span>
+                                        <span>LKR 5,000.00</span>
+                                    </div>
+                                    <div class="summary-item total">
+                                        <span>Total Amount</span>
+                                        <span>LKR 55,000.00</span>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Method -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-wallet2 me-1"></i> Payment Method
+                                    </label>
+                                    
+                                    <div class="payment-method-tabs">
+                                        <div class="payment-method-tab active" data-tab="bank_transfer">
+                                            Bank Transfer
+                                        </div>
+                                        <div class="payment-method-tab" data-tab="cash_deposit">
+                                            Cash Deposit
+                                        </div>
+                                    </div>
+                                    
+                                    <input type="hidden" name="payment_method" id="payment_method" value="bank_transfer">
+                                    
+                                    <!-- Bank Transfer Content -->
+                                    <div class="payment-method-content active" id="bank_transfer_content">
+                                        <div class="bank-details">
+                                            <h4 class="bank-details-title">
+                                                <i class="bi bi-bank"></i> Our Bank Details
+                                            </h4>
+                                            <ul class="bank-details-list">
+                                                <li><strong>Bank Name:</strong> Commercial Bank</li>
+                                                <li><strong>Account Name:</strong> CE Laptop Repair</li>
+                                                <li><strong>Account Number:</strong> 1234567890</li>
+                                                <li><strong>Branch:</strong> Colombo Main</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Cash Deposit Content -->
+                                    <div class="payment-method-content" id="cash_deposit_content">
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            Please visit our shop to complete your cash deposit payment.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column - User Payment Details -->
+                            <div class="payment-details">
+                                <!-- Amount (hidden field) -->
+                                <input type="hidden" name="amount" value="55000">
+                                
+                                <!-- Bank Name -->
+                                <div class="form-group">
+                                    <label for="bank_name" class="form-label">
+                                        <i class="bi bi-bank2 me-1"></i> Your Bank Name
+                                    </label>
+                                    <div class="input-group">
+                                        <i class="bi bi-bank2 input-icon"></i>
+                                        <input type="text" id="bank_name" name="bank_name" class="form-control @error('bank_name') is-invalid @enderror"
+                                               placeholder="Enter your bank name" value="{{ old('bank_name') }}">
+                                    </div>
+                                    @error('bank_name')
+                                        <div class="text-danger mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <!-- Account Number -->
+                                <div class="form-group">
+                                    <label for="account_number" class="form-label">
+                                        <i class="bi bi-credit-card-2-back me-1"></i> Your Account Number
+                                    </label>
+                                    <div class="input-group">
+                                        <i class="bi bi-credit-card-2-back input-icon"></i>
+                                        <input type="text" id="account_number" name="account_number" class="form-control @error('account_number') is-invalid @enderror"
+                                               placeholder="Enter your account number" value="{{ old('account_number') }}">
+                                    </div>
+                                    @error('account_number')
+                                        <div class="text-danger mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <!-- Bank Slip Upload -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="bi bi-file-earmark-arrow-up me-1"></i> Upload Bank Slip
+                                    </label>
+                                    <div class="file-upload" id="fileUpload">
+                                        <i class="bi bi-cloud-arrow-up"></i>
+                                        <span>Click to upload slip (PDF, PNG, JPG)</span>
+                                        <span class="file-name" id="fileName">No file chosen</span>
+                                        <input type="file" id="slip" name="slip" accept=".pdf,.png,.jpg,.jpeg">
+                                    </div>
+                                    @error('slip')
+                                        <div class="text-danger mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <!-- Remarks -->
+                                <div class="form-group">
+                                    <label for="remarks" class="form-label">
+                                        <i class="bi bi-chat-left-text me-1"></i> Remarks
+                                    </label>
+                                    <textarea id="remarks" name="remarks" class="form-control @error('remarks') is-invalid @enderror"
+                                              placeholder="Add shop name and your name for reference" required>{{ old('remarks') }}</textarea>
+                                    @error('remarks')
+                                        <div class="text-danger mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-note">
+                            <i class="bi bi-telephone me-1"></i> Payment not approved? Contact us: 0765645303
+                        </div>
+                    </div>
+
                     <!-- Submit -->
                     <button type="submit" class="btn btn-register" id="registerBtn">
-                        <span class="btn-text"><i class="bi bi-person-plus me-2"></i>Create Account</span>
+                        <span class="btn-text"><i class="bi bi-person-plus me-2"></i>Complete Registration</span>
                     </button>
 
                     <!-- Login Link -->
@@ -337,11 +684,11 @@
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             const btn = document.getElementById('registerBtn');
             const btnText = btn.querySelector('.btn-text');
-            btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
+            btnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
             btn.disabled = true;
             setTimeout(() => {
                 if (btn.disabled) {
-                    btnText.innerHTML = '<i class="bi bi-person-plus me-2"></i>Create Account';
+                    btnText.innerHTML = '<i class="bi bi-person-plus me-2"></i>Complete Registration';
                     btn.disabled = false;
                 }
             }, 3000);
@@ -379,7 +726,7 @@
         document.getElementById('email').addEventListener('blur', function () {
             const value = this.value.toLowerCase();
             const domain = value.split('@')[1];
-            if (blockedDomains.includes(domain)) {
+            if (domain && blockedDomains.includes(domain)) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Invalid Email Domain',
@@ -387,6 +734,96 @@
                     iconColor: '#f59e0b',
                     confirmButtonColor: '#0d6efd'
                 });
+            }
+        });
+
+        // File upload display
+        document.getElementById('slip').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+            document.getElementById('fileName').textContent = fileName;
+        });
+
+        // Payment method tabs
+        const tabs = document.querySelectorAll('.payment-method-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Get tab ID
+                const tabId = this.getAttribute('data-tab');
+                
+                // Hide all content
+                document.querySelectorAll('.payment-method-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show selected content
+                document.getElementById(tabId + '_content').classList.add('active');
+                
+                // Update hidden input
+                document.getElementById('payment_method').value = tabId;
+            });
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            const value = this.value;
+            const errorBox = document.querySelector('#passwordError');
+            const requirements = {
+                length: value.length >= 8,
+                lowercase: /[a-z]/.test(value),
+                uppercase: /[A-Z]/.test(value),
+                number: /[0-9]/.test(value),
+                special: /[@$!%*#?&]/.test(value)
+            };
+            
+            // Update requirement indicators
+            Object.keys(requirements).forEach(key => {
+                const item = document.querySelector(`.req-item[data-req="${key}"]`);
+                const icon = item.querySelector('i');
+                const text = item.querySelector('span');
+                
+                if (requirements[key]) {
+                    item.classList.add('valid');
+                    icon.classList.remove('bi-x-circle-fill', 'text-danger');
+                    icon.classList.add('bi-check-circle-fill', 'text-success');
+                } else {
+                    item.classList.remove('valid');
+                    icon.classList.remove('bi-check-circle-fill', 'text-success');
+                    icon.classList.add('bi-x-circle-fill', 'text-danger');
+                }
+            });
+            
+            // Check if all requirements are met
+            const allValid = Object.values(requirements).every(v => v);
+            
+            if (value.length > 0 && !allValid) {
+                errorBox.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Please meet all password requirements';
+                errorBox.style.display = "block";
+                this.style.borderColor = '#ef4444';
+            } else if (value.length > 0 && allValid) {
+                errorBox.style.display = "none";
+                this.style.borderColor = '#10b981';
+            } else {
+                errorBox.style.display = "none";
+                this.style.borderColor = '#e5e7eb';
+            }
+        });
+
+        // Confirm password validation
+        document.getElementById('password-confirm').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword.length > 0 && password !== confirmPassword) {
+                this.style.borderColor = '#ef4444';
+            } else if (confirmPassword.length > 0) {
+                this.style.borderColor = '#10b981';
+            } else {
+                this.style.borderColor = '#e5e7eb';
             }
         });
 

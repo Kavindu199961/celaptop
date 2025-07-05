@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 04, 2025 at 04:14 PM
+-- Generation Time: Jul 05, 2025 at 12:27 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -115,9 +115,7 @@ CREATE TABLE `counters` (
 INSERT INTO `counters` (`id`, `user_id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (2, 3, 'customer_number', 1, '2025-07-03 08:14:12', '2025-07-03 08:14:12'),
 (3, 3, 'customer_number_3', 1, '2025-07-04 07:12:47', '2025-07-04 07:12:47'),
-(4, 3, 'customer_number_user_3', 5, '2025-07-04 07:14:41', '2025-07-04 14:10:13'),
-(8, 15, 'customer_number_user_15', 9, '2025-07-04 13:21:59', '2025-07-04 13:46:40'),
-(9, 17, 'customer_number_user_17', 1, '2025-07-04 14:12:33', '2025-07-04 14:12:33');
+(4, 3, 'customer_number_user_3', 5, '2025-07-04 07:14:41', '2025-07-04 14:10:13');
 
 -- --------------------------------------------------------
 
@@ -160,9 +158,7 @@ CREATE TABLE `invoices` (
 
 INSERT INTO `invoices` (`id`, `invoice_number`, `customer_name`, `customer_phone`, `sales_rep`, `issue_date`, `total_amount`, `created_at`, `updated_at`, `user_id`) VALUES
 (24, 'INV-0001', 'Kavindu Nelshan', '0765645303', 'CE laptop repair center', '2025-07-04', 75000.00, '2025-07-04 07:54:04', '2025-07-04 07:54:04', 3),
-(26, 'INV-0003', 'Kavindu Nelshan', '0765645303', 'CE laptop repair center', '2025-07-04', 75000.00, '2025-07-04 07:57:10', '2025-07-04 07:57:10', 3),
-(33, 'JA-INV-0001', 'Kavindu Nelshan', '0765645303', 'jayathissa computers', '2025-07-04', 85000.00, '2025-07-04 13:13:47', '2025-07-04 13:13:47', 15),
-(34, 'JA-INV-0002', 'Kavindu Nelshan', '0765645303', 'jayathissa computers', '2025-07-04', 85000.00, '2025-07-04 13:39:00', '2025-07-04 13:39:00', 15);
+(26, 'INV-0003', 'Kavindu Nelshan', '0765645303', 'CE laptop repair center', '2025-07-04', 75000.00, '2025-07-04 07:57:10', '2025-07-04 07:57:10', 3);
 
 -- --------------------------------------------------------
 
@@ -183,8 +179,7 @@ CREATE TABLE `invoice_counters` (
 --
 
 INSERT INTO `invoice_counters` (`id`, `user_id`, `last_number`, `created_at`, `updated_at`) VALUES
-(1, 3, 3, '2025-07-04 07:54:04', '2025-07-04 07:57:10'),
-(6, 15, 2, '2025-07-04 13:13:47', '2025-07-04 13:39:00');
+(1, 3, 3, '2025-07-04 07:54:04', '2025-07-04 07:57:10');
 
 -- --------------------------------------------------------
 
@@ -211,9 +206,7 @@ CREATE TABLE `invoice_items` (
 
 INSERT INTO `invoice_items` (`id`, `invoice_id`, `description`, `warranty`, `quantity`, `unit_price`, `amount`, `created_at`, `updated_at`, `user_id`) VALUES
 (41, 24, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-04 07:54:04', '2025-07-04 07:54:04', 3),
-(43, 26, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-04 07:57:10', '2025-07-04 07:57:10', 3),
-(47, 33, 'Laptop asus', '1 montrh', 1, 85000.00, 85000.00, '2025-07-04 13:13:47', '2025-07-04 13:13:47', 15),
-(48, 34, 'Laptop asus', '1 montrh', 1, 85000.00, 85000.00, '2025-07-04 13:39:00', '2025-07-04 13:39:00', 15);
+(43, 26, 'Laptop asus', '1 montrh', 3, 25000.00, 75000.00, '2025-07-04 07:57:10', '2025-07-04 07:57:10', 3);
 
 -- --------------------------------------------------------
 
@@ -290,6 +283,17 @@ CREATE TABLE `jobs` (
   `created_at` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `jobs`
+--
+
+INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `available_at`, `created_at`) VALUES
+(1, 'default', '{\"uuid\":\"ab0aa9af-06f5-4edd-9fea-99c8b82082f4\",\"displayName\":\"App\\\\Notifications\\\\VerifyEmailNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:19;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:41:\\\"App\\\\Notifications\\\\VerifyEmailNotification\\\":1:{s:2:\\\"id\\\";s:36:\\\"7827b1be-8243-4d4f-b368-9c68e6f550c5\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:4:\\\"mail\\\";}}\"},\"createdAt\":1751690091,\"delay\":null}', 0, NULL, 1751690091, 1751690091),
+(2, 'default', '{\"uuid\":\"36a273dd-dcb9-4af8-9466-c7271658b733\",\"displayName\":\"App\\\\Notifications\\\\VerifyEmailNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:20;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:41:\\\"App\\\\Notifications\\\\VerifyEmailNotification\\\":1:{s:2:\\\"id\\\";s:36:\\\"63e6564a-074e-478f-8427-9e05bde4f11a\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:4:\\\"mail\\\";}}\"},\"createdAt\":1751690937,\"delay\":null}', 0, NULL, 1751690937, 1751690937),
+(3, 'default', '{\"uuid\":\"86088129-7a4e-44b7-a4f0-2eef97ecb72a\",\"displayName\":\"App\\\\Notifications\\\\VerifyEmailNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:21;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:41:\\\"App\\\\Notifications\\\\VerifyEmailNotification\\\":1:{s:2:\\\"id\\\";s:36:\\\"afb73fd8-eadb-4935-95cf-73cf7d488b85\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:4:\\\"mail\\\";}}\"},\"createdAt\":1751691522,\"delay\":null}', 0, NULL, 1751691522, 1751691522),
+(4, 'default', '{\"uuid\":\"548f5b2f-0c28-4c2d-9eed-1c76f413ef77\",\"displayName\":\"App\\\\Notifications\\\\VerifyEmailNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:22;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:41:\\\"App\\\\Notifications\\\\VerifyEmailNotification\\\":1:{s:2:\\\"id\\\";s:36:\\\"ef835a37-f0ae-4b34-bb20-12a9b0f74545\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:4:\\\"mail\\\";}}\"},\"createdAt\":1751692354,\"delay\":null}', 0, NULL, 1751692354, 1751692354),
+(5, 'default', '{\"uuid\":\"be55aac8-0914-4219-9f45-32505ef48efc\",\"displayName\":\"App\\\\Notifications\\\\VerifyEmailNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:23;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:41:\\\"App\\\\Notifications\\\\VerifyEmailNotification\\\":1:{s:2:\\\"id\\\";s:36:\\\"0d02b7b4-9639-4ae6-be1e-8105120fed93\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:4:\\\"mail\\\";}}\"},\"createdAt\":1751695491,\"delay\":null}', 0, NULL, 1751695491, 1751695491);
+
 -- --------------------------------------------------------
 
 --
@@ -338,10 +342,7 @@ CREATE TABLE `laptop_repairs` (
 --
 
 INSERT INTO `laptop_repairs` (`id`, `customer_name`, `contact`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `status`, `images`, `customer_number`, `created_at`, `updated_at`, `note_number`, `user_id`) VALUES
-(52, 'jayathissa', '0774258978', '2025-07-04', 'yru6ru', 'Accer 15 new', NULL, '5647tyhgbderrnp7', 'pending', NULL, 'CE-0001', '2025-07-04 12:53:28', '2025-07-04 12:53:28', '5', 14),
-(70, 'Kavindu Nelshan', '0774258978', '2025-07-04', 'bncn', 'Accer 15 new6', NULL, '5647tyhtlllf', 'pending', '[\"repairs\\/7cxqgSS8kmH0Wh8lHvFPravmKeGWAyVZbJdc08XL.jpg\"]', 'JA-15-0009', '2025-07-04 13:46:40', '2025-07-04 13:46:40', '18', 15),
-(71, 'Kavindu Nelshan', '0774258978', '2025-07-04', 'ththj', 'Accer 15 new6', NULL, '5647tyhtlllfj', 'pending', NULL, 'CE-3-0005', '2025-07-04 14:10:14', '2025-07-04 14:10:14', '1', 3),
-(72, 'Kavindu Nelshan', '0774258978', '2025-07-04', 'fgjvjhg', 'Accer 15 new6', NULL, '5647tyhtlllfjj', 'pending', NULL, 'XX-17-0001', '2025-07-04 14:12:33', '2025-07-04 14:12:33', '1', 17);
+(71, 'Kavindu Nelshan', '0774258978', '2025-07-04', 'ththj', 'Accer 15 new6', NULL, '5647tyhtlllfj', 'pending', NULL, 'CE-3-0005', '2025-07-04 14:10:14', '2025-07-04 14:10:14', '1', 3);
 
 -- --------------------------------------------------------
 
@@ -409,7 +410,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (50, '2025_07_03_232535_create_cashiers_table', 42),
 (51, '2025_07_04_102840_add_cost_price_to_invoice_with_stock_items_table', 43),
 (52, '2025_07_04_131722_create_invoice_counters_table', 44),
-(53, '2025_07_04_171014_create_note_counters_table', 45);
+(53, '2025_07_04_171014_create_note_counters_table', 45),
+(54, '2025_07_05_102141_add_email_verification_to_users_table', 46),
+(55, '2025_07_05_145359_create_payments_table', 47);
 
 -- --------------------------------------------------------
 
@@ -438,9 +441,7 @@ CREATE TABLE `my_shop_details` (
 --
 
 INSERT INTO `my_shop_details` (`id`, `shop_name`, `description`, `address`, `hotline`, `email`, `logo_image`, `condition_1`, `condition_2`, `condition_3`, `created_at`, `updated_at`, `user_id`) VALUES
-(3, 'CE laptop repair center', 'Dealers in Desktop Computers, Laptop Accessories, Repairs Service & import wholesale and retail', '254/1/1/6, Baladaksha Mawatha, New Sathipola Road, Mawanella, Sri Lanka', '0756502913', 'chammikaelectronic@gmail.com', 'shop_logos/HqBIVX2YUwXm1TTrAiF4aB6p2zZxzCnpZws2jLe8.jpg', 'Warranty for 1 Year Less 21 Working Days for computer hardware.', 'No Warranty for Bum Marks, Scratches, Physical damages and any other damage happened by user activities.', 'Goods sold once can\'t return.', '2025-07-03 08:04:04', '2025-07-03 08:18:02', 3),
-(8, 'Bhathiya computewrs', 'All computer repair', 'Galigamuwa, kegalle', '0756502913', 'kavindunelsan@gmail.com', 'shop_logos/ygXNnOA7sEw8LNAvSeadnD9ksYSjrQGi4BwxPhh5.png', '1', '2', '3', '2025-07-04 12:13:58', '2025-07-04 12:47:25', 14),
-(9, 'jayathissa computers', 'gttyrtu', 'ututruyr', '0756502913', 'kavindunelsan@gmail.com', 'shop_logos/uH87iqa17OPD2QXzgOTd1O8irrUzkQytkDJ3g7Vm.png', '1', '2', '3', '2025-07-04 12:57:48', '2025-07-04 12:57:48', 15);
+(3, 'CE laptop repair center', 'Dealers in Desktop Computers, Laptop Accessories, Repairs Service & import wholesale and retail', '254/1/1/6, Baladaksha Mawatha, New Sathipola Road, Mawanella, Sri Lanka', '0756502913', 'chammikaelectronic@gmail.com', 'shop_logos/HqBIVX2YUwXm1TTrAiF4aB6p2zZxzCnpZws2jLe8.jpg', 'Warranty for 1 Year Less 21 Working Days for computer hardware.', 'No Warranty for Bum Marks, Scratches, Physical damages and any other damage happened by user activities.', 'Goods sold once can\'t return.', '2025-07-03 08:04:04', '2025-07-03 08:18:02', 3);
 
 -- --------------------------------------------------------
 
@@ -461,10 +462,7 @@ CREATE TABLE `note_counters` (
 --
 
 INSERT INTO `note_counters` (`id`, `user_id`, `last_number`, `created_at`, `updated_at`) VALUES
-(1, 14, 5, '2025-07-04 12:11:49', '2025-07-04 12:53:28'),
-(2, 15, 18, '2025-07-04 12:55:52', '2025-07-04 13:46:40'),
-(3, 3, 1, '2025-07-04 14:10:13', '2025-07-04 14:10:14'),
-(4, 17, 1, '2025-07-04 14:12:33', '2025-07-04 14:12:33');
+(3, 3, 1, '2025-07-04 14:10:13', '2025-07-04 14:10:14');
 
 -- --------------------------------------------------------
 
@@ -476,6 +474,27 @@ CREATE TABLE `password_reset_tokens` (
   `email` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(255) NOT NULL,
+  `bank_name` varchar(255) DEFAULT NULL,
+  `account_number` varchar(255) DEFAULT NULL,
+  `slip_path` varchar(255) DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -498,8 +517,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('5hU5Jc4vDXuqo70d703XFhBkkMtU6XvxiGCER4MI', 17, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYWYzb2F4aWc5ZGtmUktIemlQUlZ3QkJ5R3dCWVJ1ZlVEdWdmWGdkTyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2xhcHRvcC1yZXBhaXIiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxNzt9', 1751638353),
-('qqQiV0OsIaBAXTFZgRI7dxXensP08A697q9WzYr8', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaU1SeUdCd21majlyUTN5M29LbWdHdFhDUGcyRVBWUThoN29Jd3JITyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NjQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9yZXBhaXItdHJhY2tpbmc/dHJhY2tpbmdfbnVtYmVyPUpBLTE1LTAwMDEiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1751635396);
+('J4OcGiANm15T5OQkGQxVQfGEbs18uRVR9mRj5wpu', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYlpiNTIwQ0RFamJ0dmI0TEJxUFNyYkYyUktncjNwV1dvOHA1THNqOSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjE6e3M6ODoiaW50ZW5kZWQiO3M6Mzk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9zdXBlci1hZG1pbi91c2VycyI7fX0=', 1751710922);
 
 -- --------------------------------------------------------
 
@@ -537,7 +555,7 @@ CREATE TABLE `shop_items` (
   `description` text DEFAULT NULL,
   `warranty` varchar(255) DEFAULT NULL,
   `serial_number` varchar(255) DEFAULT NULL,
-  `price` decimal(10,2) NOT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
   `date` date NOT NULL DEFAULT '2025-07-01',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -581,8 +599,7 @@ INSERT INTO `stock` (`id`, `user_id`, `item_name`, `description`, `cost`, `whole
 (9, 3, 'Jdell mouse', 'new', 1500.00, 2000.00, 2500.00, NULL, '2025-07-04', 20, '2025-07-04 03:54:47', '2025-07-04 05:02:47'),
 (10, 3, 'Keyboard', 'new', 2000.00, 2500.00, 3000.00, 'ce laptop center', '2025-07-04', 13, '2025-07-04 03:55:26', '2025-07-04 07:56:56'),
 (11, 3, 'dell mouse', 'new', 1000.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 12, '2025-07-04 04:08:47', '2025-07-04 07:39:01'),
-(12, 3, 'rgb mouse', 'new', 1500.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 3, '2025-07-04 04:09:27', '2025-07-04 09:57:27'),
-(14, 15, 'rgb mouse', NULL, 1500.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 3, '2025-07-04 13:39:24', '2025-07-04 13:39:24');
+(12, 3, 'rgb mouse', 'new', 1500.00, 2000.00, 3000.00, 'ce laptop center', '2025-07-04', 3, '2025-07-04 04:09:27', '2025-07-04 09:57:27');
 
 -- --------------------------------------------------------
 
@@ -594,25 +611,23 @@ CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('super-admin','admin','user') NOT NULL DEFAULT 'user',
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `verification_token` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `is_active`, `remember_token`, `created_at`, `updated_at`) VALUES
-(3, 'Admin User', 'admin@celaptop.com', NULL, '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-03 15:52:16'),
-(5, 'Super Admin', 'superadmin@gmail.com', NULL, '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21'),
-(14, 'Jayathissa', 'kavindunelsan@gmail.com', NULL, '$2y$12$.ovVGUyvR5h6fLV5FOTn6.liLFJJMpO84ytRDUP7hbhUIqyZdKESS', 'user', 1, NULL, '2025-07-04 12:11:49', '2025-07-04 12:12:19'),
-(15, 'Kavindu Nelshan', 'www.kavi1999maxnelshan@gmail.com', NULL, '$2y$12$722SOBMnFyq0rtLYDx.ff.z72f9fnRokN4WqLwOLHm5pSaOWny6Km', 'user', 1, NULL, '2025-07-04 12:54:53', '2025-07-04 12:55:00'),
-(17, 'Bathiya', 'bathiya@netlms.com', NULL, '$2y$12$CkcCX3.5flXZQWp9d1FWAuAreUPxBGUSVJLYJ.H97mb4RhRQosEPe', 'user', 1, NULL, '2025-07-04 14:09:37', '2025-07-04 14:09:37');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `remember_token`, `created_at`, `updated_at`, `email_verified_at`, `verification_token`) VALUES
+(3, 'Admin User', 'admin@celaptop.com', '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-03 15:52:16', NULL, NULL),
+(5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -746,6 +761,13 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indexes for table `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `payments_user_id_foreign` (`user_id`);
+
+--
 -- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
@@ -795,13 +817,13 @@ ALTER TABLE `cashiers`
 -- AUTO_INCREMENT for table `completed_repairs`
 --
 ALTER TABLE `completed_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `counters`
 --
 ALTER TABLE `counters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -813,19 +835,19 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `invoice_counters`
 --
 ALTER TABLE `invoice_counters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `invoice_items`
 --
 ALTER TABLE `invoice_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `invoice_with_stocks`
@@ -843,19 +865,19 @@ ALTER TABLE `invoice_with_stock_items`
 -- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `laptop_repairs`
 --
 ALTER TABLE `laptop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `my_shop_details`
@@ -867,31 +889,37 @@ ALTER TABLE `my_shop_details`
 -- AUTO_INCREMENT for table `note_counters`
 --
 ALTER TABLE `note_counters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `shops`
 --
 ALTER TABLE `shops`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `shop_items`
 --
 ALTER TABLE `shop_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `stock`
 --
 ALTER TABLE `stock`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- Constraints for dumped tables
@@ -963,6 +991,12 @@ ALTER TABLE `my_shop_details`
 --
 ALTER TABLE `note_counters`
   ADD CONSTRAINT `note_counters_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `payments_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `shops`

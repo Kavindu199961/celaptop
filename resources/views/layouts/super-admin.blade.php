@@ -61,6 +61,12 @@
               </a>
             </li>
 
+            <li class="dropdown {{ request()->is('super-admin/payments*') ? 'active' : '' }}">
+              <a href="{{ route('super-admin.payments.index') }}" class="nav-link">
+                <i class="fas fa-dollar-sign"></i><span>Payments</span>
+              </a>
+            </li>
+
             
 
             </li>

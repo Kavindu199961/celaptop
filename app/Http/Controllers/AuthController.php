@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use App\Providers\RouteServiceProvider;
+use App\Models\Payment;
 use App\Models\InvoiceCounter;
 use App\Models\NoteCounter;
 
@@ -84,25 +87,67 @@ public function register(Request $request)
             'regex:/[@$!%*#?&]/', // At least one special character
             'confirmed',
         ],
+        
+        // Payment validation
+        'amount' => 'required|numeric|min:1',
+        'payment_method' => 'required|string|in:bank_transfer,cash_deposit',
+        'bank_name' => 'required_if:payment_method,bank_transfer|nullable|string',
+        'account_number' => 'required_if:payment_method,bank_transfer|nullable|string',
+        'slip' => 'required_if:payment_method,bank_transfer|nullable|file|mimes:pdf,png,jpg,jpeg|max:2048',
+        'remarks' => 'required|string|max:500',
+        
     ], [
-        'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
+        'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+        'slip.required_if' => 'Please upload your bank slip for bank transfer payments.',
+        'slip.mimes' => 'Bank slip must be a PDF, PNG, JPG, or JPEG file.',
+        'slip.max' => 'Bank slip must not exceed 2MB in size.',
+        'bank_name.required_if' => 'Bank name is required for bank transfers.',
+        'account_number.required_if' => 'Account number is required for bank transfers.',
     ]);
 
+    // Create the user
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-        'role' => 'user',
-        'is_active' => 0,
+        'role' => 'user', // Default role for new users
+        'is_active' => false, // Default to inactive until payment is processed
     ]);
 
-    return redirect()->route('login')->with('success', 'Registered successfully. Please wait for admin approval.');
+    // Process payment
+    $paymentData = [
+        'user_id' => $user->id,
+        'name' => $request->name,
+        'amount' => $request->amount,
+        'payment_method' => $request->payment_method,
+        'remarks' => $request->remarks,
+        'status' => 'pending',
+    ];
+
+    if ($request->payment_method === 'bank_transfer') {
+        $paymentData['bank_name'] = $request->bank_name;
+        $paymentData['account_number'] = $request->account_number;
+        
+        if ($request->hasFile('slip')) {
+            $path = $request->file('slip')->store('payment_slips', 'public');
+            $paymentData['slip_path'] = $path;
+        }
+    }
+
+    // Create payment record
+    Payment::create($paymentData);
+
+    event(new Registered($user));
+
+    Auth::login($user);
+
+   return redirect()->route('web.repair-tracking.index')->with('success', 'Registered successfully. Please wait for admin approval.');
 }
 
-
     public function logout()
-    {
-        Auth::logout();
-        return redirect()->route('login');
-    }
+{
+    Auth::logout();
+    return redirect()->route('web.repair-tracking.index');
+}
+
 }

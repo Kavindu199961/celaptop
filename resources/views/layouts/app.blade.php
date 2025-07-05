@@ -36,17 +36,9 @@
   <li class="dropdown">
     <a href="#" class="nav-link dropdown-toggle nav-link-lg nav-link-user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
       <img alt="image" src="/assets/img/user.png" class="user-img-radious-style mr-2">
-      <span class="d-sm-none d-lg-inline-block text-dark">Hello {{ auth()->user()->name ?? 'CeylonGIT' }}</span>
+      <span class="d-sm-none d-lg-inline-block text-dark">Hello..! {{ auth()->user()->name ?? 'CeylonGIT' }}</span>
     </a>
-    <div class="dropdown-menu dropdown-menu-right">
-      <a href="{{ route('logout') }}" class="dropdown-item has-icon text-danger"
-         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
-      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-        @csrf
-      </form>
-    </div>
+    
   </li>
 </ul>
 

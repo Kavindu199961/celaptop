@@ -14,14 +14,13 @@ use App\Http\Controllers\MyShopController;
 use App\Http\Controllers\InvoiceWithStockController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\TotalAmountController;
+use App\Http\Controllers\PaymentController;
+
 
 
 // Public routes
-Route::get('/', function () {
-    return redirect()->route('login');
-});
 
-
+Route::get('/', [RepairTrackingController::class, 'index'])->name('web.repair-tracking.index');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -36,6 +35,12 @@ Route::prefix('super-admin')->middleware('auth')->group(function () {
     Route::patch('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('super-admin.toggle-status');
     Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('super-admin.users.update');
     Route::delete('/users/{user}/delete', [AdminController::class, 'deleteUser'])->name('delete-user');
+
+
+    Route::get('/payments', [PaymentController::class, 'index'])->name('super-admin.payments.index');
+    Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('super-admin.payments.approve');
+    Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('super-admin.payments.reject');
+
 });
 // Auth routes (including password reset)
 
@@ -146,7 +151,7 @@ Route::get('/total-amount', [TotalAmountController::class, 'index'])->name('tota
 
 });
 
-   Route::get('/repair-tracking', [RepairTrackingController::class, 'index'])->name('web.repair-tracking.index');
+  
 
    
 
