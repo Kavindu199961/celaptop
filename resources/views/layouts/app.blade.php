@@ -25,25 +25,63 @@
       <nav class="navbar navbar-expand-lg main-navbar sticky">
         <div class="form-inline mr-auto">
           <ul class="navbar-nav mr-3">
-            <!-- <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn"> 
-              <i class="fas fa-align-justify"></i></a></li> -->
-            <!-- <li><a href="#" class="nav-link nav-link-lg fullscreen-btn color-dark">
-                <i class="fas fa-expand color-dark"></i>
-              </a></li> -->
+            <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg
+									collapse-btn"> <i data-feather="align-justify"></i></a></li>
+            <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
+                <i data-feather="maximize"></i>
+              </a></li>
+            <li>
+              
+            </li>
           </ul>
         </div>
-        <ul class="navbar-nav navbar-right ml-auto">
-  <li class="dropdown">
-    <a href="#" class="nav-link dropdown-toggle nav-link-lg nav-link-user" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-      <img alt="image" src="/assets/img/user.png" class="user-img-radious-style mr-2">
-      <span class="d-sm-none d-lg-inline-block text-dark">Hello..! {{ auth()->user()->name ?? 'CeylonGIT' }}</span>
-    </a>
-    
-  </li>
-</ul>
+        <ul class="navbar-nav navbar-right">
+          <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link nav-link-lg message-toggle d-flex align-items-center">
+              <i class="fas fa-user-circle" style="font-size: 35px; color:rgb(0, 0, 0);"></i>
+              <span class="ml-2 d-none d-md-inline text-dark font-weight-bold" style="font-size: 16px;">
+                {{ auth()->user()->name ?? 'User' }}
+              </span>
+            </a>
 
+            <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
+              <div class="dropdown-header">
+               Profile
+                <div class="float-right">
+            
+              </div>
+              <div class="dropdown-list-content ">
+                 <div class="dropdown-item text-center">
+                    <!-- Profile Image -->
+                     @php
+                      $user = auth()->user();
+                      $shopDetail = $user ? App\Models\MyShopDetail::where('user_id', $user->id)->first() : null;
+                  @endphp
+                            @if($shopDetail && $shopDetail->logo_image)
+                      <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="User Image" class="rounded-circle mt-2" width="60" height="60">
+                    @else
+                      <img src="{{ asset('/assets/img/user.png') }}" alt="Default User" class="rounded-circle mt-2" width="60" height="60">
+                    @endif
 
+                    <!-- User Greeting -->
+                    <span class="message-user d-block font-weight-bold mt-2">
+                      Hello, {{ auth()->user()->name ?? 'User' }}
+                    </span>
 
+                    <!-- Logout Button -->
+                    <form action="{{ route('logout') }}" method="POST" class="mt-2 mb-2">
+                      @csrf
+                      <button type="submit" class="btn btn-danger btn-sm w-100">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                      </button>
+                    </form>
+                  </div>
+
+              </div>
+   
+          </li>
+          
+          
+        </ul>
       </nav>
 
     <div class="main-sidebar sidebar-style-2">
@@ -56,7 +94,7 @@
 
           <a href="{{ route('user.dashboard') }}">
               @if($shopDetail && $shopDetail->logo_image)
-                  <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
+                  <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:65px; height: auto;">
               @else
                   <img src="{{ asset('/assets/logo/logo.png') }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
               @endif
@@ -134,11 +172,11 @@
               </a>
             </li>
 
-            <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
+            <!-- <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
               <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">
                 <i class="fas fa-search-location"></i><span>Laptop Tracking</span>
               </a>
-            </li>
+            </li> -->
 
             <li class="dropdown">
               <a href="{{ route('logout') }}" class="nav-link mt-5"

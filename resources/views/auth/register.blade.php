@@ -667,7 +667,7 @@
 
                     <!-- Login Link -->
                     <div class="login-link">
-                        Already have an account? <a href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In</a>
+                        Already have an account? <a href="/"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In</a>
                     </div>
                 </form>
             </div>

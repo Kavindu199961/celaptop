@@ -155,45 +155,76 @@
 @push('scripts')
 <script>
     $(document).ready(function () {
-        // Handle View Item button click
-        $(document).on('click', '.view-item', function() {
-            var itemId = $(this).data('id');
-            
-            $.get("{{ url('shop/item') }}/" + itemId, function(data) {
-                var html = `
+        let itemCount = 1;
+        
+        // Handle Add Shop button click
+        $('#addShopBtn').on('click', function() {
+            $('#createShopModal').modal('show');
+        });
+        
+        // Add new item to create form
+        $('.add-item-btn').on('click', function() {
+            const newItem = `
+                <div class="item-group mb-3 p-3 border rounded">
+                    <button type="button" class="btn btn-sm btn-danger float-right remove-item-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Item Name *</label>
+                                <input type="text" class="form-control" name="items[${itemCount}][item_name]" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Price (Optional)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" name="items[${itemCount}][price]">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Serial Number (Optional)</label>
+                                <input type="text" class="form-control" name="items[${itemCount}][serial_number]">
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Item Name:</strong> ${data.item_name}</p>
-                            <p><strong>Price:</strong> ${parseFloat(data.price).toFixed(2)}</p>
-                            <p><strong>Date Added:</strong> ${data.date ? data.date.split('T')[0] : 'N/A'}</p>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea class="form-control" name="items[${itemCount}][description]" rows="2"></textarea>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <p><strong>Serial Number:</strong> ${data.serial_number || 'N/A'}</p>
-                            <p><strong>Warranty:</strong> ${data.warranty || 'N/A'}</p>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Warranty (Optional)</label>
+                                <input type="text" class="form-control" name="items[${itemCount}][warranty]">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" class="form-control" name="items[${itemCount}][date]" value="{{ date('Y-m-d') }}">
+                            </div>
                         </div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <p><strong>Description:</strong></p>
-                            <p>${data.description || 'No description available'}</p>
-                        </div>
-                    </div>
-                `;
-                
-                $('#itemDetailsContent').html(html);
-                $('#viewItemModal').modal('show');
-            }).fail(function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to load item details',
-                    confirmButtonColor: '#0d6efd'
-                });
-            });
+                </div>
+            `;
+            $('.items-container').append(newItem);
+            itemCount++;
         });
-    });
-
-    $(document).on('click', '.edit-shop', function() {
+        
+        // Remove item from create form
+        $(document).on('click', '.remove-item-btn', function() {
+            $(this).closest('.item-group').remove();
+        });
+        
+        // Handle View button click
+       
+        
+        // Handle Edit button click
+        $(document).on('click', '.edit-shop', function() {
             var shopId = $(this).data('id');
             
             // Fetch shop data via AJAX
@@ -293,13 +324,13 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Price *</label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="items[${itemCount}][price]" required>
+                                <label>Price (Optional)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" name="items[${itemCount}][price]">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Serial Number</label>
+                                <label>Serial Number (Optional)</label>
                                 <input type="text" class="form-control" name="items[${itemCount}][serial_number]">
                             </div>
                         </div>
@@ -313,7 +344,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Warranty</label>
+                                <label>Warranty (Optional)</label>
                                 <input type="text" class="form-control" name="items[${itemCount}][warranty]">
                             </div>
                         </div>
@@ -357,14 +388,25 @@
         $('#editShopModal').on('hidden.bs.modal', function () {
             $('#editShopForm button[type="submit"]').prop('disabled', false).html('Update Shop');
         });
-
-        $('#editShopForm').on('submit', function() {
-            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
-        });
         
         $('#deleteShopModal').on('hidden.bs.modal', function () {
             $('#deleteShopForm button[type="submit"]').prop('disabled', false).html('Delete');
         });
+        
+        // Handle form submissions with loading states
+        $('#createShopForm').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+        });
+        
+        $('#editShopForm').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+        });
+        
+        $('#deleteShopForm').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
+        });
+    });
+    
 </script>
 @endpush
 @endsection
