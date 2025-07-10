@@ -8,12 +8,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\LaptopRepair;
+use App\Models\MyShopDetail;
 
 class RepairDetailsMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $repair;
+    public $shopDetails;
 
     /**
      * Create a new message instance.
@@ -21,6 +23,8 @@ class RepairDetailsMail extends Mailable
     public function __construct(LaptopRepair $repair)
     {
         $this->repair = $repair;
+        // Get the shop details through the user relationship
+        $this->shopDetails = $repair->user->myShopDetails ?? null;
     }
 
     /**
@@ -43,6 +47,7 @@ class RepairDetailsMail extends Mailable
             view: 'emails.repair-details',
             with: [
                 'repair' => $this->repair,
+                'shop' => $this->shopDetails, // Pass shop details to the view
             ]
         );
     }

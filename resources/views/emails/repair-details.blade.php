@@ -174,6 +174,51 @@
             margin: 30px 0;
             border-left: 4px solid #667eea;
         }
+        .shop-section {
+            background: #f0f7ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid #4facfe;
+        }
+        .shop-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .shop-title svg {
+            margin-right: 10px;
+        }
+        .shop-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .shop-detail {
+            display: flex;
+            align-items: flex-start;
+        }
+        .shop-detail-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            margin-top: 2px;
+            opacity: 0.7;
+        }
+        .shop-detail-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+        .shop-detail-value {
+            color: #2d3748;
+            font-weight: 500;
+            font-size: 14px;
+        }
         .footer {
             background: #f7fafc;
             padding: 25px 30px;
@@ -189,6 +234,13 @@
             margin-top: 15px;
             font-size: 13px;
             color: #a0aec0;
+        }
+        .powered-by {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #cbd5e0;
+            font-size: 12px;
+            color: #718096;
         }
         @media (max-width: 600px) {
             .email-wrapper {
@@ -207,6 +259,9 @@
             .detail-label {
                 min-width: auto;
                 margin-bottom: 5px;
+            }
+            .shop-details {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -279,14 +334,57 @@
                     </div>
                 </div>
                 
-                <div class="info-section">
-                    <p><strong>📱 What happens next?</strong></p>
-                    <p>Our technicians will assess your device and provide updates on the repair progress. You'll receive notifications at each stage, and we'll contact you as soon as your device is ready for collection.</p>
+                <!-- Shop Details Section -->
+                <div class="shop-section">
+                    <div class="shop-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 21H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 7V9C3 9.79565 3.31607 10.5587 3.87868 11.1213C4.44129 11.6839 5.20435 12 6 12C6.79565 12 7.55871 11.6839 8.12132 11.1213C8.68393 10.5587 9 9.79565 9 9V7M3 7H21M3 7L5 3H19L21 7M9 7V9C9 9.79565 9.31607 10.5587 9.87868 11.1213C10.4413 11.6839 11.2044 12 12 12C12.7956 12 13.5587 11.6839 14.1213 11.1213C14.6839 10.5587 15 9.79565 15 9V7M9 7H15M15 7V9C15 9.79565 15.3161 10.5587 15.8787 11.1213C16.4413 11.6839 17.2044 12 18 12C18.7956 12 19.5587 11.6839 20.1213 11.1213C20.6839 10.5587 21 9.79565 21 9V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5 20V10.85M19 20V10.85" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Shop Details
+                    </div>
+                    <div class="shop-details">
+                        <div class="shop-detail">
+                            <svg class="shop-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/>
+                            </svg>
+                            <div>
+                                <div class="shop-detail-label">Address</div>
+                                <div class="shop-detail-value">{{ $shop->address ?? '123 Repair Street, Colombo, Sri Lanka' }}</div>
+                            </div>
+                        </div>
+                        <div class="shop-detail">
+                            <svg class="shop-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/>
+                            </svg>
+                            <div>
+                                <div class="shop-detail-label">Phone</div>
+                                <div class="shop-detail-value">{{ $shop->hotline ?? '+94 76 564 5303' }}</div>
+                            </div>
+                        </div>
+                        <div class="shop-detail">
+                            <svg class="shop-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/>
+                            </svg>
+                            <div>
+                                <div class="shop-detail-label">Email</div>
+                                <div class="shop-detail-value">{{ $shop->email ?? 'support@ceylongit.com' }}</div>
+                            </div>
+                        </div>
+                        <div class="shop-detail">
+                            <svg class="shop-detail-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,6A6,6 0 0,1 18,12C18,14.22 16.79,16.16 15,17.2V19A1,1 0 0,1 14,20H10A1,1 0 0,1 9,19V17.2C7.21,16.16 6,14.22 6,12A6,6 0 0,1 12,6M14,21V22A1,1 0 0,1 13,23H11A1,1 0 0,1 10,22V21H14M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12Z"/>
+                            </svg>
+                            <!-- <div>
+                                <div class="shop-detail-label">Working Hours</div>
+                                <div class="shop-detail-value">{{ $shop->working_hours ?? 'Mon-Sat: 9:00 AM - 6:00 PM' }}</div>
+                            </div> -->
+                        </div>
+                    </div>
                 </div>
                 
-                <p style="margin-top: 30px; color: #4a5568;">
-                    <strong>💡 Pro tip:</strong> Save your tracking ID <strong>{{ $repair->customer_number }}</strong> for quick reference when contacting us.
-                </p>
+                
             </div>
             
             <div class="footer">
@@ -294,6 +392,9 @@
                 <p>Contact our support team with your tracking ID for instant assistance.</p>
                 <div class="contact-info">
                     This is an automated message • Please keep this email for your records
+                </div>
+                <div class="powered-by">
+                    Powered by CeylonGIT - 076 564 5303
                 </div>
             </div>
         </div>

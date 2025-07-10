@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2025 at 11:53 AM
+-- Generation Time: Jul 10, 2025 at 04:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -126,6 +126,13 @@ CREATE TABLE `complete_shop_repairs` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `complete_shop_repairs`
+--
+
+INSERT INTO `complete_shop_repairs` (`id`, `repair_item_id`, `shop_id`, `user_id`, `final_price`, `notes`, `status`, `created_at`, `updated_at`) VALUES
+(2, 3, 2, 3, 1500.00, 'gtrhr', 'completed', '2025-07-10 11:42:43', '2025-07-10 11:42:43');
+
 -- --------------------------------------------------------
 
 --
@@ -148,8 +155,9 @@ CREATE TABLE `counters` (
 INSERT INTO `counters` (`id`, `user_id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (2, 3, 'customer_number', 1, '2025-07-03 08:14:12', '2025-07-03 08:14:12'),
 (3, 3, 'customer_number_3', 1, '2025-07-04 07:12:47', '2025-07-04 07:12:47'),
-(4, 3, 'customer_number_user_3', 22, '2025-07-04 07:14:41', '2025-07-10 08:13:30'),
-(11, 31, 'customer_number_user_31', 1, '2025-07-07 08:17:19', '2025-07-07 08:17:19');
+(4, 3, 'customer_number_user_3', 31, '2025-07-04 07:14:41', '2025-07-10 14:02:22'),
+(11, 31, 'customer_number_user_31', 1, '2025-07-07 08:17:19', '2025-07-07 08:17:19'),
+(12, 32, 'customer_number_user_32', 1, '2025-07-10 13:30:52', '2025-07-10 13:30:52');
 
 -- --------------------------------------------------------
 
@@ -377,7 +385,10 @@ CREATE TABLE `laptop_repairs` (
 
 INSERT INTO `laptop_repairs` (`id`, `customer_name`, `contact`, `email`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `status`, `images`, `customer_number`, `created_at`, `updated_at`, `note_number`, `user_id`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
 (74, 'Kavindu Nelshan', '0765645303', NULL, '2025-07-07', 'kjjj', 'asus', NULL, '234765889995t5t', 'pending', '[\"repairs\\/6q5omVYPQLUs0HydVIP2SxeUxJPjO7IGNXjXGrF9.jpg\"]', 'XX-31-0001', '2025-07-07 08:17:19', '2025-07-07 08:17:19', '425', 31, NULL, 0, 0, 0, 0, 0, 0),
-(91, 'Kavindu Nelshan', '0765645303', 'www.kavi1999maxnelshan@gmail.com', '2025-07-10', 'iti67i', 'asus', NULL, 'yeryeu46u6', 'pending', '[\"repairs\\/Km5IE9dJrEEhr60tw4L4jrGbnj4l0a3SZT2QoZ40.jpg\"]', 'CE-3-0022', '2025-07-10 08:13:30', '2025-07-10 08:58:35', '471', 3, '16GB', 1, 1, 1, 1, 1, 1);
+(97, 'Kavindu Nelshan', '0765645303', 'www.kavi1999maxnelshan@gmail.com', '2025-07-10', 'no power', 'asus', NULL, 'yeryeu46u68t', 'pending', NULL, 'CE-3-0028', '2025-07-10 13:15:48', '2025-07-10 13:15:48', '475', 3, NULL, 0, 0, 1, 0, 0, 0),
+(98, 'Kavindu Nelshan', '0765645303', 'jayathissa1999max@gmail.com', '2025-07-10', 'no power', 'asushhg', NULL, 'yeryeu46u68tyhh', 'pending', NULL, 'XX-32-0001', '2025-07-10 13:30:52', '2025-07-10 13:30:52', '500', 32, NULL, 0, 0, 0, 0, 0, 0),
+(99, 'Kavindu Nelshan', '0765645303', 'www.kavi1999maxnelshan@gmail.com', '2025-07-10', 'no power', 'asusyy', NULL, 'yeryeu46u6yyFG', 'pending', NULL, 'CE-3-0029', '2025-07-10 13:49:46', '2025-07-10 13:49:46', '486', 3, NULL, 0, 1, 1, 0, 0, 0),
+(101, 'Kavindu Nelshan', '0765645303', 'www.kavi1999maxnelshan@gmail.com', '2025-07-10', 'no power', 'asusyyddd', NULL, 'yeryeu46u6yyFGfdfuuttdd', 'pending', NULL, 'CE-3-0031', '2025-07-10 14:02:22', '2025-07-10 14:02:22', '510', 3, NULL, 1, 1, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -457,7 +468,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (62, '2025_07_10_102706_add_specs_to_repair_items_table', 54),
 (63, '2025_07_10_110958_create_complete_shop_repairs_table', 55),
 (64, '2025_07_10_133057_add_specs_fields_to_laptop_repairs_table', 56),
-(65, '2025_07_10_133509_add_specs_fields_to_completed_repairs_table', 57);
+(65, '2025_07_10_133509_add_specs_fields_to_completed_repairs_table', 57),
+(66, '2025_07_10_173115_add_smtp_fields_to_users_table', 58);
 
 -- --------------------------------------------------------
 
@@ -581,7 +593,7 @@ CREATE TABLE `repair_items` (
 --
 
 INSERT INTO `repair_items` (`id`, `item_number`, `shop_id`, `item_name`, `price`, `description`, `serial_number`, `date`, `status`, `created_at`, `updated_at`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
-(3, 'ST-2-0001', 2, 'laptop', 11111.00, '45y54', '4erggt3rt', '2025-07-10', 'in_progress', '2025-07-10 05:07:35', '2025-07-10 06:04:54', '8GB', 1, 1, 1, 1, 1, 1),
+(3, 'ST-2-0001', 2, 'laptop', 11111.00, '45y54', '4erggt3rt', '2025-07-10', 'completed', '2025-07-10 05:07:35', '2025-07-10 11:42:43', '8GB', 1, 1, 1, 1, 1, 1),
 (4, 'ST-2-0002', 2, 'laptop', 1111.00, 'vmh', '4erggt3rtrete', '2025-07-10', 'completed', '2025-07-10 05:11:43', '2025-07-10 05:55:03', NULL, 0, 1, 0, 0, 1, 0),
 (7, 'ST-2-0003', 2, 'laptop', 345.00, 'egw4g', 'feg', '2025-07-10', 'pending', '2025-07-10 09:21:56', '2025-07-10 09:21:56', '12GB', 1, 0, 0, 0, 1, 0);
 
@@ -605,7 +617,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('ORmUufPBuCysfNN4NYUVZ3U3lUBZyBS02528nGA7', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoic29YM1owNlJpZks1dWpaN09OQUVUWWRJeE9KQ2ZqZGdId1p3QURsOCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NTI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL3Nob3BfbmFtZXMvMi9yZXBhaXItaXRlbXMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1752140728);
+('Jx46piQedraMR2rIYQKmH9z7rD9u4emqBMRqlF1I', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoic29YM1owNlJpZks1dWpaN09OQUVUWWRJeE9KQ2ZqZGdId1p3QURsOCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL3VzZXIvZW1haWwtc2V0dGluZ3MiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1752156291);
 
 -- --------------------------------------------------------
 
@@ -730,18 +742,23 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `verification_token` varchar(255) DEFAULT NULL
+  `verification_token` varchar(255) DEFAULT NULL,
+  `smtp_host` varchar(255) DEFAULT NULL,
+  `smtp_port` int(11) DEFAULT NULL,
+  `smtp_encryption` varchar(255) DEFAULT NULL,
+  `email_username` varchar(255) DEFAULT NULL,
+  `email_password` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `remember_token`, `created_at`, `updated_at`, `email_verified_at`, `verification_token`) VALUES
-(3, 'Admin User', 'admin@celaptop.com', '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-03 15:52:16', NULL, NULL),
-(5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21', NULL, NULL),
-(31, 'Kavindu Nelshan', 'www.kavi1999maxnelshan@gmail.com', '$2y$12$sxwrffpy6HqYmpuCMqXGxukhgrptM2tpXcbT70FhQrB2BQHiGwK52', 'user', 1, NULL, '2025-07-07 07:18:17', '2025-07-07 07:19:05', NULL, NULL),
-(32, 'kavindu nelshan', 'test3@gmail.com', '$2y$12$xo08Mm5.hngQBufYFTnn9.ZBwE1xhc9ST.9/Q3Z8g/1PA5o7LpxDa', 'user', 1, NULL, '2025-07-10 08:29:15', '2025-07-10 08:29:15', NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `remember_token`, `created_at`, `updated_at`, `email_verified_at`, `verification_token`, `smtp_host`, `smtp_port`, `smtp_encryption`, `email_username`, `email_password`) VALUES
+(3, 'Admin User', 'admin@celaptop.com', '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '2025-06-28 07:53:09', '2025-07-10 12:32:31', NULL, NULL, 'smtp.gmail.com', 587, 'tls', 'jayathissa1999max@gmail.com', 'eyJpdiI6IjVwMC9SdnZoT0MzVWVobnNrZGdsbXc9PSIsInZhbHVlIjoiaC96ZVkrU3BpcUF2UVNPZndmaTdLWlJKTEt5cmhmZjh5aHJwV09rRUkwZz0iLCJtYWMiOiIyMzc1YjgyYTJkMTY4ZDExNThlYzRlY2FlZjBlMWExZTAzYzdjNjRhMTU0NGQ3M2NiMmM2ZTQ0Mjk2NTgyMTg4IiwidGFnIjoiIn0='),
+(5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(31, 'Kavindu Nelshan', 'www.kavi1999maxnelshan@gmail.com', '$2y$12$sxwrffpy6HqYmpuCMqXGxukhgrptM2tpXcbT70FhQrB2BQHiGwK52', 'user', 1, NULL, '2025-07-07 07:18:17', '2025-07-07 07:19:05', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(32, 'kavindu nelshan', 'test3@gmail.com', '$2y$12$xo08Mm5.hngQBufYFTnn9.ZBwE1xhc9ST.9/Q3Z8g/1PA5o7LpxDa', 'user', 1, NULL, '2025-07-10 08:29:15', '2025-07-10 13:26:07', NULL, NULL, 'smtp.gmail.com', 587, 'tls', 'www.kavi1999maxnelshan@gmail.com', 'eyJpdiI6IkF0L000WllRdk1NWWcrb0pPRVBMTXc9PSIsInZhbHVlIjoiMjdjcXF6QmpzczZtaUZPTXpnWndlblBNVUtwOWpTTFhoYnpzZGJBRit5Zz0iLCJtYWMiOiI5YTRmNjkxMjg0NTQ5MjFjZDhkMDYxZTYyNzFkN2UzYTlmMmU0MTE5ODY3NDRkNWMxMGU0N2FmMDU2MTgxYTRmIiwidGFnIjoiIn0=');
 
 -- --------------------------------------------------------
 
@@ -984,13 +1001,13 @@ ALTER TABLE `completed_repairs`
 -- AUTO_INCREMENT for table `complete_shop_repairs`
 --
 ALTER TABLE `complete_shop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `counters`
 --
 ALTER TABLE `counters`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1038,13 +1055,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `laptop_repairs`
 --
 ALTER TABLE `laptop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `my_shop_details`

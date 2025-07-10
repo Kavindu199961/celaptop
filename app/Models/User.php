@@ -60,5 +60,11 @@ class User extends Authenticatable
     return $this->hasOne(UserEmailSetting::class);
 }
 
+// In your User model
+public function myShopDetails()
+{
+    return $this->hasOne(MyShopDetail::class);
+}
+
 
 }
