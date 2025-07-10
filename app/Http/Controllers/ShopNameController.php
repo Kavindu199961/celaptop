@@ -1,0 +1,323 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\CompleteShopRepair;
+use App\Models\RepairItem;
+use App\Models\ShopNames;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+
+
+class ShopNameController extends Controller
+{
+   public function index()
+    {
+        $search = request('search');
+        $userId = Auth::id();
+
+        $shops = ShopNames::where('user_id', $userId)
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('user.shop_names.index', compact('shops'));
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'contact' => 'nullable|string|max:255',
+                'address' => 'nullable|string',
+            ]);
+
+            $validated['user_id'] = Auth::id();
+
+            ShopNames::create($validated);
+
+            return redirect()->route('user.shop_names.index')
+                ->with('success', 'Shop created successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput()
+                ->with('error', 'Validation failed. Please check the form fields.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An error occurred. Please try again.');
+        }
+    }
+
+    public function edit($id)
+    {
+        $shop = ShopNames::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        if (request()->ajax()) {
+            return response()->json($shop);
+        }
+
+        return view('user.shop_names.edit', compact('shop'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $shop = ShopNames::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'contact' => 'nullable|string|max:255',
+                'address' => 'nullable|string',
+            ]);
+
+            $shop->update($validated);
+
+            return redirect()->route('user.shop_names.index')
+                ->with('success', 'Shop updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An error occurred while updating the shop: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $shop = ShopNames::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+            $shopName = $shop->name;
+            $shop->delete();
+
+            return redirect()->route('user.shop_names.index')
+                ->with('success', 'Shop (' . $shopName . ') deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('user.shop_names.index')
+                ->with('error', 'Failed to delete shop: ' . $e->getMessage());
+        }
+    }
+
+   public function storeRepairItems(Request $request, $shopId)
+{
+    // Begin database transaction
+    DB::beginTransaction();
+
+    try {
+        // Validate the shop exists and belongs to the user
+        $shop = ShopNames::where('id', $shopId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Validate request data
+        $validated = $request->validate([
+            'repair_items' => 'required|array|min:1',
+            'repair_items.*.item_name' => 'required|string|max:255',
+            'repair_items.*.ram' => 'nullable|in:4GB,8GB,12GB,16GB,32GB,64GB',
+            'repair_items.*.hdd' => 'nullable|boolean',
+            'repair_items.*.ssd' => 'nullable|boolean',
+            'repair_items.*.nvme' => 'nullable|boolean',
+            'repair_items.*.battery' => 'nullable|boolean',
+            'repair_items.*.dvd_rom' => 'nullable|boolean',
+            'repair_items.*.keyboard' => 'nullable|boolean',
+            'repair_items.*.price' => 'nullable|numeric|min:0',
+            'repair_items.*.description' => 'nullable|string',
+            'repair_items.*.serial_number' => 'nullable|string|max:255',
+            'repair_items.*.date' => 'required|date',
+            'repair_items.*.status' => 'required|in:pending,in_progress,completed,canceled',
+        ]);
+
+        $createdItems = [];
+        
+        foreach ($request->repair_items as $itemData) {
+            // Add shop_id to each item
+            $itemData['shop_id'] = $shop->id;
+            
+            // Create repair item (the item_number will be auto-generated by the model)
+            $repairItem = RepairItem::create($itemData);
+            $createdItems[] = $repairItem;
+            
+            // Log creation for debugging
+            \Log::info('Created repair item', [
+                'item_number' => $repairItem->item_number,
+                'shop_id' => $shop->id,
+                'data' => $itemData
+            ]);
+        }
+
+        // Commit transaction if all items created successfully
+        DB::commit();
+
+        return redirect()->route('user.shop_names.index')
+            ->with('success', count($createdItems) . ' repair items added successfully with numbers: ' . 
+                   collect($createdItems)->pluck('item_number')->implode(', '));
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->withErrors($e->validator)
+            ->withInput();
+            
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->with('error', 'Shop not found or you don\'t have permission.')
+            ->withInput();
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error storing repair items: ' . $e->getMessage());
+        return redirect()->back()
+            ->with('error', 'Failed to save repair items: ' . $e->getMessage())
+            ->withInput();
+    }
+}
+    public function showRepairItems($shopId)
+{
+    $shop = ShopNames::where('id', $shopId)
+        ->where('user_id', Auth::id())
+        ->firstOrFail();
+
+    $repairItems = RepairItem::where('shop_id', $shop->id)
+        ->where('status', '!=', 'completed')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    $completedRepairs = CompleteShopRepair::with('repairItem')
+        ->where('shop_id', $shop->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('user.shop_names.repair_items', compact('shop', 'repairItems', 'completedRepairs'));
+}
+
+public function storeRepairItemsshowpage(Request $request, $shopId)
+{
+    // Begin database transaction
+    DB::beginTransaction();
+
+    try {
+        // Validate the shop exists and belongs to the user
+        $shop = ShopNames::where('id', $shopId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Validate request data
+        $validated = $request->validate([
+            'repair_items' => 'required|array|min:1',
+            'repair_items.*.item_name' => 'required|string|max:255',
+            'repair_items.*.ram' => 'nullable|in:4GB,8GB,12GB,16GB,32GB,64GB',
+            'repair_items.*.hdd' => 'nullable|boolean',
+            'repair_items.*.ssd' => 'nullable|boolean',
+            'repair_items.*.nvme' => 'nullable|boolean',
+            'repair_items.*.battery' => 'nullable|boolean',
+            'repair_items.*.dvd_rom' => 'nullable|boolean',
+            'repair_items.*.keyboard' => 'nullable|boolean',
+            'repair_items.*.price' => 'nullable|numeric|min:0',
+            'repair_items.*.description' => 'nullable|string',
+            'repair_items.*.serial_number' => 'nullable|string|max:255',
+            'repair_items.*.date' => 'required|date',
+            'repair_items.*.status' => 'required|in:pending,in_progress,completed,canceled',
+        ]);
+
+        $createdItems = [];
+        
+        foreach ($request->repair_items as $itemData) {
+            // Add shop_id to each item
+            $itemData['shop_id'] = $shop->id;
+            
+            // Create repair item (the item_number will be auto-generated by the model)
+            $repairItem = RepairItem::create($itemData);
+            $createdItems[] = $repairItem;
+            
+            // Log creation for debugging
+            \Log::info('Created repair item', [
+                'item_number' => $repairItem->item_number,
+                'shop_id' => $shop->id,
+                'data' => $itemData
+            ]);
+        }
+
+        // Commit transaction if all items created successfully
+        DB::commit();
+
+        return redirect()->route('user.shop_names.repair_items.index', $shop->id)
+            ->with('success', count($createdItems) . ' repair items added successfully with numbers: ' . 
+                   collect($createdItems)->pluck('item_number')->implode(', '));
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->withErrors($e->validator)
+            ->withInput();
+            
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->with('error', 'Shop not found or you don\'t have permission.')
+            ->withInput();
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error storing repair items: ' . $e->getMessage());
+        return redirect()->back()
+            ->with('error', 'Failed to save repair items: ' . $e->getMessage())
+            ->withInput();
+    }
+}
+
+    public function destroyRepairItem($id)
+    {
+        $repairItem = RepairItem::where('id', $id)
+            ->whereHas('shop', function($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->firstOrFail();
+
+        $repairItem->delete();
+
+        return redirect()->back()
+            ->with('success', 'Repair item deleted successfully');
+    }
+
+  public function updateStatus(Request $request, $repairItem)
+{
+    $request->validate([
+        'status' => 'required|in:pending,in_progress,completed,canceled',
+        'final_price' => 'required_if:status,completed|numeric|min:0',
+        'notes' => 'nullable|string'
+    ]);
+
+    $repairItem = RepairItem::where('id', $repairItem)
+        ->whereHas('shop', function($query) {
+            $query->where('user_id', Auth::id());
+        })
+        ->firstOrFail();
+
+    // Update the repair item status
+    $repairItem->update(['status' => $request->status]);
+
+    // If status is completed, create a completed repair record
+    if ($request->status === 'completed') {
+        CompleteShopRepair::create([
+            'repair_item_id' => $repairItem->id,
+            'shop_id' => $repairItem->shop_id,
+            'user_id' => Auth::id(),
+            'final_price' => $request->final_price,
+            'notes' => $request->notes,
+            'status' => 'completed'
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Status updated successfully'
+    ]);
+}
+
+}

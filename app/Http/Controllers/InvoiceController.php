@@ -96,7 +96,7 @@ public function index()
 {
     $this->authorizeAccess($invoice);
 
-   $user = auth()->user();
+    $user = auth()->user();
     $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
 
     $logoPath = null;
@@ -118,6 +118,9 @@ public function index()
         'logoPath' => $logoPath,
         'shopDetail' => $shopDetail,
     ]);
+
+    // Set the custom paper size (A2 landscape size in points: 595.28 x 421.26)
+    $pdf->setPaper([0, 0, 595.28, 421.26]);
 
     return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
 }

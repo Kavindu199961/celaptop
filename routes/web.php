@@ -15,10 +15,11 @@ use App\Http\Controllers\InvoiceWithStockController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\TotalAmountController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\EmailSettingsController;
+use App\Http\Controllers\ShopNameController;
+use App\Http\Controllers\CompleteShopRepairController;
 
 
-
-// Public routes
 
 Route::get('/', [RepairTrackingController::class, 'index'])->name('web.repair-tracking.index');
 
@@ -40,6 +41,8 @@ Route::prefix('super-admin')->middleware('auth')->group(function () {
     Route::get('/payments', [PaymentController::class, 'index'])->name('super-admin.payments.index');
     Route::post('/payments/{payment}/approve', [PaymentController::class, 'approve'])->name('super-admin.payments.approve');
     Route::post('/payments/{payment}/reject', [PaymentController::class, 'reject'])->name('super-admin.payments.reject');
+
+
 
 });
 // Auth routes (including password reset)
@@ -125,6 +128,33 @@ Route::prefix('shop')->name('shop.')->group(function () {
      Route::get('/{shop}', [ShopController::class, 'show'])->name('show');
 });
 
+Route::prefix('shop_names')->name('shop_names.')->group(function () {
+    Route::get('/', [ShopNameController::class, 'index'])->name('index');
+    Route::post('/', [ShopNameController::class, 'store'])->name('store');
+    
+    // Add this before parameterized routes
+    Route::post('/repairitemstore/{shop}', [ShopNameController::class, 'storeRepairItems'])->name('repair_items.store');
+    Route::post('/repairitemstoreshow/{shop}', [ShopNameController::class, 'storeRepairItemsshowpage'])->name('repair_items.showpage.store');
+    Route::get('/{shop}/repair-items', [ShopNameController::class, 'showRepairItems'])->name('repair_items.index');
+    Route::delete('/repair-items/{repairItem}', [ShopNameController::class, 'destroyRepairItem'])->name('repair_items.destroy');
+    Route::put('/repair-items/{repairItem}/status', [ShopNameController::class, 'updateStatus'])->name('repair_items.update_status');
+    
+    // Keep these after
+    Route::get('/{shop}/edit', [ShopNameController::class, 'edit'])->name('edit');
+    Route::put('/{shop}', [ShopNameController::class, 'update'])->name('update');
+    Route::delete('/{shop}', [ShopNameController::class, 'destroy'])->name('destroy');
+    Route::get('/{shop}', [ShopNameController::class, 'show'])->name('show');
+});
+
+Route::prefix('shop_completed_repair')->name('shop_completed_repair.')->group(function () {
+        Route::get('/', [CompleteShopRepairController::class, 'index'])->name('index');
+        Route::get('/{repair}/edit', [CompleteShopRepairController::class, 'edit'])->name('edit');
+        Route::put('/{repair}', [CompleteShopRepairController::class, 'update'])->name('update');
+        Route::delete('/{repair}', [CompleteShopRepairController::class, 'destroy'])->name('destroy');
+    });
+
+
+
 Route::prefix('myshop')->name('myshop.')->group(function () {
     Route::get('/', [MyShopController::class, 'index'])->name('index');
     Route::post('/', [MyShopController::class, 'store'])->name('store');
@@ -145,6 +175,11 @@ Route::prefix('cashier')->name('cashier.')->group(function () {
     Route::delete('/{id}', [CashierController::class, 'destroy'])->name('destroy');
 
 });
+
+ Route::prefix('email-settings')->name('email-settings.')->group(function() {
+        Route::get('/', [EmailSettingsController::class, 'index'])->name('index');
+        Route::post('/update', [EmailSettingsController::class, 'update'])->name('update');
+    });
 
 Route::get('/total-amount', [TotalAmountController::class, 'index'])->name('total_amount.index');
 

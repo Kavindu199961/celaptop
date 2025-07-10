@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MyShopDetail;
 use App\Models\Counter;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RepairDetailsMail;
 
 class LaptopRepairController extends Controller
 {
@@ -66,45 +68,43 @@ protected function generateCustomerNumber()
 }
 
    
-    public function store(Request $request)
+// Fixed store function
+public function store(Request $request)
 {
     try {
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'contact' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
             'device' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
             'fault' => 'required|string',
             'repair_price' => 'nullable|numeric|min:0',
             'date' => 'required|date',
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'note_number' => 'required|string|max:255|unique:laptop_repairs,note_number',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'ram' => 'nullable|in:4GB,8GB,12GB,16GB,32GB,64GB',
+            'hdd' => 'nullable|boolean',
+            'ssd' => 'nullable|boolean',
+            'nvme' => 'nullable|boolean',
+            'battery' => 'nullable|boolean',
+            'dvd_rom' => 'nullable|boolean',
+            'keyboard' => 'nullable|boolean',
         ]);
 
-        // Set default status
         $validated['status'] = $validated['status'] ?? 'pending';
-        
-        // Associate with authenticated user
         $validated['user_id'] = Auth::id();
-
-        // Generate customer number
         $validated['customer_number'] = $this->generateCustomerNumber();
 
-        // Handle note counter in a transaction to prevent race conditions
-        DB::transaction(function () use (&$validated) {
-            $noteCounter = NoteCounter::firstOrCreate(
-                ['user_id' => Auth::id()],
-                ['last_number' => 0]
-            );
-            
-            // Increment and get the new number atomically
-            $newNumber = $noteCounter->last_number + 1;
-            $noteCounter->last_number = $newNumber;
-            $noteCounter->save();
-            
-            $validated['note_number'] = $newNumber;
-        });
+        // Handle boolean fields (convert checkboxes to proper boolean values)
+        $validated['hdd'] = $request->has('hdd');
+        $validated['ssd'] = $request->has('ssd');
+        $validated['nvme'] = $request->has('nvme');
+        $validated['battery'] = $request->has('battery');
+        $validated['dvd_rom'] = $request->has('dvd_rom');
+        $validated['keyboard'] = $request->has('keyboard');
 
         // Handle image uploads
         if ($request->hasFile('images')) {
@@ -120,29 +120,49 @@ protected function generateCustomerNumber()
             }
         }
 
-        // Create the repair record
         $repair = LaptopRepair::create($validated);
 
+        // Send email if email was provided
+        if (!empty($validated['email'])) {
+            try {
+                \Log::info('Attempting to send email to: ' . $validated['email']);
+                
+                Mail::to($validated['email'])
+                    ->send(new RepairDetailsMail($repair));
+                
+                \Log::info('Email sent successfully to: ' . $validated['email']);
+                
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Repair record created and email sent successfully',
+                        'note_number' => $repair->note_number
+                    ]);
+                }
+            } catch (\Exception $emailException) {
+                \Log::error('Email sending failed: ' . $emailException->getMessage());
+                \Log::error('Email error trace: ' . $emailException->getTraceAsString());
+                
+                session()->flash('warning', 'Repair record created but email could not be sent: ' . $emailException->getMessage());
+            }
+        }
 
         return redirect()->route('user.laptop-repair.index')
-        ->with('success', 'Repair record created successfully. Note Number: ' . $repair->note_number);
-   
+            ->with('success', 'Repair record created successfully. Note Number: ' . $repair->note_number);
 
     } catch (\Illuminate\Validation\ValidationException $e) {
         return redirect()->back()
-                         ->withErrors($e->validator)
-                         ->withInput()
-                         ->with('error', 'Validation failed. Please check the form fields.');
+            ->withErrors($e->validator)
+            ->withInput()
+            ->with('error', 'Validation failed. Please check the form fields.');
     } catch (\Exception $e) {
-        // Log the actual error for debugging
         \Log::error('Repair creation error: ' . $e->getMessage());
-        
+
         return redirect()->back()
-                         ->withInput()
-                         ->with('error', 'An error occurred: ' . $e->getMessage());
+            ->withInput()
+            ->with('error', 'An error occurred: ' . $e->getMessage());
     }
 }
-
     /**
      * Display the specified resource.
      */
@@ -167,7 +187,7 @@ protected function generateCustomerNumber()
      */
     public function update(Request $request, $id)
     {
-        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
+        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id); 
         
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',

@@ -21,38 +21,41 @@ class LaptopRepair extends Model
         'note_number',
         'status',
         'customer_number',
-        'images', // This will be a JSON field to store multiple image paths
-        'user_id', // Foreign key to the users table
+        'images',
+        'user_id',
+        'email',
+        'ram',
+        'hdd',
+        'ssd',
+        'nvme',
+        'battery',
+        'dvd_rom',
+        'keyboard',
     ];
 
     protected $casts = [
         'date' => 'date',
         'repair_price' => 'decimal:2',
+        'hdd' => 'boolean',
+        'ssd' => 'boolean',
+        'nvme' => 'boolean',
+        'battery' => 'boolean',
+        'dvd_rom' => 'boolean',
+        'keyboard' => 'boolean',
     ];
 
-  
-    /**
-     * Generate unique customer number in 
-     */
-
-
- 
     public function scopeByStatus(Builder $query, string $status)
     {
         return $query->where('status', $status);
     }
 
-    /**
-     * Scope for filtering by date range
-     */
     public function scopeByDateRange(Builder $query, $startDate, $endDate)
     {
         return $query->whereBetween('date', [$startDate, $endDate]);
     }
 
     public function user()
-{
-    return $this->belongsTo(User::class);
-}
-
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -155,9 +155,10 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="createRepairForm" enctype="multipart/form-data"  method="POST" action="{{ route('user.laptop-repair.store') }}">
+            <form id="createRepairForm" enctype="multipart/form-data" method="POST" action="{{ route('user.laptop-repair.store') }}">
                 @csrf
                 <div class="modal-body">
+                    <!-- Customer Information -->
                     <div class="row">
                         <div class="col-md-6">
                             <h5>Customer Information</h5>
@@ -169,7 +170,13 @@
                                 <label for="create_contact">Contact</label>
                                 <input type="text" class="form-control" id="create_contact" name="contact" required>
                             </div>
+                            <div class="form-group">
+                                <label for="create_email">Email (Optional)</label>
+                                <input type="email" class="form-control" id="create_email" name="email" placeholder="Enter customer email for notifications">
+                            </div>
                         </div>
+
+                        <!-- Device Information -->
                         <div class="col-md-6">
                             <h5>Device Information</h5>
                             <div class="form-group">
@@ -182,41 +189,91 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Specifications and Components -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Device Specifications</h5>
+                            <div class="form-group">
+                                <label for="create_ram">RAM</label>
+                                <select class="form-control" id="create_ram" name="ram">
+                                    <option value="">Select RAM</option>
+                                    <option value="4GB">4GB</option>
+                                    <option value="8GB">8GB</option>
+                                    <option value="12GB">12GB</option>
+                                    <option value="16GB">16GB</option>
+                                    <option value="32GB">32GB</option>
+                                    <option value="64GB">64GB</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Storage Options</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="create_hdd" name="hdd" value="1">
+                                    <label class="custom-control-label" for="create_hdd">HDD</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="create_ssd" name="ssd" value="1">
+                                    <label class="custom-control-label" for="create_ssd">SSD</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="create_nvme" name="nvme" value="1">
+                                    <label class="custom-control-label" for="create_nvme">NVMe</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5>Components</h5>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="create_battery" name="battery" value="1">
+                                    <label class="custom-control-label" for="create_battery">Battery</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="create_dvd_rom" name="dvd_rom" value="1">
+                                    <label class="custom-control-label" for="create_dvd_rom">DVD ROM</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="create_keyboard" name="keyboard" value="1">
+                                    <label class="custom-control-label" for="create_keyboard">Keyboard</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fault, Images, Price -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="create_fault">Fault Description</label>
                                 <textarea class="form-control" id="create_fault" name="fault" rows="3" required></textarea>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="create_images">Upload Images (optional)</label>
-                            <input type="file" class="form-control" name="images[]" id="create_images" multiple accept="image/*">
-                            <div id="imagePreviewContainer" class="mt-2 d-flex flex-wrap"></div>
-                        </div>
-
-                        </div>
-
-                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="create_repair_price">Repair Price (Optional)</label>
                                 <input type="number" step="0.01" class="form-control" id="create_repair_price" name="repair_price">
                             </div>
                             <div class="form-group">
                                 <label for="create_note_number">Note Number</label>
-                                <input type="text" class="form-control"  value="{{ $nextNoteNumber }}" disabled>
-                                <input type="hidden" name="note_number" value="">
+                                <input type="text" class="form-control" id="create_note_number" name="note_number" placeholder="Enter Note Number" required>
                             </div>
+                        </div>
 
-
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="create_images">Upload Images (Optional)</label>
+                                <input type="file" class="form-control" name="images[]" id="create_images" multiple accept="image/*">
+                                <div id="imagePreviewContainer" class="mt-2 d-flex flex-wrap"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="create_date">Date</label>
+                                <input type="date" class="form-control" id="create_date" name="date" required value="{{ date('Y-m-d') }}">
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="create_date">Date</label>
-                        <input type="date" class="form-control" id="create_date" name="date" required value="{{ date('Y-m-d') }}">
-                    </div>
                 </div>
+
+                <!-- Footer -->
                 <div class="modal-footer bg-whitesmoke br">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save Repair</button>
@@ -225,6 +282,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteRepairModal" tabindex="-1" role="dialog" aria-labelledby="deleteRepairModalLabel" aria-hidden="true">

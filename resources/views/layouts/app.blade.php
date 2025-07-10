@@ -166,11 +166,24 @@
 
             
 
-            <li class="dropdown {{ request()->is('user/shop*') ? 'active' : '' }}">
-              <a href="{{ route('user.shop.index') }}" class="nav-link">
-                <i class="fas fa-store"></i><span>Shop Details</span>
+            <li class="dropdown {{ request()->is('user/shop_names*') ? 'active' : '' }}">
+              <a href="{{ route('user.shop_names.index') }}" class="nav-link">
+                <i class="fas fa-store"></i><span>Shop Repair Details</span>
               </a>
             </li>
+
+            <li class="dropdown {{ request()->is('user/shop_completed_repair*') ? 'active' : '' }}">
+              <a href="{{ route('user.shop_completed_repair.index') }}" class="nav-link">
+                <i class="fas fa-check-double"></i><span>Completed Shop Repairs</span>
+              </a>
+
+            
+
+            <!-- <li class="dropdown {{ request()->is('user/email-settings*') ? 'active' : '' }}">
+              <a href="{{ route('user.email-settings.index') }}" class="nav-link">
+                <i class="fas fa-envelope"></i></i><span>Email Setting</span>
+              </a>
+            </li> -->
 
             <!-- <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
               <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">

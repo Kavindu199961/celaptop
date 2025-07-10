@@ -34,7 +34,8 @@ class CompletedRepair extends Model
         'status',
         'completed_at',
         'images', // This will be a JSON field to store multiple image paths
-        'user_id' // Assuming you want to track which user completed the repair
+        'user_id', // Assuming you want to track which user completed the repair
+        'email',
     ];
 
 

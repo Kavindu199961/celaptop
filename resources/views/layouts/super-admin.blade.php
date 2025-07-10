@@ -67,7 +67,11 @@
               </a>
             </li>
 
-            
+            <li class="dropdown {{ request()->is('user/email-settings*') ? 'active' : '' }}">
+              <a href="{{ route('user.email-settings.index') }}" class="nav-link">
+                <i class="fas fa-envelope"></i></i><span>Email Setting</span>
+              </a>
+            </li>
 
             </li>
 

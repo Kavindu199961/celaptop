@@ -601,9 +601,9 @@
                         </button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn register-btn"   data-bs-toggle="modal" data-bs-target="#registerModal">
+                        <!-- <button class="btn register-btn"   data-bs-toggle="modal" data-bs-target="#registerModal">
                             <i class="fas fa-store me-2"></i>Do you have a repair shop?
-                       </button>
+                       </button> -->
                     </li>
                 </ul>
             </div>
@@ -822,16 +822,16 @@
                     Sign In
                     </button>
                     
-                    <div class="d-flex align-items-center my-3">
+                    <!-- <div class="d-flex align-items-center my-3">
                         <hr class="flex-grow-1">
                         <span class="mx-2 text-muted">or</span>
                         <hr class="flex-grow-1">
-                    </div>
+                    </div> -->
                     
                     <div class="text-center">
-                        <p class="mb-0">Don't have an account? 
+                        <!-- <p class="mb-0">Don't have an account? 
                             <a href="{{ route('register') }}" class="text-decoration-none fw-bold text-primary">Sign up</a>
-                        </p>
+                        </p> -->
                     </div>
                 </form>
             </div>

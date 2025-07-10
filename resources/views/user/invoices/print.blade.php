@@ -5,7 +5,7 @@
     <title>Invoice #{{ $invoice->invoice_number }}</title>
     <style>
         @page {
-            size: A5 landscape; /* Half A4 size (210mm x 148.5mm) */
+            size: 210mm 148.5mm; /* Half A4 size (210mm x 148.5mm) */
             margin: 0;
         }
 

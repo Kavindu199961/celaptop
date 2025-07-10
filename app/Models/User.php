@@ -49,5 +49,10 @@ class User extends Authenticatable
         return $this->is_active;
     }
 
+    public function emailSetting()
+{
+    return $this->hasOne(UserEmailSetting::class);
+}
+
 
 }

@@ -112,7 +112,7 @@ class InvoiceWithStockController extends Controller
         return view('user.invoices_with_stock.show', compact('invoiceWithStock'));
     }
 
-    public function download(InvoiceWithStock $invoiceWithStock)
+   public function download(InvoiceWithStock $invoiceWithStock)
 {
     $this->authorizeAccess($invoiceWithStock);
 
@@ -133,12 +133,15 @@ class InvoiceWithStockController extends Controller
         : 'user.invoices_with_stock.pdf';
 
     $pdf = PDF::loadView($viewName, [
-        'invoiceWithStock' => $invoiceWithStock, // Changed from 'invoice' to 'invoiceWithStock'
+        'invoiceWithStock' => $invoiceWithStock,
         'logoPath' => $logoPath,
         'shopDetail' => $shopDetail,
     ]);
 
-    return $pdf->download( $invoiceWithStock->invoice_number . '.pdf');
+    // Set custom paper size (A2 landscape: 595.28 x 421.26 points)
+    $pdf->setPaper([0, 0, 595.28, 421.26]);
+
+    return $pdf->download($invoiceWithStock->invoice_number . '.pdf');
 }
 
     public function print(InvoiceWithStock $invoiceWithStock)
