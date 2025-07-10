@@ -191,40 +191,112 @@ public function store(Request $request, UserMailService $mailService)
         return view('user.laptop-repair.show', compact('repair'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
-        return view('user.laptop-repair.edit', compact('repair'));
-    }
+   
+   public function edit($id)
+{
+   
+    $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id);
+    // Convert images JSON to array if it exists
+    $repair->images = $repair->images ? json_decode($repair->images, true) : [];
+    
+    return response()->json($repair);
+}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $repair = LaptopRepair::where('user_id', Auth::id())->findOrFail($id); 
-        
+public function update(Request $request, $id)
+{
+    try {
+        $repair = LaptopRepair::findOrFail($id);
+
+        // Validate request data
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'contact' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
             'device' => 'required|string|max:255',
-            'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number,' . $id,
+            'serial_number' => 'nullable|string|max:255',
             'fault' => 'required|string',
-            'repair_price' => 'required|numeric|min:0',
-            'note_number' => 'nullable|string|max:255',
+            'repair_price' => 'nullable|numeric|min:0',
             'date' => 'required|date',
-            'status' => 'required|in:pending,in_progress,completed,cancelled'
+            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'note_number' => 'required|string|max:255|unique:laptop_repairs,note_number,'.$repair->id,
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'ram' => 'nullable|in:4GB,8GB,12GB,16GB,32GB,64GB',
+            'hdd' => 'nullable|boolean',
+            'ssd' => 'nullable|boolean',
+            'nvme' => 'nullable|boolean',
+            'battery' => 'nullable|boolean',
+            'dvd_rom' => 'nullable|boolean',
+            'keyboard' => 'nullable|boolean',
+            'existing_images' => 'nullable|array',
         ]);
 
+        // Set default status if not provided
+        $validated['status'] = $validated['status'] ?? $repair->status;
+        
+        // Handle boolean fields
+        $validated['hdd'] = $request->has('hdd');
+        $validated['ssd'] = $request->has('ssd');
+        $validated['nvme'] = $request->has('nvme');
+        $validated['battery'] = $request->has('battery');
+        $validated['dvd_rom'] = $request->has('dvd_rom');
+        $validated['keyboard'] = $request->has('keyboard');
+
+        // Handle image uploads
+        $existingImages = $request->input('existing_images', []);
+        $newImagePaths = [];
+        
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if ($image->isValid()) {
+                    $path = $image->store('repairs', 'public');
+                    $newImagePaths[] = $path;
+                }
+            }
+        }
+        
+        // Combine existing and new images
+        $allImages = array_merge($existingImages, $newImagePaths);
+        $validated['images'] = !empty($allImages) ? json_encode($allImages) : null;
+
+        // Update repair record
         $repair->update($validated);
 
-        return redirect()->route('user.laptop-repair.index')
-                         ->with('success', 'Repair record updated successfully.');
-    }
+        // Return JSON response with redirect URL for AJAX requests
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Repair #{$repair->note_number} updated successfully",
+                'redirect_url' => route('user.laptop_repair.index')
+            ]);
+        }
 
+        // Redirect for normal form submissions
+        return redirect()->route('user.laptop-repair.index')
+                         ->with('success', "Repair #{$repair->note_number} updated successfully");
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors occurred',
+                'errors' => $e->validator->errors()
+            ], 422);
+        }
+        return back()->withErrors($e->validator)->withInput();
+
+    } catch (\Exception $e) {
+        \Log::error("Repair update failed: {$e->getMessage()}");
+        
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating repair: ' . $e->getMessage()
+            ], 500);
+        }
+        return back()->with('error', 'Error updating repair: ' . $e->getMessage());
+    }
+}
     /**
      * Update the status of the specified resource.
      */

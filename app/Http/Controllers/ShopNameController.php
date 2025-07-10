@@ -177,6 +177,47 @@ class ShopNameController extends Controller
             ->withInput();
     }
 }
+
+public function updateRepairItem(Request $request, $shopId, RepairItem $repairItem)
+{
+    // Verify the repair item belongs to the user's shop
+    if ($repairItem->shop->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    // Validate request data
+    $validated = $request->validate([
+        'item_name' => 'required|string|max:255',
+        'ram' => 'nullable|in:4GB,8GB,12GB,16GB,32GB,64GB',
+        'hdd' => 'nullable|boolean',
+        'ssd' => 'nullable|boolean',
+        'nvme' => 'nullable|boolean',
+        'battery' => 'nullable|boolean',
+        'dvd_rom' => 'nullable|boolean',
+        'keyboard' => 'nullable|boolean',
+        'price' => 'nullable|numeric|min:0',
+        'description' => 'nullable|string',
+        'serial_number' => 'nullable|string|max:255',
+        'date' => 'required|date',
+        'status' => 'required|in:pending,in_progress,completed,canceled',
+    ]);
+
+    try {
+        // Update the repair item
+        $repairItem->update($validated);
+
+        return response()->json([
+            'message' => 'Repair item updated successfully',
+            'item' => $repairItem
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('Error updating repair item: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Failed to update repair item: ' . $e->getMessage()
+        ], 500);
+    }
+}
     public function showRepairItems($shopId)
 {
     $shop = ShopNames::where('id', $shopId)

@@ -51,7 +51,7 @@
                         <tr>
                             <td>{{ $item->item_number }}</td>
                             <td>{{ $item->item_name }}</td>
-                            <td>{{ $item->serial_number ?? 'N/A' }}</td>
+                            <td>{{ $item->serial_number ?? '--' }}</td>
                             <!-- <td>
                                 @if($item->ram)
                                     <span class="badge bg-info">RAM: {{ $item->ram }}</span>
@@ -66,7 +66,7 @@
                                     <span class="badge bg-success">NVMe</span>
                                 @endif
                             </td> -->
-                            <td>{{ $item->price ? number_format($item->price, 2) : 'N/A' }}</td>
+                            <td>{{ $item->price ? number_format($item->price, 2) : '--' }}</td>
                             <td>{{ $item->date->format('Y-m-d') }}</td>
                             <td>
                                 <select class="form-control status-select" data-id="{{ $item->id }}">
@@ -77,7 +77,12 @@
                                 </select>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-danger delete-repair-item" 
+
+                             <button class="btn btn-sm btn-warning edit-repair-item" 
+                                    data-item="{{ json_encode($item) }}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                                    <button class="btn btn-sm btn-danger delete-repair-item" 
                                         data-id="{{ $item->id }}"
                                         data-number="{{ $item->item_number }}">
                                     <i class="fas fa-trash"></i>
@@ -215,6 +220,164 @@
     </div>
 </div>
 
+<!-- Edit Repair Item Modal -->
+<div class="modal fade" id="editRepairItemModal" tabindex="-1" role="dialog" aria-labelledby="editRepairItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRepairItemModalLabel">Edit Repair Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editRepairItemForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_item_name">Item Name *</label>
+                                <input type="text" class="form-control" id="edit_item_name" name="item_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_serial_number">Serial Number</label>
+                                <input type="text" class="form-control" id="edit_serial_number" name="serial_number">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="edit_price">Price (LKR)</label>
+                                <input type="number" step="0.01" class="form-control" id="edit_price" name="price">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="edit_date">Date *</label>
+                                <input type="date" class="form-control" id="edit_date" name="date" required 
+                                    value="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="edit_status">Status *</label>
+                                <select class="form-control" id="edit_status" name="status" required>
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="canceled">Canceled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hardware Specifications Section -->
+                    <div class="hardware-specs">
+                        <h6><i class="fas fa-microchip"></i> Hardware Specifications</h6>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="edit_ram">RAM</label>
+                                    <select class="form-control" id="edit_ram" name="ram">
+                                        <option value="">Select RAM</option>
+                                        <option value="4GB">4GB</option>
+                                        <option value="8GB">8GB</option>
+                                        <option value="12GB">12GB</option>
+                                        <option value="16GB">16GB</option>
+                                        <option value="32GB">32GB</option>
+                                        <option value="64GB">64GB</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="checkbox-wrapper">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="edit_hdd" name="hdd" value="1">
+                                                <label class="form-check-label" for="edit_hdd">
+                                                    <i class="fas fa-hdd"></i> HDD
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="checkbox-wrapper">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="edit_ssd" name="ssd" value="1">
+                                                <label class="form-check-label" for="edit_ssd">
+                                                    <i class="fas fa-save"></i> SSD
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="checkbox-wrapper">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="edit_nvme" name="nvme" value="1">
+                                                <label class="form-check-label" for="edit_nvme">
+                                                    <i class="fas fa-bolt"></i> NVMe
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="checkbox-wrapper">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="edit_battery" name="battery" value="1">
+                                        <label class="form-check-label" for="edit_battery">
+                                            <i class="fas fa-battery-half"></i> Battery
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox-wrapper">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="edit_dvd_rom" name="dvd_rom" value="1">
+                                        <label class="form-check-label" for="edit_dvd_rom">
+                                            <i class="fas fa-compact-disc"></i> DVD ROM
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkbox-wrapper">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="edit_keyboard" name="keyboard" value="1">
+                                        <label class="form-check-label" for="edit_keyboard">
+                                            <i class="fas fa-keyboard"></i> Keyboard
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mt-3">
+                        <label for="edit_description">Description</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 <style>
     .badge {
@@ -297,7 +460,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="serial_number_${index}">Serial Number</label>
+                            <label for="serial_number_${index}">Serial Number (Optional)</label>
                             <input type="text" class="form-control" id="serial_number_${index}" name="repair_items[${index}][serial_number]">
                         </div>
                     </div>
@@ -305,7 +468,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="price_${index}">Price (LKR)</label>
+                            <label for="price_${index}">Price (LKR) (Optional)</label>
                             <input type="number" step="0.01" class="form-control" id="price_${index}" name="repair_items[${index}][price]">
                         </div>
                     </div>
@@ -486,7 +649,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <p><strong>Serial Number:</strong> ${item.serial_number || 'N/A'}</p>
-                        <p><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(item.status)}">${formatStatus(item.status)}</span></p>
+                        <p><strong>Status:</strong> <span class="badge text-dark ${getStatusBadgeClass(item.status)}">${formatStatus(item.status)}</span></p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Date:</strong> ${formattedDate}</p>
@@ -497,13 +660,13 @@
                 <div class="mb-3">
                     <h6>Hardware Specifications</h6>
                     <div>
-                        ${item.ram ? '<span class="badge bg-info">RAM: ' + item.ram + '</span>' : ''}
-                        ${item.hdd ? '<span class="badge bg-secondary">HDD</span>' : ''}
-                        ${item.ssd ? '<span class="badge bg-primary">SSD</span>' : ''}
-                        ${item.nvme ? '<span class="badge bg-success">NVMe</span>' : ''}
-                        ${item.battery ? '<span class="badge bg-warning">Battery</span>' : ''}
-                        ${item.dvd_rom ? '<span class="badge bg-dark">DVD ROM</span>' : ''}
-                        ${item.keyboard ? '<span class="badge bg-danger">Keyboard</span>' : ''}
+                        ${item.ram ? '<span class="badge bg-info text-dark">RAM: ' + item.ram + '</span>' : ''}
+                        ${item.hdd ? '<span class="badge bg-secondary text-dark">HDD</span>' : ''}
+                        ${item.ssd ? '<span class="badge bg-primary text-dark">SSD</span>' : ''}
+                        ${item.nvme ? '<span class="badge bg-success text-dark">NVMe</span>' : ''}
+                        ${item.battery ? '<span class="badge bg-warning text-dark">Battery</span>' : ''}
+                        ${item.dvd_rom ? '<span class="badge bg-dark text-white">DVD ROM</span>' : ''}
+                        ${item.keyboard ? '<span class="badge bg-danger text-dark">Keyboard</span>' : ''}
                     </div>
                 </div>
                 
@@ -711,6 +874,77 @@
             itemCounter = $('.repair-item').length - 1;
         }
     });
+
+    // Handle Edit Repair Item button click
+// Handle Edit Repair Item button click
+$(document).on('click', '.edit-repair-item', function() {
+    var item = $(this).data('item');
+    var shopId = "{{ $shop->id }}"; // Get the shop ID from the blade template
+    
+    // Set the form action URL with both shopId and repairItem parameters
+    var actionUrl = "{{ route('user.shop_names.repair_items.update', ['shop' => ':shopId', 'repairItem' => ':repairItemId']) }}";
+    actionUrl = actionUrl.replace(':shopId', shopId).replace(':repairItemId', item.id);
+    $('#editRepairItemForm').attr('action', actionUrl);
+    
+    // Rest of your code remains the same...
+    $('#edit_item_name').val(item.item_name);
+    $('#edit_serial_number').val(item.serial_number || '');
+    $('#edit_price').val(item.price || '');
+    $('#edit_date').val(new Date(item.date).toISOString().substr(0, 10));
+    $('#edit_status').val(item.status);
+    $('#edit_description').val(item.description || '');
+    
+    if (item.ram) {
+        $('#edit_ram').val(item.ram);
+    }
+    
+    $('#edit_hdd').prop('checked', item.hdd == 1);
+    $('#edit_ssd').prop('checked', item.ssd == 1);
+    $('#edit_nvme').prop('checked', item.nvme == 1);
+    $('#edit_battery').prop('checked', item.battery == 1);
+    $('#edit_dvd_rom').prop('checked', item.dvd_rom == 1);
+    $('#edit_keyboard').prop('checked', item.keyboard == 1);
+    
+    $('#editRepairItemModal').modal('show');
+});
+
+// Handle Edit form submission
+$('#editRepairItemForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    var form = $(this);
+    var url = form.attr('action');
+    var formData = form.serialize();
+    
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            $('#editRepairItemModal').modal('hide');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: response.message,
+                confirmButtonColor: '#0d6efd'
+            }).then(() => {
+                location.reload(); // Refresh the page to show changes
+            });
+        },
+        error: function(xhr) {
+            var errorMessage = xhr.responseJSON?.message || 'Failed to update repair item';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage,
+                confirmButtonColor: '#0d6efd'
+            });
+        }
+    });
+});
+
 </script>
+
+
 @endpush
 @endsection

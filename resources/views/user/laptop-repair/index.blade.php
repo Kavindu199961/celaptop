@@ -120,6 +120,12 @@
                                 <a href="{{ route('user.laptop-repair.show', $repair->id) }}" class="btn btn-sm btn-info" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
+
+                                <button class="btn btn-sm btn-warning edit-repair" 
+                                        data-id="{{ $repair->id }}"
+                                        title="Edit Repair">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                                 <button class="btn btn-sm btn-danger delete-repair" 
                                         data-id="{{ $repair->id }}"
                                         data-name="{{ $repair->customer_name }}">
@@ -283,6 +289,158 @@
     </div>
 </div>
 
+<!-- Edit Repair Modal -->
+<div class="modal fade" id="editRepairModal" tabindex="-1" role="dialog" aria-labelledby="editRepairModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRepairModalLabel">Edit Laptop Repair</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editRepairForm" enctype="multipart/form-data" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <!-- Customer Information -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <div class="form-group">
+                                <label for="edit_customer_name">Name</label>
+                                <input type="text" class="form-control" id="edit_customer_name" name="customer_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_contact">Contact</label>
+                                <input type="text" class="form-control" id="edit_contact" name="contact" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_email">Email (Optional)</label>
+                                <input type="email" class="form-control" id="edit_email" name="email" placeholder="Enter customer email for notifications">
+                            </div>
+                        </div>
+
+                        <!-- Device Information -->
+                        <div class="col-md-6">
+                            <h5>Device Information</h5>
+                            <div class="form-group">
+                                <label for="edit_device">Device</label>
+                                <input type="text" class="form-control" id="edit_device" name="device" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_serial_number">Serial Number (Optional)</label>
+                                <input type="text" class="form-control" id="edit_serial_number" name="serial_number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Specifications and Components -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Device Specifications</h5>
+                            <div class="form-group">
+                                <label for="edit_ram">RAM</label>
+                                <select class="form-control" id="edit_ram" name="ram">
+                                    <option value="">Select RAM</option>
+                                    <option value="4GB">4GB</option>
+                                    <option value="8GB">8GB</option>
+                                    <option value="12GB">12GB</option>
+                                    <option value="16GB">16GB</option>
+                                    <option value="32GB">32GB</option>
+                                    <option value="64GB">64GB</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Storage Options</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="edit_hdd" name="hdd" value="1">
+                                    <label class="custom-control-label" for="edit_hdd">HDD</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="edit_ssd" name="ssd" value="1">
+                                    <label class="custom-control-label" for="edit_ssd">SSD</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="edit_nvme" name="nvme" value="1">
+                                    <label class="custom-control-label" for="edit_nvme">NVMe</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5>Components</h5>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="edit_battery" name="battery" value="1">
+                                    <label class="custom-control-label" for="edit_battery">Battery</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="edit_dvd_rom" name="dvd_rom" value="1">
+                                    <label class="custom-control-label" for="edit_dvd_rom">DVD ROM</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="edit_keyboard" name="keyboard" value="1">
+                                    <label class="custom-control-label" for="edit_keyboard">Keyboard</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fault, Images, Price -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_fault">Fault Description</label>
+                                <textarea class="form-control" id="edit_fault" name="fault" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_repair_price">Repair Price (Optional)</label>
+                                <input type="number" step="0.01" class="form-control" id="edit_repair_price" name="repair_price">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_note_number">Note Number</label>
+                                <input type="text" class="form-control" id="edit_note_number" name="note_number" placeholder="Enter Note Number" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_images">Upload Additional Images (Optional)</label>
+                                <input type="file" class="form-control" name="images[]" id="edit_images" multiple accept="image/*">
+                                <div id="editImagePreviewContainer" class="mt-2 d-flex flex-wrap"></div>
+                                <div class="existing-images mt-2">
+                                    <h6>Existing Images:</h6>
+                                    <div class="d-flex flex-wrap" id="existingImagesContainer"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_date">Date</label>
+                                <input type="date" class="form-control" id="edit_date" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_status">Status</label>
+                                <select class="form-control" id="edit_status" name="status">
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer bg-whitesmoke br">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Repair</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteRepairModal" tabindex="-1" role="dialog" aria-labelledby="deleteRepairModalLabel" aria-hidden="true">
@@ -417,15 +575,13 @@
         });
 
         // Handle Add Repair button click
-       $('#addRepairBtn').on('click', function () {
-    // Set today's date
-    $('#create_date').val(new Date().toISOString().split('T')[0]);
+        $('#addRepairBtn').on('click', function () {
+            // Set today's date
+            $('#create_date').val(new Date().toISOString().split('T')[0]);
 
-
-    // Always show modal immediately to avoid "not opening" issues
-    $('#createRepairModal').modal('show');
-
-});
+            // Always show modal immediately to avoid "not opening" issues
+            $('#createRepairModal').modal('show');
+        });
 
         // Handle Delete button click
         $(document).on('click', '.delete-repair', function() {
@@ -713,82 +869,321 @@
         $('#deleteRepairForm').on('submit', function() {
             $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
         });
-    });
 
-    let selectedFiles = [];
+        // Image upload handling for create modal
+        let selectedFiles = [];
+        const input = document.getElementById('create_images');
+        const container = document.getElementById('imagePreviewContainer');
 
-const input = document.getElementById('create_images');
-const container = document.getElementById('imagePreviewContainer');
+        input.addEventListener('change', function (event) {
+            const newFiles = Array.from(event.target.files);
 
-input.addEventListener('change', function (event) {
-    const newFiles = Array.from(event.target.files);
-
-    // Append new files (prevent duplicates by checking name + size)
-    newFiles.forEach(file => {
-        const isDuplicate = selectedFiles.some(existing =>
-            existing.name === file.name && existing.size === file.size
-        );
-        if (!isDuplicate) {
-            selectedFiles.push(file);
-        }
-    });
-
-    // Clear file input so selecting the same file again still triggers change
-    input.value = '';
-
-    // Refresh preview
-    showPreviews();
-});
-
-function showPreviews() {
-    container.innerHTML = '';
-
-    selectedFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const previewBox = document.createElement('div');
-            previewBox.className = 'position-relative mr-2 mb-2';
-
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.width = '120px';
-            img.style.height = '120px';
-            img.style.objectFit = 'cover';
-            img.className = 'img-thumbnail';
-
-            const removeBtn = document.createElement('span');
-            removeBtn.innerHTML = '&times;';
-            removeBtn.className = 'position-absolute text-white bg-danger rounded-circle text-center';
-            removeBtn.style.cssText = `
-                width: 18px;
-                height: 18px;
-                top: -6px;
-                right: -6px;
-                font-size: 14px;
-                cursor: pointer;
-                line-height: 18px;
-            `;
-            removeBtn.title = 'Remove';
-
-            removeBtn.addEventListener('click', function () {
-                selectedFiles.splice(index, 1);
-                showPreviews();
+            // Append new files (prevent duplicates by checking name + size)
+            newFiles.forEach(file => {
+                const isDuplicate = selectedFiles.some(existing =>
+                    existing.name === file.name && existing.size === file.size
+                );
+                if (!isDuplicate) {
+                    selectedFiles.push(file);
+                }
             });
 
-            previewBox.appendChild(img);
-            previewBox.appendChild(removeBtn);
-            container.appendChild(previewBox);
-        };
-        reader.readAsDataURL(file);
-    });
-}
+            // Clear file input so selecting the same file again still triggers change
+            input.value = '';
 
-// Intercept form submit to update the input field manually
-document.getElementById('createRepairForm').addEventListener('submit', function (e) {
-    const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => dataTransfer.items.add(file));
-    input.files = dataTransfer.files;
+            // Refresh preview
+            showPreviews();
+        });
+
+        function showPreviews() {
+            container.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewBox = document.createElement('div');
+                    previewBox.className = 'position-relative mr-2 mb-2';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '120px';
+                    img.style.height = '120px';
+                    img.style.objectFit = 'cover';
+                    img.className = 'img-thumbnail';
+
+                    const removeBtn = document.createElement('span');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.className = 'position-absolute text-white bg-danger rounded-circle text-center';
+                    removeBtn.style.cssText = `
+                        width: 18px;
+                        height: 18px;
+                        top: -6px;
+                        right: -6px;
+                        font-size: 14px;
+                        cursor: pointer;
+                        line-height: 18px;
+                    `;
+                    removeBtn.title = 'Remove';
+
+                    removeBtn.addEventListener('click', function () {
+                        selectedFiles.splice(index, 1);
+                        showPreviews();
+                    });
+
+                    previewBox.appendChild(img);
+                    previewBox.appendChild(removeBtn);
+                    container.appendChild(previewBox);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Intercept form submit to update the input field manually
+        document.getElementById('createRepairForm').addEventListener('submit', function (e) {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            input.files = dataTransfer.files;
+        });
+
+        // Handle Edit button click - Fixed version
+        $(document).on('click', '.edit-repair', function() {
+            var repairId = $(this).data('id');
+            
+            // Store the original modal content
+            var originalModalContent = $('#editRepairModal .modal-content').html();
+            
+            // Show loading state
+            $('#editRepairModal').modal('show');
+            $('#editRepairModal .modal-content').html(`
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Repair</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center py-5">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p class="mt-3">Loading repair details...</p>
+                </div>
+            `);
+            
+            // Fetch repair data
+            $.ajax({
+                url: "{{ route('user.laptop-repair.edit', ':id') }}".replace(':id', repairId),
+                method: 'GET',
+                success: function(response) {
+                    // Restore original modal structure
+                    $('#editRepairModal .modal-content').html(originalModalContent);
+                    
+                    // Set form action
+                    var updateUrl = "{{ route('user.laptop-repair.update', ':id') }}".replace(':id', repairId);
+                    $('#editRepairForm').attr('action', updateUrl);
+                    
+                    // Populate form fields
+                    $('#edit_customer_name').val(response.customer_name);
+                    $('#edit_contact').val(response.contact);
+                    $('#edit_email').val(response.email);
+                    $('#edit_device').val(response.device);
+                    $('#edit_serial_number').val(response.serial_number);
+                    $('#edit_fault').val(response.fault);
+                    $('#edit_repair_price').val(response.repair_price);
+                    $('#edit_note_number').val(response.note_number);
+                    $('#edit_date').val(new Date(response.date).toISOString().split('T')[0]);
+                    $('#edit_status').val(response.status);
+                    
+                    // Set RAM
+                    $('#edit_ram').val(response.ram);
+                    
+                    // Set checkboxes
+                    $('#edit_hdd').prop('checked', response.hdd == 1);
+                    $('#edit_ssd').prop('checked', response.ssd == 1);
+                    $('#edit_nvme').prop('checked', response.nvme == 1);
+                    $('#edit_battery').prop('checked', response.battery == 1);
+                    $('#edit_dvd_rom').prop('checked', response.dvd_rom == 1);
+                    $('#edit_keyboard').prop('checked', response.keyboard == 1);
+                    
+                    // Handle existing images
+                    const existingImagesContainer = $('#existingImagesContainer');
+                    existingImagesContainer.empty();
+                    
+                    if (response.images && response.images.length > 0) {
+                        response.images.forEach((image, index) => {
+                            const imgBox = $(`
+                                <div class="position-relative mr-2 mb-2">
+                                    <img src="/storage/${image}" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                    <span class="position-absolute text-white bg-danger rounded-circle text-center remove-existing-image" 
+                                          style="width: 18px; height: 18px; top: -6px; right: -6px; font-size: 14px; cursor: pointer; line-height: 18px;"
+                                          data-index="${index}">&times;</span>
+                                    <input type="hidden" name="existing_images[]" value="${image}">
+                                </div>
+                            `);
+                            existingImagesContainer.append(imgBox);
+                        });
+                    } else {
+                        existingImagesContainer.html('<p>No images uploaded</p>');
+                    }
+                    
+                    // Initialize image preview for new images
+                    editSelectedFiles = [];
+                    $('#editImagePreviewContainer').empty();
+                },
+                error: function(xhr) {
+                    // Restore original modal content on error
+                    $('#editRepairModal .modal-content').html(originalModalContent);
+                    $('#editRepairModal').modal('hide');
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Failed to load repair details',
+                        showConfirmButton: true
+                    });
+                }
+            });
+        });
+
+        // Handle removal of existing images
+        $(document).on('click', '.remove-existing-image', function() {
+            $(this).parent().remove();
+        });
+
+        // Handle form submission for edit
+       // Handle form submission for edit
+$('#editRepairForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    var form = $(this);
+    var submitBtn = form.find('button[type="submit"]');
+    submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+    
+    var formData = new FormData(this);
+    
+    $.ajax({
+        url: form.attr('action'),
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            if (response.success && response.redirect_url) {
+                // Directly redirect to the provided URL after successful update
+                window.location.href = response.redirect_url;
+            } else if (response.success) {
+                // Fallback in case redirect_url is not provided
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message || 'Repair updated successfully',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = "{{ route('user.laptop-repair.index') }}";
+                });
+            }
+        },
+        error: function(xhr) {
+            submitBtn.prop('disabled', false).html('Update Repair');
+            
+            if (xhr.status === 422) {
+                // Validation errors
+                var errors = xhr.responseJSON.errors;
+                var errorMessages = [];
+                
+                for (var field in errors) {
+                    errorMessages.push(errors[field].join('<br>'));
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    html: errorMessages.join('<br>'),
+                    showConfirmButton: true
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: xhr.responseJSON?.message || 'Failed to update repair',
+                    showConfirmButton: true
+                });
+            }
+        }
+    });
 });
+
+        // Image preview handling for edit modal
+        let editSelectedFiles = [];
+        const editInput = document.getElementById('edit_images');
+        const editContainer = document.getElementById('editImagePreviewContainer');
+
+        editInput.addEventListener('change', function (event) {
+            const newFiles = Array.from(event.target.files);
+
+            newFiles.forEach(file => {
+                const isDuplicate = editSelectedFiles.some(existing =>
+                    existing.name === file.name && existing.size === file.size
+                );
+                if (!isDuplicate) {
+                    editSelectedFiles.push(file);
+                }
+            });
+
+            editInput.value = '';
+            showEditPreviews();
+        });
+
+        function showEditPreviews() {
+            editContainer.innerHTML = '';
+
+            editSelectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewBox = document.createElement('div');
+                    previewBox.className = 'position-relative mr-2 mb-2';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '120px';
+                    img.style.height = '120px';
+                    img.style.objectFit = 'cover';
+                    img.className = 'img-thumbnail';
+
+                    const removeBtn = document.createElement('span');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.className = 'position-absolute text-white bg-danger rounded-circle text-center';
+                    removeBtn.style.cssText = `
+                        width: 18px;
+                        height: 18px;
+                        top: -6px;
+                        right: -6px;
+                        font-size: 14px;
+                        cursor: pointer;
+                        line-height: 18px;
+                    `;
+                    removeBtn.title = 'Remove';
+                    removeBtn.dataset.index = index;
+
+                    removeBtn.addEventListener('click', function () {
+                        editSelectedFiles.splice(index, 1);
+                        showEditPreviews();
+                    });
+
+                    previewBox.appendChild(img);
+                    previewBox.appendChild(removeBtn);
+                    editContainer.appendChild(previewBox);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Intercept edit form submit to update the input field manually
+        document.getElementById('editRepairForm').addEventListener('submit', function (e) {
+            const dataTransfer = new DataTransfer();
+            editSelectedFiles.forEach(file => dataTransfer.items.add(file));
+            editInput.files = dataTransfer.files;
+        });
+    });
 </script>
+
 @endpush
 @endsection

@@ -282,9 +282,13 @@
                 <p>Your repair request has been received and is being processed. Here are your complete repair details:</p>
                 
                 <div class="customer-number-card">
-                    <div class="customer-number-label">Your Repair Tracking ID</div>
+                    <div class="customer-number-label">
+                        Your Repair Tracking ID and Track With 
+                        <a href="https://www.celaptoprepaircenter.com" target="_blank">celaptoprepaircenter.com</a>
+                    </div>
                     <div class="customer-number-value">{{ $repair->customer_number }}</div>
                 </div>
+
                 
                 <div class="details-grid">
                     <div class="detail-card">

@@ -405,7 +405,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="serial_number_${index}">Serial Number</label>
+                            <label for="serial_number_${index}">Serial Number (Optional)</label>
                             <input type="text" class="form-control" id="serial_number_${index}" name="repair_items[${index}][serial_number]">
                         </div>
                     </div>
@@ -413,7 +413,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="price_${index}">Price</label>
+                            <label for="price_${index}">Price (LKR) (Optional)</label>
                             <input type="number" step="0.01" class="form-control" id="price_${index}" name="repair_items[${index}][price]">
                         </div>
                     </div>

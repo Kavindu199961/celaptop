@@ -60,6 +60,7 @@ Route::middleware(['user'])->prefix('user')->name('user.')->group(function () {
     Route::prefix('laptop-repair')->middleware('auth')->name('laptop-repair.')->group(function () {
   
     Route::resource('', LaptopRepairController::class)->except(['show']);
+
     // Additional Laptop Repair Routes
     Route::patch('{id}/status', [LaptopRepairController::class, 'updateStatus'])->name('update-status');   
     Route::patch('{id}/price', [LaptopRepairController::class, 'updatePrice'])->name('update-price');  
@@ -68,6 +69,8 @@ Route::middleware(['user'])->prefix('user')->name('user.')->group(function () {
     Route::get('get-note-number', [LaptopRepairController::class, 'getNextNoteNumber'])->name('get-note-number');
     Route::get('repairs/{repair}', [LaptopRepairController::class, 'show'])->name('show');
     Route::delete('repairs/{repair}', [LaptopRepairController::class, 'destroy'])->name('destroy');
+     Route::get('{id}/edit', [LaptopRepairController::class, 'edit'])->name('edit');
+    Route::put('{id}', [LaptopRepairController::class, 'update'])->name('update');
 });
 
 
@@ -140,6 +143,7 @@ Route::prefix('shop_names')->name('shop_names.')->group(function () {
     Route::get('/{shop}/repair-items', [ShopNameController::class, 'showRepairItems'])->name('repair_items.index');
     Route::delete('/repair-items/{repairItem}', [ShopNameController::class, 'destroyRepairItem'])->name('repair_items.destroy');
     Route::put('/repair-items/{repairItem}/status', [ShopNameController::class, 'updateStatus'])->name('repair_items.update_status');
+    Route::put('/{shop}/repair-items/{repairItem}', [ShopNameController::class, 'updateRepairItem'])->name('repair_items.update');
     
     // Keep these after
     Route::get('/{shop}/edit', [ShopNameController::class, 'edit'])->name('edit');

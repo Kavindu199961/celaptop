@@ -424,6 +424,11 @@
 .password-requirements .req-item.valid i {
     color: #28a745 !important;
 }
+
+.label {
+    display: inline-block;
+    width: 150px; /* Adjust based on the longest label */
+  }
     </style>
 </head>
 <body>
@@ -572,10 +577,10 @@
                                                 <i class="bi bi-bank"></i> Our Bank Details
                                             </h4>
                                             <ul class="bank-details-list">
-                                                <li><strong>Bank Name:</strong> Commercial Bank</li>
-                                                <li><strong>Account Name:</strong> CE Laptop Repair</li>
-                                                <li><strong>Account Number:</strong> 1234567890</li>
-                                                <li><strong>Branch:</strong> Colombo Main</li>
+                                                <li><strong class="label">Bank Name:</strong> BOC (Bank Of Ceylon)</li>
+                                                <li><strong class="label">Account Name:</strong> H.W.K.N Jayathissa</li>
+                                                <li><strong class="label">Account Number:</strong> 87781111</li>
+                                                <li><strong class="label">Branch:</strong> Padukka</li>
                                             </ul>
                                         </div>
                                     </div>
