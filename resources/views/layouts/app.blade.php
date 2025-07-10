@@ -164,7 +164,7 @@
               </a>
             </li>
 
-            
+            <hr class="my-2">
 
             <li class="dropdown {{ request()->is('user/shop_names*') ? 'active' : '' }}">
               <a href="{{ route('user.shop_names.index') }}" class="nav-link">
