@@ -15,9 +15,11 @@ use App\Http\Controllers\InvoiceWithStockController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\TotalAmountController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\EmailSettingsController;
 use App\Http\Controllers\ShopNameController;
 use App\Http\Controllers\CompleteShopRepairController;
+use App\Http\Controllers\EmailSettingController;
+
+
 
 
 
@@ -55,7 +57,7 @@ Route::middleware(['user'])->prefix('user')->name('user.')->group(function () {
     // Laptop Repair Routes
 
 
-    Route::prefix('laptop-repair')->name('laptop-repair.')->group(function () {
+    Route::prefix('laptop-repair')->middleware('auth')->name('laptop-repair.')->group(function () {
   
     Route::resource('', LaptopRepairController::class)->except(['show']);
     // Additional Laptop Repair Routes
@@ -175,11 +177,13 @@ Route::prefix('cashier')->name('cashier.')->group(function () {
     Route::delete('/{id}', [CashierController::class, 'destroy'])->name('destroy');
 
 });
-
- Route::prefix('email-settings')->name('email-settings.')->group(function() {
-        Route::get('/', [EmailSettingsController::class, 'index'])->name('index');
-        Route::post('/update', [EmailSettingsController::class, 'update'])->name('update');
-    });
+Route::prefix('user')->middleware('auth')->group(function () {
+    // Email Settings
+    Route::get('/email-settings', [EmailSettingController::class, 'index'])
+        ->name('email-settings.index');
+    Route::put('/email-settings', [EmailSettingController::class, 'update'])
+        ->name('email-settings.update');
+});
 
 Route::get('/total-amount', [TotalAmountController::class, 'index'])->name('total_amount.index');
 

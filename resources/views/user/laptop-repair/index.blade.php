@@ -184,8 +184,8 @@
                                 <input type="text" class="form-control" id="create_device" name="device" required>
                             </div>
                             <div class="form-group">
-                                <label for="create_serial_number">Serial Number</label>
-                                <input type="text" class="form-control" id="create_serial_number" name="serial_number" required>
+                                <label for="create_serial_number">Serial Number (Optional)</label>
+                                <input type="text" class="form-control" id="create_serial_number" name="serial_number">
                             </div>
                         </div>
                     </div>

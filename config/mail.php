@@ -97,6 +97,16 @@ return [
             'retry_after' => 60,
         ],
 
+        'user_specific' => [
+        'transport' => 'smtp',
+        'host' => env('MAIL_HOST'),
+        'port' => env('MAIL_PORT'),
+        'encryption' => env('MAIL_ENCRYPTION'),
+        'username' => env('MAIL_USERNAME'), // Will be overridden at runtime
+        'password' => env('MAIL_PASSWORD'), // Will be overridden at runtime
+        'timeout' => null,
+    ],
+
     ],
 
     /*

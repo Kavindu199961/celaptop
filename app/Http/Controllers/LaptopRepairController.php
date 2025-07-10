@@ -12,6 +12,7 @@ use App\Models\MyShopDetail;
 use App\Models\Counter;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RepairDetailsMail;
+use App\Services\UserMailService;
 
 class LaptopRepairController extends Controller
 {
@@ -69,15 +70,16 @@ protected function generateCustomerNumber()
 
    
 // Fixed store function
-public function store(Request $request)
+public function store(Request $request, UserMailService $mailService)
 {
     try {
+        // Validate request data
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'contact' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'device' => 'required|string|max:255',
-            'serial_number' => 'required|string|max:255|unique:laptop_repairs,serial_number',
+            'serial_number' => 'nullable|string|max:255', // Removed the unique validation
             'fault' => 'required|string',
             'repair_price' => 'nullable|numeric|min:0',
             'date' => 'required|date',
@@ -94,11 +96,17 @@ public function store(Request $request)
             'keyboard' => 'nullable|boolean',
         ]);
 
+        // Rest of your code remains the same...
+        // Set default status if not provided
         $validated['status'] = $validated['status'] ?? 'pending';
+        
+        // Add authenticated user ID
         $validated['user_id'] = Auth::id();
+        
+        // Generate customer number
         $validated['customer_number'] = $this->generateCustomerNumber();
 
-        // Handle boolean fields (convert checkboxes to proper boolean values)
+        // Handle boolean fields
         $validated['hdd'] = $request->has('hdd');
         $validated['ssd'] = $request->has('ssd');
         $validated['nvme'] = $request->has('nvme');
@@ -110,57 +118,67 @@ public function store(Request $request)
         if ($request->hasFile('images')) {
             $imagePaths = [];
             foreach ($request->file('images') as $image) {
-                if ($image && $image->isValid()) {
+                if ($image->isValid()) {
                     $path = $image->store('repairs', 'public');
                     $imagePaths[] = $path;
                 }
             }
-            if (!empty($imagePaths)) {
-                $validated['images'] = json_encode($imagePaths);
-            }
+            $validated['images'] = json_encode($imagePaths);
         }
 
+        // Create repair record
         $repair = LaptopRepair::create($validated);
 
-        // Send email if email was provided
+        // Send email notification if recipient email exists
         if (!empty($validated['email'])) {
             try {
-                \Log::info('Attempting to send email to: ' . $validated['email']);
+                $user = Auth::user();
                 
-                Mail::to($validated['email'])
-                    ->send(new RepairDetailsMail($repair));
-                
-                \Log::info('Email sent successfully to: ' . $validated['email']);
-                
-                if ($request->wantsJson()) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Repair record created and email sent successfully',
-                        'note_number' => $repair->note_number
-                    ]);
+                if (!$user || !$user->email) {
+                    throw new \RuntimeException('Invalid authenticated user');
                 }
-            } catch (\Exception $emailException) {
-                \Log::error('Email sending failed: ' . $emailException->getMessage());
-                \Log::error('Email error trace: ' . $emailException->getTraceAsString());
+
+                $mailable = (new RepairDetailsMail($repair))
+                    ->to($validated['email']);
+                    
+                \Log::debug('Attempting to send email', [
+                    'recipient' => $validated['email'],
+                    'user_email' => $user->email,
+                    'user_id' => $user->id
+                ]);
+
+                if ($mailService->sendWithUserConfig($user, $mailable)) {
+                    \Log::info('Email sent successfully');
+                } else {
+                    \Log::warning('Email sent using fallback method');
+                    session()->flash('warning', 'Email sent using default system mailer');
+                }
                 
-                session()->flash('warning', 'Repair record created but email could not be sent: ' . $emailException->getMessage());
+            } catch (\Exception $e) {
+                \Log::error('Email sending failed', [
+                    'error' => $e->getMessage(),
+                    'repair_id' => $repair->id ?? null,
+                    'trace' => $e->getTraceAsString()
+                ]);
+                session()->flash('warning', 'Email could not be sent: ' . $e->getMessage());
             }
         }
 
         return redirect()->route('user.laptop-repair.index')
-            ->with('success', 'Repair record created successfully. Note Number: ' . $repair->note_number);
+            ->with('success', "Repair #{$repair->note_number} created successfully");
 
     } catch (\Illuminate\Validation\ValidationException $e) {
         return redirect()->back()
             ->withErrors($e->validator)
             ->withInput()
-            ->with('error', 'Validation failed. Please check the form fields.');
-    } catch (\Exception $e) {
-        \Log::error('Repair creation error: ' . $e->getMessage());
+            ->with('error', 'Validation errors occurred');
 
+    } catch (\Exception $e) {
+        \Log::error("Repair creation failed: {$e->getMessage()}");
+        
         return redirect()->back()
             ->withInput()
-            ->with('error', 'An error occurred: ' . $e->getMessage());
+            ->with('error', 'Error creating repair: ' . $e->getMessage());
     }
 }
     /**

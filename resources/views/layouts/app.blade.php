@@ -164,7 +164,8 @@
               </a>
             </li>
 
-            <hr class="my-2">
+            <hr class="my-1" style="height: 2px; background-color: black; border: none;">
+
 
             <li class="dropdown {{ request()->is('user/shop_names*') ? 'active' : '' }}">
               <a href="{{ route('user.shop_names.index') }}" class="nav-link">
@@ -179,11 +180,11 @@
 
             
 
-            <!-- <li class="dropdown {{ request()->is('user/email-settings*') ? 'active' : '' }}">
+            <li class="dropdown {{ request()->is('user/user/email-settings*') ? 'active' : '' }}">
               <a href="{{ route('user.email-settings.index') }}" class="nav-link">
                 <i class="fas fa-envelope"></i></i><span>Email Setting</span>
               </a>
-            </li> -->
+            </li>
 
             <!-- <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
               <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">

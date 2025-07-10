@@ -17,6 +17,12 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'email_verified_at',
+        'smtp_host',
+        'smtp_port',
+        'smtp_encryption',
+        'email_username',
+        'email_password', // This will be encrypted
     ];
 
     protected $hidden = [
