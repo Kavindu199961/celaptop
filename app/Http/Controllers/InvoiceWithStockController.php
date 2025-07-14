@@ -108,15 +108,17 @@ class InvoiceWithStockController extends Controller
 
     public function show(InvoiceWithStock $invoiceWithStock)
     {
-        $this->authorizeAccess($invoiceWithStock);
+        
         return view('user.invoices_with_stock.show', compact('invoiceWithStock'));
     }
 
    public function download(InvoiceWithStock $invoiceWithStock)
 {
-    $this->authorizeAccess($invoiceWithStock);
-
-    $user = auth()->user();
+   $user = auth()->user();
+    if (!$user) {
+        abort(403, 'Unauthorized access');
+    }
+    
     $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
 
     $logoPath = null;
@@ -146,9 +148,11 @@ class InvoiceWithStockController extends Controller
 
     public function print(InvoiceWithStock $invoiceWithStock)
     {
-        $this->authorizeAccess($invoiceWithStock);
-
         $user = auth()->user();
+    if (!$user) {
+        abort(403, 'Unauthorized access');
+    }
+    
         $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
 
         $logoBase64 = null;
@@ -170,7 +174,7 @@ class InvoiceWithStockController extends Controller
 
     public function destroy(InvoiceWithStock $invoiceWithStock)
     {
-        $this->authorizeAccess($invoiceWithStock);
+        
         
         foreach ($invoiceWithStock->items as $item) {
             if ($item->stock) {

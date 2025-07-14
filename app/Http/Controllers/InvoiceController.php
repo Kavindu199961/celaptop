@@ -162,7 +162,7 @@ public function index()
 
     public function destroy(Invoice $invoice)
     {
-        $this->authorizeAccess($invoice);
+       
         $invoice->delete();
         return redirect()->route('user.invoices.index')->with('success', 'Invoice deleted successfully');
     }
