@@ -87,20 +87,25 @@ public function index()
     }
 
     public function show(Invoice $invoice)
-    {
-        $this->authorizeAccess($invoice);
-        return view('user.invoices.show', compact('invoice'));
+{
+    // Simply check if user is logged in (handled by middleware)
+    // No additional ownership check
+    return view('user.invoices.show', compact('invoice'));
+}
+
+  public function download(Invoice $invoice)
+{
+    // Ensure the user is authenticated
+    $user = auth()->user();
+    if (!$user) {
+        abort(403, 'Unauthorized access');
     }
 
-   public function download(Invoice $invoice)
-{
-    $this->authorizeAccess($invoice);
-
-    $user = auth()->user();
+    // Get shop details for the authenticated user
     $shopDetail = MyShopDetail::where('user_id', $user->id)->first();
 
+    // Check if logo exists and is readable
     $logoPath = null;
-
     if ($shopDetail && $shopDetail->logo_image) {
         $logoPath = storage_path('app/public/' . $shopDetail->logo_image);
         if (!file_exists($logoPath) || !is_readable($logoPath)) {
@@ -109,27 +114,32 @@ public function index()
         }
     }
 
+    // Choose PDF view based on number of items
     $viewName = $invoice->items->count() > 10 
         ? 'user.invoices.fullpdf' 
         : 'user.invoices.pdf';
 
+    // Generate PDF
     $pdf = PDF::loadView($viewName, [
         'invoice' => $invoice,
         'logoPath' => $logoPath,
         'shopDetail' => $shopDetail,
     ]);
 
-    // Set the custom paper size (A2 landscape size in points: 595.28 x 421.26)
+    // Set paper size (A2 landscape)
     $pdf->setPaper([0, 0, 595.28, 421.26]);
 
+    // Download the generated PDF
     return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
 }
 
+
     public function print(Invoice $invoice)
 {
-    $this->authorizeAccess($invoice);
-
     $user = auth()->user();
+    if (!$user) {
+        abort(403, 'Unauthorized access');
+    }
     // Assuming a relationship: $user->shopDetail
     $shopDetail =  MyShopDetail::where('user_id', $user->id)->first();
 
@@ -157,10 +167,10 @@ public function index()
         return redirect()->route('user.invoices.index')->with('success', 'Invoice deleted successfully');
     }
 
-    private function authorizeAccess(Invoice $invoice)
-    {
-        if ($invoice->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access.');
-        }
+        protected function authorizeAccess(Invoice $invoice)
+{
+    if (auth()->user()->cannot('view', $invoice)) {
+        abort(403, 'Unauthorized action.');
     }
+}
 }
