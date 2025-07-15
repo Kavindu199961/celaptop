@@ -139,6 +139,14 @@
               </a>
           </li>
 
+            <li class="dropdown {{ request()->is('user/estimates*') ? 'active' : '' }}">
+              <a href="{{ route('user.estimates.index') }}" class="nav-link">
+                <i class="fas fa-file-alt"></i><span>Estimates</span>
+              </a>
+            </li>
+
+          
+
           <li class="dropdown {{ request()->is('user/total-amount*') ? 'active' : '' }}">
               <a href="{{ route('user.total_amount.index') }}" class="nav-link">
                 <i class="fas fa-chart-line"></i><span>Invoice Report</span>

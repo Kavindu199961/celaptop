@@ -18,10 +18,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ShopNameController;
 use App\Http\Controllers\CompleteShopRepairController;
 use App\Http\Controllers\EmailSettingController;
-
-
-
-
+use App\Http\Controllers\EstimateController;
 
 Route::get('/', [RepairTrackingController::class, 'index'])->name('web.repair-tracking.index');
 
@@ -106,6 +103,23 @@ Route::prefix('invoices')->name('invoices.')->group(function () {
     
     // Customer routes (similar to your vendor routes)
     Route::get('/customer/{customer}', [InvoiceController::class, 'customerShow'])->name('customer.show');
+});
+
+Route::prefix('estimates')->name('estimates.')->group(function () {
+    Route::get('/', [EstimateController::class, 'index'])->name('index');
+    Route::post('/', [EstimateController::class, 'store'])->name('store');
+    Route::get('/create', [EstimateController::class, 'create'])->name('create');
+    Route::get('/{estimate}', [EstimateController::class, 'show'])->name('show');
+    Route::get('/{estimate}/edit', [EstimateController::class, 'edit'])->name('edit');
+    Route::put('/{estimate}', [EstimateController::class, 'update'])->name('update');
+    Route::delete('/{estimate}', [EstimateController::class, 'destroy'])->name('destroy');
+    
+    // Additional invoice-specific routes
+    Route::get('/{estimate}/print', [EstimateController::class, 'print'])->name('print');
+    Route::get('/{estimate}/download', [EstimateController::class, 'download'])->name('download');
+    
+    // Customer routes (similar to your vendor routes)
+    Route::get('/customer/{customer}', [EstimateController::class, 'customerShow'])->name('customer.show');
 });
 
 Route::prefix('invoices-with-stock')->name('invoices_with_stock.')->group(function () {
