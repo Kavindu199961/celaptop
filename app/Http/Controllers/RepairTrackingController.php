@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LaptopRepair;
 use App\Models\CompletedRepair;
 use App\Models\MyShopDetail;
+use App\Models\RepairItem;
 use Illuminate\Http\Request;
 
 class RepairTrackingController extends Controller
@@ -12,135 +13,175 @@ class RepairTrackingController extends Controller
     public function index(Request $request)
     {
         $repair = null;
+        $repairItem = null;
         $steps = [];
         $status = null;
         $shopDetails = null;
+        $searchType = null;
 
         if ($request->has('tracking_number')) {
             $trackingNumber = $request->input('tracking_number');
+
             $repair = $this->findRepair($trackingNumber);
-            
+
             if ($repair) {
-                $status = $repair instanceof CompletedRepair ? 'completed' : 'ongoing';
+                $searchType = 'customer_number';
+                $status = $repair instanceof CompletedRepair ? 'completed' : $repair->status;
                 $steps = $this->getRepairSteps($repair, $status);
-                
-                // Get shop details for the user who created this repair
                 $shopDetails = MyShopDetail::where('user_id', $repair->user_id)->first();
+            } else {
+                $repairItem = RepairItem::with('shop')->where('item_number', $trackingNumber)->first();
+
+                if ($repairItem) {
+                    $searchType = 'item_number';
+                    $status = $repairItem->completedRepair ? 'completed' : $repairItem->status;
+                    $steps = $this->getRepairItemSteps($repairItem, $status);
+                    if ($repairItem->shop) {
+                        $shopDetails = MyShopDetail::where('user_id', $repairItem->shop->user_id)->first();
+                    }
+                }
             }
         }
 
         return view('web.repair-tracking.index', [
             'repair' => $repair,
+            'repairItem' => $repairItem,
             'steps' => $steps,
             'status' => $status,
             'request' => $request,
-            'shopDetails' => $shopDetails
+            'shopDetails' => $shopDetails,
+            'searchType' => $searchType,
         ]);
     }
 
     protected function findRepair($trackingNumber)
     {
-        // Check only by customer_number now (removed note_number)
         $repair = LaptopRepair::where('customer_number', $trackingNumber)->first();
-        
         if (!$repair && class_exists(CompletedRepair::class)) {
             $repair = CompletedRepair::where('customer_number', $trackingNumber)->first();
         }
-        
         return $repair;
     }
 
     protected function getRepairSteps($repair, $status)
     {
-        if ($status === 'completed') {
-            return $this->getCompletedSteps($repair);
-        }
-        
-        return $this->getOngoingSteps($repair->status, $repair);
+        return $this->getDetailedSteps($status, $repair);
     }
 
-    protected function getOngoingSteps($currentStatus, $repair)
+    protected function getRepairItemSteps($repairItem, $status)
+    {
+        return $this->getDetailedItemSteps($status, $repairItem);
+    }
+
+    protected function getDetailedSteps($status, $repair)
     {
         $allSteps = [
+            'pending' => [
+                'label' => 'Pending',
+                'description' => 'Your item has been received and is awaiting processing.'
+            ],
             'received' => [
-                'label' => 'Device Received', 
+                'label' => 'Device Received',
                 'description' => 'Your device has been received and logged into our system.'
             ],
             'diagnosis' => [
-                'label' => 'Diagnosis', 
-                'description' => 'Our technicians are diagnosing the reported fault: ' . ($repair->fault ?? 'N/A')
-            ],
-            'parts_ordered' => [
-                'label' => 'Parts Ordered', 
-                'description' => 'Necessary parts have been ordered for your repair.'
+                'label' => 'Diagnosis',
+                'description' => 'Technicians are diagnosing the device: ' . ($repair->fault ?? 'N/A')
             ],
             'repairing' => [
-                'label' => 'Repair In Progress', 
-                'description' => 'Your device is currently being repaired.'
+                'label' => 'Repairing',
+                'description' => 'Repair is in progress.'
             ],
             'testing' => [
-                'label' => 'Quality Testing', 
-                'description' => 'Repaired device is undergoing quality assurance tests.'
+                'label' => 'Testing',
+                'description' => 'Device is being tested after repair.'
             ],
             'ready' => [
-                'label' => 'Ready for Pickup', 
-                'description' => 'Your device is ready for pickup. Repair price: ' . 
-                                ($repair->repair_price ? 'Rs. ' . number_format($repair->repair_price, 2) : 'Pending')
+                'label' => 'Ready for Pickup',
+                'description' => 'Your device is ready for pickup.'
             ],
         ];
 
-        $steps = [];
-        $foundCurrent = false;
-
-        foreach ($allSteps as $statusKey => $step) {
-            $steps[] = array_merge($step, [
-                'status' => $statusKey,
-                'active' => $statusKey === $currentStatus,
-                'completed' => !$foundCurrent && $statusKey !== $currentStatus
-            ]);
-
-            if ($statusKey === $currentStatus) {
-                $foundCurrent = true;
-            }
-        }
-
-        return $steps;
+        return $this->markStepsByGroup($allSteps, $status);
     }
 
-    protected function getCompletedSteps($repair)
+    protected function getDetailedItemSteps($status, $repairItem)
     {
-        return [
-            [
-                'label' => 'Device Received',
-                'description' => 'Your device was received at our service center on ' . $repair->date->format('M j, Y'),
-                'completed' => true,
-                'active' => false
+        $allSteps = [
+            'pending' => [
+                'label' => 'Pending',
+                'description' => 'Your item has been received and is awaiting processing.'
             ],
-            [
-                'label' => 'Diagnosis Completed',
-                'description' => 'Our technicians diagnosed: ' . ($repair->fault ?? 'N/A'),
-                'completed' => true,
-                'active' => false
+            'received' => [
+                'label' => 'Item Received',
+                'description' => 'Your item has been received and logged into our system with number: ' . $repairItem->item_number
             ],
-            [
-                'label' => 'Repair Completed',
-                'description' => 'Device was successfully repaired' . 
-                                ($repair->repair_price ? ' for Rs. ' . number_format($repair->repair_price, 2) : ''),
-                'completed' => true,
-                'active' => false
+            'diagnosis' => [
+                'label' => 'Diagnosis',
+                'description' => 'Our technicians are diagnosing the item: ' . ($repairItem->description ?? 'N/A')
             ],
-            [
-                'label' => 'Quality Testing Passed',
-                'description' => 'Device passed all quality assurance tests',
-                'completed' => true,
-                'active' => false
+            'repairing' => [
+                'label' => 'Repair In Progress',
+                'description' => 'Your item is currently being repaired.'
             ],
-            [
-                'label' => 'Device Delivered',
-                'description' => 'Device was successfully delivered/collected',
-                'completed' => true,
-                'active' => false
-            ]
+            'testing' => [
+                'label' => 'Testing',
+                'description' => 'Item is being tested after repair.'
+            ],
+            'ready' => [
+                'label' => 'Ready for Pickup',
+                'description' => $this->getReadyDescription($repairItem, $status)
+            ],
+        ];
+
+        return $this->markStepsByGroup($allSteps, $status);
+    }
+
+    protected function getReadyDescription($repairItem, $currentStatus)
+    {
+        if ($currentStatus === 'completed') {
+            $price = is_numeric($repairItem->final_price)
+                ? 'Rs. ' . number_format((float) $repairItem->final_price, 2)
+                : 'Pending';
+
+            return 'Your item is ready for pickup. Repair Price: ' . $price;
+        } else {
+            return 'Your item is ready for pickup.';
+        }
+    }
+
+    protected function markStepsByGroup($allSteps, $status)
+{
+    // Define groupings
+    $activeStepsMap = [
+        'pending' => ['pending', 'received'],
+        'in_progress' => ['diagnosis', 'repairing'],
+        'completed' => ['testing', 'ready']
+    ];
+
+    $steps = [];
+    $activeGroup = $activeStepsMap[$status] ?? [];
+
+    // Create a flat list of all keys (to track progress index)
+    $stepKeys = array_keys($allSteps);
+    $lastActiveIndex = max(array_map(fn($key) => array_search($key, $stepKeys), $activeGroup));
+
+    foreach ($allSteps as $key => $step) {
+        $stepIndex = array_search($key, $stepKeys);
+
+        $isCompleted = $stepIndex < $lastActiveIndex;
+        $isActive = in_array($key, $activeGroup);
+
+        $steps[] = [
+            'status' => $key,
+            'label' => $step['label'],
+            'description' => $step['description'],
+            'completed' => $isCompleted,
+            'active' => $isActive
         ];
     }
+
+    return $steps;
+}
+
 }
