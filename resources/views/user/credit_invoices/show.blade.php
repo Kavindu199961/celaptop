@@ -31,11 +31,11 @@
                         </tr>
                         <tr>
                             <th>Contact</th>
-                            <td>{{ $creditInvoice->creditShop->contact ?? 'N/A' }}</td>
+                            <td>{{ $creditInvoice->creditShop->contact ?? '--' }}</td>
                         </tr>
                         <tr>
                             <th>Address</th>
-                            <td>{{ $creditInvoice->creditShop->address ?? 'N/A' }}</td>
+                            <td>{{ $creditInvoice->creditShop->address ?? '--' }}</td>
                         </tr>
                     </table>
                 </div>
@@ -76,12 +76,12 @@
                     <h5>Customer Information</h5>
                     <table class="table table-sm table-borderless">
                         <tr>
-                            <th width="120">Name</th>
+                            <th width="120"></th>
                             <td>{{ $creditInvoice->customer_name }}</td>
                         </tr>
                         <tr>
                             <th>Phone</th>
-                            <td>{{ $creditInvoice->customer_phone ?? 'N/A' }}</td>
+                            <td>{{ $creditInvoice->customer_phone ?? '--' }}</td>
                         </tr>
                     </table>
                 </div>
@@ -89,7 +89,7 @@
                     <h5>Payment Summary</h5>
                     <table class="table table-sm table-borderless">
                         <tr>
-                            <th width="120">Total Amount</th>
+                            <th width="120">Total Credit Amount</th>
                             <td>{{ number_format($creditInvoice->total_amount, 2) }}</td>
                         </tr>
                         <!-- <tr>
@@ -131,7 +131,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="5" class="text-right">Total Amount:</th>
+                            <th colspan="5" class="text-right">Total Credit Amount:</th>
                             <th>{{ number_format($creditInvoice->total_amount, 2) }}</th>
                         </tr>
                         <!-- <tr>

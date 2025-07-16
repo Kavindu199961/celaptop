@@ -187,7 +187,7 @@
                                     <!-- <th>Customer Name</th> -->
                                     <th>Phone</th>
                                     <th>Total Amount</th>
-                                    <th>Remaining</th>
+                                    <!-- <th>Remaining</th> -->
                                     <!-- <th>Status</th> -->
                                     <th>Date</th>
                                     <th>Actions</th>
@@ -201,7 +201,7 @@
                                     <!-- <td>{{ $invoice->customer_name }}</td> -->
                                     <td>{{ $invoice->customer_phone }}</td>
                                     <td>{{ number_format($invoice->total_amount, 2) }}</td>
-                                    <td>{{ number_format($invoice->remaining_amount, 2) }}</td>
+                                    <!-- <td>{{ number_format($invoice->remaining_amount, 2) }}</td> -->
                                     <!-- <td>
                                         <span class="badge 
                                             @if($invoice->status == 'paid') badge-success
