@@ -17,8 +17,10 @@ use App\Http\Controllers\TotalAmountController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ShopNameController;
 use App\Http\Controllers\CompleteShopRepairController;
+use App\Http\Controllers\CreditInvoiceController;
 use App\Http\Controllers\EmailSettingController;
 use App\Http\Controllers\EstimateController;
+use App\Http\Controllers\CreditShopController;
 
 Route::get('/', [RepairTrackingController::class, 'index'])->name('web.repair-tracking.index');
 
@@ -164,6 +166,28 @@ Route::prefix('shop_names')->name('shop_names.')->group(function () {
     Route::put('/{shop}', [ShopNameController::class, 'update'])->name('update');
     Route::delete('/{shop}', [ShopNameController::class, 'destroy'])->name('destroy');
     Route::get('/{shop}', [ShopNameController::class, 'show'])->name('show');
+});
+
+Route::prefix('credit_shop')->name('credit_shop.')->group(function () {
+    // Basic CRUD routes
+    Route::get('/', [CreditShopController::class, 'index'])->name('index');
+    Route::post('/', [CreditShopController::class, 'store'])->name('store');
+    
+    // Standard resource routes (keep these after specific routes)
+    Route::get('/{creditShop}/edit', [CreditShopController::class, 'edit'])->name('edit');
+    Route::put('/{creditShop}', [CreditShopController::class, 'update'])->name('update');
+    Route::delete('/{creditShop}', [CreditShopController::class, 'destroy'])->name('destroy');
+    Route::get('/{creditShop}', [CreditShopController::class, 'show'])->name('show');
+});
+
+// routes/web.php
+Route::prefix('credit_invoices')->name('credit_invoices.')->group(function () {
+    Route::get('/', [CreditInvoiceController::class, 'index'])->name('index');
+    Route::post('/', [CreditInvoiceController::class, 'store'])->name('store');
+    Route::get('/{creditInvoice}', [CreditInvoiceController::class, 'show'])->name('show');
+    Route::get('/{creditInvoice}/print', [CreditInvoiceController::class, 'print'])->name('print');
+    Route::get('/{creditInvoice}/download', [CreditInvoiceController::class, 'download'])->name('download');
+    Route::delete('/{creditInvoice}', [CreditInvoiceController::class, 'destroy'])->name('destroy');
 });
 
 Route::prefix('shop_completed_repair')->name('shop_completed_repair.')->group(function () {

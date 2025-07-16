@@ -145,7 +145,19 @@
               </a>
             </li>
 
-          
+            <hr class="my-1" style="height: 2px; background-color: black; border: none;">
+            <li class="dropdown {{ request()->is('user/credit_shop*') ? 'active' : '' }}">
+                <a href="{{ route('user.credit_shop.index') }}" class="nav-link">
+                  <i class="fas fa-store"></i><span>Credit Shops</span>
+                </a>
+              </li>
+
+              <li class="dropdown {{ request()->is('user/credit_invoices*') ? 'active' : '' }}">
+                <a href="{{ route('user.credit_invoices.index') }}" class="nav-link">
+                  <i class="fas fa-file-invoice-dollar"></i><span>Credit Invoices</span>
+                </a>
+              </li>
+          <hr class="my-1" style="height: 2px; background-color: black; border: none;">
 
           <li class="dropdown {{ request()->is('user/total-amount*') ? 'active' : '' }}">
               <a href="{{ route('user.total_amount.index') }}" class="nav-link">

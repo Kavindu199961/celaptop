@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 15, 2025 at 07:06 AM
+-- Generation Time: Jul 16, 2025 at 01:23 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -99,6 +99,13 @@ CREATE TABLE `completed_repairs` (
   `keyboard` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `completed_repairs`
+--
+
+INSERT INTO `completed_repairs` (`id`, `user_id`, `customer_name`, `contact`, `email`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `note_number`, `customer_number`, `status`, `images`, `completed_at`, `created_at`, `updated_at`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
+(19, 3, 'kavi', '0775486221', NULL, '2025-07-16', 'no power', 'dell gaming', 2500.00, 'freg4g4t43', '486', 'CE-3-0042', 'completed', NULL, '2025-07-16 13:10:42', '2025-07-16 07:40:42', '2025-07-16 07:40:42', NULL, 0, 0, 1, 1, 0, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -116,6 +123,13 @@ CREATE TABLE `complete_shop_repairs` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `complete_shop_repairs`
+--
+
+INSERT INTO `complete_shop_repairs` (`id`, `repair_item_id`, `shop_id`, `user_id`, `final_price`, `notes`, `status`, `created_at`, `updated_at`) VALUES
+(4, 11, 4, 3, 2500.00, 'kllk', 'completed', '2025-07-16 07:33:38', '2025-07-16 07:33:38');
 
 -- --------------------------------------------------------
 
@@ -139,9 +153,89 @@ CREATE TABLE `counters` (
 INSERT INTO `counters` (`id`, `user_id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (2, 3, 'customer_number', 1, '2025-07-03 08:14:12', '2025-07-03 08:14:12'),
 (3, 3, 'customer_number_3', 1, '2025-07-04 07:12:47', '2025-07-04 07:12:47'),
-(4, 3, 'customer_number_user_3', 40, '2025-07-04 07:14:41', '2025-07-10 15:31:05'),
+(4, 3, 'customer_number_user_3', 42, '2025-07-04 07:14:41', '2025-07-16 07:32:23'),
 (11, 31, 'customer_number_user_31', 1, '2025-07-07 08:17:19', '2025-07-07 08:17:19'),
 (12, 32, 'customer_number_user_32', 1, '2025-07-10 13:30:52', '2025-07-10 13:30:52');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `credit_invoices`
+--
+
+CREATE TABLE `credit_invoices` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_number` varchar(255) NOT NULL,
+  `credit_shop_id` bigint(20) UNSIGNED NOT NULL,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `customer_phone` varchar(255) DEFAULT NULL,
+  `sales_rep` varchar(255) NOT NULL,
+  `issue_date` date NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `paid_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `remaining_amount` decimal(10,2) NOT NULL,
+  `status` enum('pending','partial','paid') NOT NULL DEFAULT 'pending',
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `credit_invoices`
+--
+
+INSERT INTO `credit_invoices` (`id`, `invoice_number`, `credit_shop_id`, `customer_name`, `customer_phone`, `sales_rep`, `issue_date`, `total_amount`, `paid_amount`, `remaining_amount`, `status`, `user_id`, `created_at`, `updated_at`) VALUES
+(4, 'CE-INVCR-0009', 3, NULL, NULL, 'Chammika', '2025-07-16', 2500.00, 0.00, 2500.00, 'pending', 3, '2025-07-16 11:05:59', '2025-07-16 11:05:59');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `credit_invoice_items`
+--
+
+CREATE TABLE `credit_invoice_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `credit_invoice_id` bigint(20) UNSIGNED NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `warranty` varchar(255) DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `credit_invoice_items`
+--
+
+INSERT INTO `credit_invoice_items` (`id`, `credit_invoice_id`, `description`, `warranty`, `quantity`, `unit_price`, `amount`, `user_id`, `created_at`, `updated_at`) VALUES
+(4, 4, 'kryuih', NULL, 1, 2500.00, 2500.00, 3, '2025-07-16 11:05:59', '2025-07-16 11:05:59');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `credit_shops`
+--
+
+CREATE TABLE `credit_shops` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `contact` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `credit_shops`
+--
+
+INSERT INTO `credit_shops` (`id`, `name`, `contact`, `address`, `user_id`, `created_at`, `updated_at`) VALUES
+(3, 'Pro link', NULL, NULL, 3, '2025-07-16 09:40:55', '2025-07-16 09:40:55'),
+(4, 'new borm', '0774522125', 'kegalle', 3, '2025-07-16 10:07:56', '2025-07-16 10:07:56');
 
 -- --------------------------------------------------------
 
@@ -278,7 +372,7 @@ CREATE TABLE `invoice_counters` (
 --
 
 INSERT INTO `invoice_counters` (`id`, `user_id`, `last_number`, `created_at`, `updated_at`) VALUES
-(1, 3, 8, '2025-07-04 07:54:04', '2025-07-14 03:26:27');
+(1, 3, 9, '2025-07-04 07:54:04', '2025-07-16 11:05:59');
 
 -- --------------------------------------------------------
 
@@ -513,7 +607,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (66, '2025_07_10_173115_add_smtp_fields_to_users_table', 58),
 (67, '2025_07_15_091310_create_estimates_table', 59),
 (68, '2025_07_15_091412_create_estimate_items_table', 59),
-(69, '2025_07_15_091433_create_estimate_counters_table', 59);
+(69, '2025_07_15_091433_create_estimate_counters_table', 59),
+(70, '2025_07_16_143504_create_credit_shops_table', 60),
+(71, '2025_07_16_151629_create_credit_invoices_table', 61),
+(72, '2025_07_16_151804_create_credit_invoice_items_table', 61);
 
 -- --------------------------------------------------------
 
@@ -632,6 +729,15 @@ CREATE TABLE `repair_items` (
   `keyboard` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `repair_items`
+--
+
+INSERT INTO `repair_items` (`id`, `item_number`, `shop_id`, `item_name`, `price`, `description`, `serial_number`, `date`, `status`, `created_at`, `updated_at`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
+(9, 'CE-3-0001', 3, 'laptop', NULL, 'no power', '4ergg', '2025-07-16', 'completed', '2025-07-16 05:00:04', '2025-07-16 05:15:38', '12GB', 1, 0, 0, 0, 1, 1),
+(10, 'PO-4-0001', 4, 'asus', NULL, 'mother bord replace', '4erggt3rt', '2025-07-16', 'in_progress', '2025-07-16 05:00:54', '2025-07-16 06:44:00', '16GB', 0, 1, 0, 0, 1, 1),
+(11, 'PO-4-0002', 4, 'asus', NULL, 'no power', '4erggt3rt', '2025-07-16', 'completed', '2025-07-16 07:31:40', '2025-07-16 07:33:38', NULL, 0, 1, 0, 0, 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -652,7 +758,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('6CHUYo6Xgfl9nowOZPZbpbbToiDZRI0ybeD0dZss', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiaXJOcWdoejdVcUdaMmNLeXpydEYzNW1Nb1ZFRWFmdndCcTd0VTNSbyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2VzdGltYXRlcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM7fQ==', 1752554004);
+('Ja85enAqh1gOQEXR51t2K9nANoGgcQMoQ4E0A5VN', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNTVKZzhIWXB6REprNkt4ang3bjlsZFRRd2VZRDg5ZUtPQmNPdDJyVCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2NyZWRpdF9pbnZvaWNlcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM7fQ==', 1752664955);
 
 -- --------------------------------------------------------
 
@@ -722,6 +828,14 @@ CREATE TABLE `shop_names` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `shop_names`
+--
+
+INSERT INTO `shop_names` (`id`, `name`, `contact`, `address`, `user_id`, `created_at`, `updated_at`) VALUES
+(3, 'cer', '0765645303', NULL, 3, '2025-07-16 04:59:39', '2025-07-16 04:59:39'),
+(4, 'power link', NULL, NULL, 3, '2025-07-16 05:00:30', '2025-07-16 05:00:30');
 
 -- --------------------------------------------------------
 
@@ -842,6 +956,30 @@ ALTER TABLE `counters`
   ADD UNIQUE KEY `counters_key_unique` (`key`),
   ADD UNIQUE KEY `counters_key_user_id_unique` (`key`,`user_id`),
   ADD KEY `counters_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `credit_invoices`
+--
+ALTER TABLE `credit_invoices`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `credit_invoices_invoice_number_unique` (`invoice_number`),
+  ADD KEY `credit_invoices_credit_shop_id_foreign` (`credit_shop_id`),
+  ADD KEY `credit_invoices_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `credit_invoice_items`
+--
+ALTER TABLE `credit_invoice_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `credit_invoice_items_credit_invoice_id_foreign` (`credit_invoice_id`),
+  ADD KEY `credit_invoice_items_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `credit_shops`
+--
+ALTER TABLE `credit_shops`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `credit_shops_user_id_foreign` (`user_id`);
 
 --
 -- Indexes for table `estimates`
@@ -1037,19 +1175,37 @@ ALTER TABLE `cashiers`
 -- AUTO_INCREMENT for table `completed_repairs`
 --
 ALTER TABLE `completed_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `complete_shop_repairs`
 --
 ALTER TABLE `complete_shop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `counters`
 --
 ALTER TABLE `counters`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `credit_invoices`
+--
+ALTER TABLE `credit_invoices`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `credit_invoice_items`
+--
+ALTER TABLE `credit_invoice_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `credit_shops`
+--
+ALTER TABLE `credit_shops`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `estimates`
@@ -1115,13 +1271,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `laptop_repairs`
 --
 ALTER TABLE `laptop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `my_shop_details`
@@ -1145,7 +1301,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `repair_items`
 --
 ALTER TABLE `repair_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `shops`
@@ -1163,7 +1319,7 @@ ALTER TABLE `shop_items`
 -- AUTO_INCREMENT for table `shop_names`
 --
 ALTER TABLE `shop_names`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `stock`
@@ -1212,6 +1368,26 @@ ALTER TABLE `complete_shop_repairs`
 --
 ALTER TABLE `counters`
   ADD CONSTRAINT `counters_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `credit_invoices`
+--
+ALTER TABLE `credit_invoices`
+  ADD CONSTRAINT `credit_invoices_credit_shop_id_foreign` FOREIGN KEY (`credit_shop_id`) REFERENCES `credit_shops` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `credit_invoices_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `credit_invoice_items`
+--
+ALTER TABLE `credit_invoice_items`
+  ADD CONSTRAINT `credit_invoice_items_credit_invoice_id_foreign` FOREIGN KEY (`credit_invoice_id`) REFERENCES `credit_invoices` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `credit_invoice_items_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `credit_shops`
+--
+ALTER TABLE `credit_shops`
+  ADD CONSTRAINT `credit_shops_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `estimates`
