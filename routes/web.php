@@ -149,24 +149,25 @@ Route::prefix('shop')->name('shop.')->group(function () {
      Route::get('/{shop}', [ShopController::class, 'show'])->name('show');
 });
 
-Route::prefix('shop_names')->name('shop_names.')->group(function () {
-    Route::get('/', [ShopNameController::class, 'index'])->name('index');
-    Route::post('/', [ShopNameController::class, 'store'])->name('store');
-    
-    // Add this before parameterized routes
-    Route::post('/repairitemstore/{shop}', [ShopNameController::class, 'storeRepairItems'])->name('repair_items.store');
-    Route::post('/repairitemstoreshow/{shop}', [ShopNameController::class, 'storeRepairItemsshowpage'])->name('repair_items.showpage.store');
-    Route::get('/{shop}/repair-items', [ShopNameController::class, 'showRepairItems'])->name('repair_items.index');
-    Route::delete('/repair-items/{repairItem}', [ShopNameController::class, 'destroyRepairItem'])->name('repair_items.destroy');
-    Route::put('/repair-items/{repairItem}/status', [ShopNameController::class, 'updateStatus'])->name('repair_items.update_status');
-    Route::put('/{shop}/repair-items/{repairItem}', [ShopNameController::class, 'updateRepairItem'])->name('repair_items.update');
-    
-    // Keep these after
-    Route::get('/{shop}/edit', [ShopNameController::class, 'edit'])->name('edit');
-    Route::put('/{shop}', [ShopNameController::class, 'update'])->name('update');
-    Route::delete('/{shop}', [ShopNameController::class, 'destroy'])->name('destroy');
-    Route::get('/{shop}', [ShopNameController::class, 'show'])->name('show');
-});
+Route::prefix('user/shop_names')->name('shop_names.')->group(function () {
+        Route::get('/', [ShopNameController::class, 'index'])->name('index');
+        Route::post('/', [ShopNameController::class, 'store'])->name('store');
+        Route::get('/{shop}/edit', [ShopNameController::class, 'edit'])->name('edit');
+        Route::put('/{shop}', [ShopNameController::class, 'update'])->name('update');
+        Route::delete('/{shop}', [ShopNameController::class, 'destroy'])->name('destroy');
+        
+        // Repair Items Routes
+        Route::prefix('{shop}/repair-items')->name('repair_items.')->group(function () {
+            Route::get('/', [ShopNameController::class, 'showRepairItems'])->name('index');
+            Route::post('/', [ShopNameController::class, 'storeRepairItems'])->name('store');
+            Route::post('/showpage', [ShopNameController::class, 'storeRepairItemsshowpage'])->name('showpage.store');
+            Route::get('/{repairItem}/edit', [ShopNameController::class, 'editRepairItem'])->name('edit');
+            Route::put('/{repairItem}', [ShopNameController::class, 'updateRepairItem'])->name('update');
+            Route::put('/{repairItem}/status', [ShopNameController::class, 'updateStatus'])->name('update_status');
+            Route::delete('/{repairItem}', [ShopNameController::class, 'destroyRepairItem'])->name('destroy');
+        });
+    });
+
 
 Route::prefix('credit_shop')->name('credit_shop.')->group(function () {
     // Basic CRUD routes

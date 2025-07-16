@@ -39,7 +39,6 @@
                             <th>Item #</th>
                             <th>Name</th>
                             <th>Serial</th>
-                            <!-- <th>Specs</th> -->
                             <th>Price (LKR)</th>
                             <th>Date</th>
                             <th>Status</th>
@@ -52,20 +51,6 @@
                             <td>{{ $item->item_number }}</td>
                             <td>{{ $item->item_name }}</td>
                             <td>{{ $item->serial_number ?? '--' }}</td>
-                            <!-- <td>
-                                @if($item->ram)
-                                    <span class="badge bg-info">RAM: {{ $item->ram }}</span>
-                                @endif
-                                @if($item->hdd)
-                                    <span class="badge bg-secondary">HDD</span>
-                                @endif
-                                @if($item->ssd)
-                                    <span class="badge bg-primary">SSD</span>
-                                @endif
-                                @if($item->nvme)
-                                    <span class="badge bg-success">NVMe</span>
-                                @endif
-                            </td> -->
                             <td>{{ $item->price ? number_format($item->price, 2) : '--' }}</td>
                             <td>{{ $item->date->format('Y-m-d') }}</td>
                             <td>
@@ -77,12 +62,12 @@
                                 </select>
                             </td>
                             <td>
-
-                             <button class="btn btn-sm btn-warning edit-repair-item" 
-                                    data-item="{{ json_encode($item) }}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                                    <button class="btn btn-sm btn-danger delete-repair-item" 
+                                <button class="btn btn-sm btn-warning edit-repair-item" 
+                                        data-id="{{ $item->id }}"
+                                        data-shop-id="{{ $shop->id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-repair-item" 
                                         data-id="{{ $item->id }}"
                                         data-number="{{ $item->item_number }}">
                                     <i class="fas fa-trash"></i>
@@ -95,7 +80,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center">No repair items found</td>
+                            <td colspan="7" class="text-center">No repair items found</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -132,7 +117,8 @@
                             <td>{{ Str::limit($completed->notes, 30) }}</td>
                             <td>
                                 <button class="btn btn-sm btn-info view-completed-details" 
-                                        data-completed="{{ json_encode($completed) }}">
+                                        data-completed="{{ json_encode($completed) }}"
+                                        data-repair-item="{{ json_encode($completed->repairItem) }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </td>
@@ -156,7 +142,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addRepairItemsForm" method="POST" action="{{ route('user.shop_names.repair_items.showpage.store', $shop->id) }}">
+            <form id="addRepairItemsForm" method="POST" action="{{ route('user.shop_names.repair_items.store', $shop->id) }}">
                 @csrf
                 <div class="modal-body">
                     <div id="repair-items-container">
@@ -166,7 +152,7 @@
                         <i class="fas fa-plus"></i> Add Another Item
                     </button>
                 </div>
-                <div class="modal-footer bg-whitesmoke br">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save Items</button>
                 </div>
@@ -188,7 +174,7 @@
             <div class="modal-body" id="itemDetailsContent">
                 <!-- Details will be loaded here -->
             </div>
-            <div class="modal-footer bg-whitesmoke br">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -208,7 +194,7 @@
             <div class="modal-body">
                 <p>Are you sure you want to delete repair item <strong id="delete_item_number"></strong>? This action cannot be undone.</p>
             </div>
-            <div class="modal-footer bg-whitesmoke br">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <form id="deleteRepairItemForm" method="POST" style="display: inline;">
                     @csrf
@@ -258,8 +244,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="edit_date">Date *</label>
-                                <input type="date" class="form-control" id="edit_date" name="date" required 
-                                    value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="edit_date" name="date" required>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -369,15 +354,14 @@
                         <textarea class="form-control" id="edit_description" name="description" rows="2"></textarea>
                     </div>
                 </div>
-                <div class="modal-footer bg-whitesmoke br">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary">Update Item</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 
 <style>
     .badge {
@@ -386,11 +370,15 @@
     }
     .status-select {
         min-width: 150px;
+        font-size: 12px;
+        padding: 5px;
+        border-radius: 0px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
-    .specs-badge {
-        display: inline-block;
-        margin-right: 5px;
-        margin-bottom: 5px;
+    .status-select:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
     .repair-item {
         background-color: #f8f9fa;
@@ -413,36 +401,36 @@
         padding: 1rem;
         margin-top: 1rem;
     }
-    .completed-badge {
-        background-color: #28a745;
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        min-height: 38px;
     }
-
-    .status-select {
-        font-size: 12px;
-        padding: 5px 5px;
-        border-radius: 0px;
-         font-weight: 600;
+    .checkbox-wrapper .form-check {
+        margin-bottom: 0;
+    }
+    .checkbox-wrapper .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin-top: 0;
+        margin-right: 8px;
         cursor: pointer;
-        transition: all 0.3s ease;
     }
-    
-    .status-select:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    .checkbox-wrapper .form-check-label {
+        cursor: pointer;
+        font-weight: 500;
+        margin-bottom: 0;
     }
 </style>
-
 
 @push('scripts')
 <script>
     $(document).ready(function () {
         // Handle Add Repair Item button click
         $('#addRepairItemBtn').on('click', function() {
-            // Reset the form and add one empty item
             $('#repair-items-container').html('');
             itemCounter = 0;
             addRepairItem(0);
-            
-            // Show the modal
             $('#addRepairItemsModal').modal('show');
         });
 
@@ -603,7 +591,6 @@
         $(document).on('click', '.remove-item', function() {
             if($('.repair-item').length > 1) {
                 $(this).closest('.repair-item').remove();
-                // Reindex all items
                 reindexItems();
             } else {
                 Swal.fire({
@@ -620,26 +607,20 @@
             var itemId = $(this).data('id');
             var itemNumber = $(this).data('number');
             
-            // Set the item number in the confirmation message
             $('#delete_item_number').text(itemNumber);
             
-            // Set the form action URL with the correct item ID
-            var actionUrl = "{{ route('user.shop_names.repair_items.destroy', ':id') }}";
+            var actionUrl = "{{ route('user.shop_names.repair_items.destroy', ['shop' => $shop->id, 'repairItem' => ':id']) }}";
             actionUrl = actionUrl.replace(':id', itemId);
             $('#deleteRepairItemForm').attr('action', actionUrl);
             
-            // Show the modal
             $('#deleteRepairItemModal').modal('show');
         });
 
         // Handle View Details button click
         $(document).on('click', '.view-details', function() {
             var item = $(this).data('item');
-            
-            // Format the date
             var formattedDate = new Date(item.date).toLocaleDateString();
             
-            // Create HTML for the details
             var html = `
                 <div class="mb-3">
                     <h5>${item.item_name}</h5>
@@ -649,7 +630,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <p><strong>Serial Number:</strong> ${item.serial_number || 'N/A'}</p>
-                        <p><strong>Status:</strong> <span class="badge text-dark ${getStatusBadgeClass(item.status)}">${formatStatus(item.status)}</span></p>
+                        <p><strong>Status:</strong> <span class="badge ${getStatusBadgeClass(item.status)}">${formatStatus(item.status)}</span></p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Date:</strong> ${formattedDate}</p>
@@ -660,13 +641,13 @@
                 <div class="mb-3">
                     <h6>Hardware Specifications</h6>
                     <div>
-                        ${item.ram ? '<span class="badge bg-info text-dark">RAM: ' + item.ram + '</span>' : ''}
-                        ${item.hdd ? '<span class="badge bg-secondary text-dark">HDD</span>' : ''}
-                        ${item.ssd ? '<span class="badge bg-primary text-dark">SSD</span>' : ''}
-                        ${item.nvme ? '<span class="badge bg-success text-dark">NVMe</span>' : ''}
-                        ${item.battery ? '<span class="badge bg-warning text-dark">Battery</span>' : ''}
+                        ${item.ram ? '<span class="badge bg-info">RAM: ' + item.ram + '</span>' : ''}
+                        ${item.hdd ? '<span class="badge bg-secondary">HDD</span>' : ''}
+                        ${item.ssd ? '<span class="badge bg-primary">SSD</span>' : ''}
+                        ${item.nvme ? '<span class="badge bg-success">NVMe</span>' : ''}
+                        ${item.battery ? '<span class="badge bg-warning">Battery</span>' : ''}
                         ${item.dvd_rom ? '<span class="badge bg-dark text-white">DVD ROM</span>' : ''}
-                        ${item.keyboard ? '<span class="badge bg-danger text-dark">Keyboard</span>' : ''}
+                        ${item.keyboard ? '<span class="badge bg-danger">Keyboard</span>' : ''}
                     </div>
                 </div>
                 
@@ -683,7 +664,7 @@
         // Handle View Completed Details button click
         $(document).on('click', '.view-completed-details', function() {
             var completed = $(this).data('completed');
-            var repairItem = completed.repair_item;
+            var repairItem = $(this).data('repair-item');
             
             var html = `
                 <div class="mb-3">
@@ -695,7 +676,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <p><strong>Completed Date:</strong> ${new Date(completed.created_at).toLocaleString()}</p>
-                        <p><strong>Final Price:</strong> LKR -${parseFloat(completed.final_price).toFixed(2)}</p>
+                        <p><strong>Final Price:</strong> LKR ${parseFloat(completed.final_price).toFixed(2)}</p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Completed By:</strong> {{ Auth::user()->name }}</p>
@@ -709,7 +690,7 @@
                 
                 <div class="mb-3">
                     <h6>Original Details</h6>
-                    <p><strong>Original Price:</strong> ${repairItem.price ? 'LKR-' + parseFloat(repairItem.price).toFixed(2) : 'N/A'}</p>
+                    <p><strong>Original Price:</strong> ${repairItem.price ? 'LKR ' + parseFloat(repairItem.price).toFixed(2) : 'N/A'}</p>
                     <p><strong>Description:</strong> ${repairItem.description || 'No description provided'}</p>
                 </div>
             `;
@@ -722,28 +703,83 @@
             });
         });
 
-        // Helper function to format status
-        function formatStatus(status) {
-            return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-        }
+        // Handle Edit Repair Item button click
+        $(document).on('click', '.edit-repair-item', function() {
+            var shopId = $(this).data('shop-id');
+            var repairItemId = $(this).data('id');
+            
+            var editUrl = "{{ route('user.shop_names.repair_items.edit', ['shop' => $shop->id, 'repairItem' => ':id']) }}"
+                .replace(':id', repairItemId);
+            
+            var updateUrl = "{{ route('user.shop_names.repair_items.update', ['shop' => $shop->id, 'repairItem' => ':id']) }}"
+                .replace(':id', repairItemId);
+            
+            $.get(editUrl, function(data) {
+                $('#edit_item_name').val(data.item_name);
+                $('#edit_serial_number').val(data.serial_number);
+                $('#edit_price').val(data.price);
+                $('#edit_date').val(new Date(data.date).toISOString().substr(0, 10));
+                $('#edit_status').val(data.status);
+                $('#edit_ram').val(data.ram);
+                $('#edit_description').val(data.description);
+                
+                $('#edit_hdd').prop('checked', data.hdd == 1);
+                $('#edit_ssd').prop('checked', data.ssd == 1);
+                $('#edit_nvme').prop('checked', data.nvme == 1);
+                $('#edit_battery').prop('checked', data.battery == 1);
+                $('#edit_dvd_rom').prop('checked', data.dvd_rom == 1);
+                $('#edit_keyboard').prop('checked', data.keyboard == 1);
+                
+                $('#editRepairItemForm').attr('action', updateUrl);
+                $('#editRepairItemModal').modal('show');
+            });
+        });
 
-        // Helper function to get status badge class
-        function getStatusBadgeClass(status) {
-            switch(status) {
-                case 'pending': return 'bg-secondary';
-                case 'in_progress': return 'bg-primary';
-                case 'completed': return 'bg-success';
-                case 'canceled': return 'bg-danger';
-                default: return 'bg-secondary';
-            }
-        }
+        // Submit Edit Form
+        $('#editRepairItemForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            var form = $(this);
+            var url = form.attr('action');
+            
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    if(response.success) {
+                        $('#editRepairItemModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                            confirmButtonColor: '#0d6efd'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    var errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+                        ? xhr.responseJSON.message 
+                        : 'Failed to update repair item';
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage,
+                        confirmButtonColor: '#0d6efd'
+                    });
+                }
+            });
+        });
 
         // Handle status change
         $(document).on('change', '.status-select', function() {
             var itemId = $(this).data('id');
             var newStatus = $(this).val();
             var previousValue = $(this).data('previous-value');
-            var url = "{{ route('user.shop_names.repair_items.update_status', ['repairItem' => ':id']) }}";
+            var url = "{{ route('user.shop_names.repair_items.update_status', ['shop' => $shop->id, 'repairItem' => ':id']) }}";
             url = url.replace(':id', itemId);
             
             if (newStatus === 'completed') {
@@ -814,7 +850,6 @@
                     });
                     
                     if (data.status === 'completed') {
-                        // Refresh the page to show the completed status
                         setTimeout(() => {
                             location.reload();
                         }, 1500);
@@ -827,7 +862,6 @@
                         text: xhr.responseJSON?.message || 'Failed to update status',
                         confirmButtonColor: '#0d6efd'
                     });
-                    // Revert the select to its previous value
                     selectElement.val(previousValue);
                 }
             });
@@ -838,12 +872,27 @@
             $(this).data('previous-value', $(this).val());
         });
 
+        // Helper function to format status
+        function formatStatus(status) {
+            return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        // Helper function to get status badge class
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'pending': return 'bg-secondary';
+                case 'in_progress': return 'bg-primary';
+                case 'completed': return 'bg-success';
+                case 'canceled': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
         // Function to reindex all items after removal
         function reindexItems() {
             $('.repair-item').each(function(index) {
                 $(this).attr('data-index', index);
                 
-                // Update all form elements
                 $(this).find('input, select, textarea').each(function() {
                     var element = $(this);
                     var name = element.attr('name');
@@ -860,7 +909,6 @@
                     }
                 });
                 
-                // Update labels
                 $(this).find('label').each(function() {
                     var label = $(this);
                     var forAttr = label.attr('for');
@@ -874,77 +922,6 @@
             itemCounter = $('.repair-item').length - 1;
         }
     });
-
-    // Handle Edit Repair Item button click
-// Handle Edit Repair Item button click
-$(document).on('click', '.edit-repair-item', function() {
-    var item = $(this).data('item');
-    var shopId = "{{ $shop->id }}"; // Get the shop ID from the blade template
-    
-    // Set the form action URL with both shopId and repairItem parameters
-    var actionUrl = "{{ route('user.shop_names.repair_items.update', ['shop' => ':shopId', 'repairItem' => ':repairItemId']) }}";
-    actionUrl = actionUrl.replace(':shopId', shopId).replace(':repairItemId', item.id);
-    $('#editRepairItemForm').attr('action', actionUrl);
-    
-    // Rest of your code remains the same...
-    $('#edit_item_name').val(item.item_name);
-    $('#edit_serial_number').val(item.serial_number || '');
-    $('#edit_price').val(item.price || '');
-    $('#edit_date').val(new Date(item.date).toISOString().substr(0, 10));
-    $('#edit_status').val(item.status);
-    $('#edit_description').val(item.description || '');
-    
-    if (item.ram) {
-        $('#edit_ram').val(item.ram);
-    }
-    
-    $('#edit_hdd').prop('checked', item.hdd == 1);
-    $('#edit_ssd').prop('checked', item.ssd == 1);
-    $('#edit_nvme').prop('checked', item.nvme == 1);
-    $('#edit_battery').prop('checked', item.battery == 1);
-    $('#edit_dvd_rom').prop('checked', item.dvd_rom == 1);
-    $('#edit_keyboard').prop('checked', item.keyboard == 1);
-    
-    $('#editRepairItemModal').modal('show');
-});
-
-// Handle Edit form submission
-$('#editRepairItemForm').on('submit', function(e) {
-    e.preventDefault();
-    
-    var form = $(this);
-    var url = form.attr('action');
-    var formData = form.serialize();
-    
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: formData,
-        success: function(response) {
-            $('#editRepairItemModal').modal('hide');
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.message,
-                confirmButtonColor: '#0d6efd'
-            }).then(() => {
-                location.reload(); // Refresh the page to show changes
-            });
-        },
-        error: function(xhr) {
-            var errorMessage = xhr.responseJSON?.message || 'Failed to update repair item';
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: errorMessage,
-                confirmButtonColor: '#0d6efd'
-            });
-        }
-    });
-});
-
 </script>
-
-
 @endpush
 @endsection
