@@ -641,13 +641,13 @@
                 <div class="mb-3">
                     <h6>Hardware Specifications</h6>
                     <div>
-                        ${item.ram ? '<span class="badge bg-info">RAM: ' + item.ram + '</span>' : ''}
-                        ${item.hdd ? '<span class="badge bg-secondary">HDD</span>' : ''}
-                        ${item.ssd ? '<span class="badge bg-primary">SSD</span>' : ''}
-                        ${item.nvme ? '<span class="badge bg-success">NVMe</span>' : ''}
-                        ${item.battery ? '<span class="badge bg-warning">Battery</span>' : ''}
+                         ${item.ram ? '<span class="badge bg-info text-dark">RAM: ' + item.ram + '</span>' : ''}
+                        ${item.hdd ? '<span class="badge bg-secondary text-dark">HDD</span>' : ''}
+                        ${item.ssd ? '<span class="badge bg-primary text-dark">SSD</span>' : ''}
+                        ${item.nvme ? '<span class="badge bg-success text-dark">NVMe</span>' : ''}
+                        ${item.battery ? '<span class="badge bg-warning text-dark">Battery</span>' : ''}
                         ${item.dvd_rom ? '<span class="badge bg-dark text-white">DVD ROM</span>' : ''}
-                        ${item.keyboard ? '<span class="badge bg-danger">Keyboard</span>' : ''}
+                        ${item.keyboard ? '<span class="badge bg-danger text-dark">Keyboard</span>' : ''}
                     </div>
                 </div>
                 
