@@ -33,6 +33,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'permissions' => 'array',
     ];
 
     public function isAdmin()
@@ -66,5 +67,19 @@ public function myShopDetails()
     return $this->hasOne(MyShopDetail::class);
 }
 
+public function getPermissionsAttribute($value)
+{
+    return json_decode($value, true) ?? [];
+}
+
+public function setPermissionsAttribute($value)
+{
+    $this->attributes['permissions'] = json_encode($value);
+}
+
+public function hasPermission($permission)
+{
+    return in_array($permission, $this->permissions ?? []);
+}
 
 }

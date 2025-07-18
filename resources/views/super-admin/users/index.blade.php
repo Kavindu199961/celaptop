@@ -51,8 +51,10 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
+                            <th>Permissins</th>
                             <th>Status</th>
                             <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -64,6 +66,24 @@
                                 <span class="badge badge-{{ $user->role === 'admin' ? 'primary' : 'secondary' }}">
                                     {{ ucfirst($user->role) }}
                                 </span>
+                            </td>
+                            <td>
+                                @if($user->permissions && count($user->permissions))
+                                    <div class="permission-container">
+                                        @foreach(array_slice($user->permissions, 0, 3) as $permission)
+                                            <span class="badge badge-info mr-1">{{ $permission }}</span>
+                                        @endforeach
+                                        
+                                        @if(count($user->permissions) > 3)
+                                            <a href="#" class="small text-primary show-more-perms" 
+                                            data-permissions="{{ json_encode($user->permissions) }}">
+                                                +{{ count($user->permissions) - 3 }} more
+                                            </a>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-muted">No permissions</span>
+                                @endif
                             </td>
                             <td>
                                 <div class="custom-control custom-switch">
@@ -106,7 +126,7 @@
 
 <!-- Create User Modal -->
 <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createUserModalLabel">Add New User</h5>
@@ -138,13 +158,39 @@
                         <select class="form-control" id="create_role" name="role" required>
                             <option value="user">User</option>
                             <option value="admin">Admin</option>
-                            
                         </select>
                     </div>
                     <div class="form-group">
                         <div class="custom-control custom-switch">
                             <input type="checkbox" class="custom-control-input" id="create_is_active" name="is_active" checked>
                             <label class="custom-control-label" for="create_is_active">Active</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Permissions Section for Create -->
+                    <div class="form-group">
+                        <label class="form-label">Permissions</label>
+                        <div class="selectgroup w-100">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="selectAllCreatePermissions">
+                                        <label class="custom-control-label font-weight-bold" for="selectAllCreatePermissions">Select All Permissions</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12" id="createPermissionCheckboxes">
+                                    @foreach($allPermissions as $index => $permission)
+                                    <div class="col-md-6 mb-2" style="display: inline-block;">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input create-permission-checkbox" 
+                                                   id="create_permission_{{ $index }}" name="permissions[]" value="{{ $permission }}">
+                                            <label class="custom-control-label" for="create_permission_{{ $index }}">{{ $permission }}</label>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -159,7 +205,7 @@
 
 <!-- Edit User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
@@ -200,6 +246,25 @@
                             <label class="custom-control-label" for="edit_is_active">Active</label>
                         </div>
                     </div>
+                    
+                    <!-- Permissions Section for Edit -->
+                    <div class="form-group">
+                        <label class="form-label">Permissions</label>
+                        <div class="selectgroup w-100">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="selectAllEditPermissions">
+                                        <label class="custom-control-label font-weight-bold" for="selectAllEditPermissions">Select All Permissions</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12" id="editPermissionCheckboxes">
+                                    <!-- Permission checkboxes will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer bg-whitesmoke br">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -238,29 +303,132 @@
 
 @push('scripts')
 <script>
-   
+    // Global variables to store permissions
+    let allPermissions = @json($allPermissions);
+    let userPermissions = [];
+
+    // Function to populate permission checkboxes for edit modal
+    function populateEditPermissions(permissions, selectedPermissions = []) {
+        const container = document.getElementById('editPermissionCheckboxes');
+        container.innerHTML = '';
+        
+        permissions.forEach((permission, index) => {
+            const isChecked = selectedPermissions.includes(permission) ? 'checked' : '';
+            const permissionId = `edit_permission_${index}`;
+            
+            const html = `
+                <div class="col-md-6 mb-2" style="display: inline-block;">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input edit-permission-checkbox" 
+                               id="${permissionId}" name="permissions[]" value="${permission}" ${isChecked}>
+                        <label class="custom-control-label" for="${permissionId}">${permission}</label>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML += html;
+        });
+        
+        // Update select all checkbox state
+        updateEditSelectAllState();
+    }
+
+    // Function to update select all checkbox state for edit modal
+    function updateEditSelectAllState() {
+        const selectAllCheckbox = document.getElementById('selectAllEditPermissions');
+        const permissionCheckboxes = document.querySelectorAll('.edit-permission-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.edit-permission-checkbox:checked');
+        
+        if (checkedCheckboxes.length === permissionCheckboxes.length && permissionCheckboxes.length > 0) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedCheckboxes.length > 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        }
+    }
+
+    // Function to update select all checkbox state for create modal
+    function updateCreateSelectAllState() {
+        const selectAllCheckbox = document.getElementById('selectAllCreatePermissions');
+        const permissionCheckboxes = document.querySelectorAll('.create-permission-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.create-permission-checkbox:checked');
+        
+        if (checkedCheckboxes.length === permissionCheckboxes.length && permissionCheckboxes.length > 0) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedCheckboxes.length > 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        }
+    }
+
+    $(document).ready(function () {
+        // Handle select all checkbox for create modal
+        $('#selectAllCreatePermissions').on('change', function() {
+            const permissionCheckboxes = document.querySelectorAll('.create-permission-checkbox');
+            permissionCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Handle select all checkbox for edit modal
+        $('#selectAllEditPermissions').on('change', function() {
+            const permissionCheckboxes = document.querySelectorAll('.edit-permission-checkbox');
+            permissionCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // Handle individual permission checkboxes for create modal
+        $(document).on('change', '.create-permission-checkbox', function() {
+            updateCreateSelectAllState();
+        });
+
+        // Handle individual permission checkboxes for edit modal
+        $(document).on('change', '.edit-permission-checkbox', function() {
+            updateEditSelectAllState();
+        });
+
+        // Initialize create modal select all state
+        updateCreateSelectAllState();
+
         // Handle Add User button click
-        $(document).ready(function () {
-        // Handle Add User button click - FIXED
         $('#addUserBtn').on('click', function() {
             $('#createUserModal').modal('show');
         });
 
-        // Handle Edit button click - FIXED
+        // Handle Edit button click - Updated to fetch permissions
         $(document).on('click', '.edit-user', function() {
             var userId = $(this).data('id');
             
-            // Fetch user data via AJAX - FIXED route
+            // Fetch user data via AJAX
             $.get("/super-admin/users/" + userId + "/edit", function(data) {
+                // Store permissions data
+                userPermissions = data.user.permissions || [];
+                
                 // Populate the edit form
-                $('#edit_name').val(data.name);
-                $('#edit_email').val(data.email);
-                $('#edit_role').val(data.role);
-                $('#edit_is_active').prop('checked', data.is_active);
+                $('#edit_name').val(data.user.name);
+                $('#edit_email').val(data.user.email);
+                $('#edit_role').val(data.user.role);
+                $('#edit_is_active').prop('checked', data.user.is_active);
+                
+                // Clear password fields
+                $('#edit_password').val('');
+                $('#edit_password_confirmation').val('');
                 
                 // Set the form action URL
                 var actionUrl = "/super-admin/users/" + userId;
                 $('#editUserForm').attr('action', actionUrl);
+                
+                // Populate permissions
+                populateEditPermissions(data.allPermissions, userPermissions);
                 
                 // Show the modal
                 $('#editUserModal').modal('show');
@@ -335,6 +503,16 @@
             $('#deleteUserForm button[type="submit"]').prop('disabled', false).html('Delete');
         });
 
+        $('#createUserModal').on('hidden.bs.modal', function () {
+            $('#createUserForm button[type="submit"]').prop('disabled', false).html('Save User');
+            // Reset form
+            $('#createUserForm')[0].reset();
+            $('#create_is_active').prop('checked', true);
+            // Uncheck all permissions
+            $('.create-permission-checkbox').prop('checked', false);
+            updateCreateSelectAllState();
+        });
+
         // Handle form submissions with loading states
         $('#editUserForm').on('submit', function() {
             $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
@@ -343,7 +521,49 @@
         $('#deleteUserForm').on('submit', function() {
             $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
         });
+
+        $('#createUserForm').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+        });
     });
 </script>
+
+<style>
+/* Custom styles for better appearance */
+.selectgroup {
+    margin-bottom: 0;
+}
+
+.permission-checkbox, .create-permission-checkbox, .edit-permission-checkbox {
+    margin-right: 8px;
+}
+
+.custom-control-label {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+#editPermissionCheckboxes, #createPermissionCheckboxes {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.col-md-6.mb-2 {
+    padding: 0 5px;
+}
+</style>
 @endpush
 @endsection

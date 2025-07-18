@@ -15,8 +15,9 @@
   <!-- Font Awesome 6 CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="icon" href="{{ asset('assets/img/desktop.png') }}" type="image/png">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" href="{{ asset('assets/img/desktop.png') }}" type="image/png">
+
 </head>
 
 <body>
@@ -128,84 +129,110 @@
               </a>
             </li>
 
-           <li class="dropdown {{ request()->is('user/invoices') || request()->is('user/invoices/*') ? 'active' : '' }}">
-              <a href="{{ route('user.invoices.index') }}" class="nav-link">
-                  <i class="fas fa-file-invoice-dollar"></i><span>Invoice</span>
-              </a>
-          </li>
-
-          <li class="dropdown {{ request()->is('user/invoices-with-stock') || request()->is('user/invoices-with-stock/*') ? 'active' : '' }}">
-              <a href="{{ route('user.invoices_with_stock.index') }}" class="nav-link">
-                  <i class="fas fa-clipboard-list"></i><span>Invoice With Stock</span>
-              </a>
-          </li>
-
-            <li class="dropdown {{ request()->is('user/estimates*') ? 'active' : '' }}">
-              <a href="{{ route('user.estimates.index') }}" class="nav-link">
-                <i class="fas fa-file-alt"></i><span>Estimates</span>
-              </a>
+           @if(auth()->user()->hasPermission('Invoice'))
+            <li class="dropdown {{ request()->is('user/invoices') || request()->is('user/invoices/*') ? 'active' : '' }}">
+                <a href="{{ route('user.invoices.index') }}" class="nav-link">
+                    <i class="fas fa-file-invoice-dollar"></i><span>Invoice</span>
+                </a>
             </li>
-
+            @endif
+            
+            @if(auth()->user()->hasPermission('Invoice With Stock'))
+            <li class="dropdown {{ request()->is('user/invoices-with-stock') || request()->is('user/invoices-with-stock/*') ? 'active' : '' }}">
+                <a href="{{ route('user.invoices_with_stock.index') }}" class="nav-link">
+                    <i class="fas fa-clipboard-list"></i><span>Invoice With Stock</span>
+                </a>
+            </li>
+            @endif
+            
+            @if(auth()->user()->hasPermission('Estimates'))
+            <li class="dropdown {{ request()->is('user/estimates*') ? 'active' : '' }}">
+                <a href="{{ route('user.estimates.index') }}" class="nav-link">
+                    <i class="fas fa-file-alt"></i><span>Estimates</span>
+                </a>
+            </li>
+            @endif
+            
+            @if(auth()->user()->hasPermission('Stock'))
+            <li class="dropdown {{ request()->is('user/stock*') ? 'active' : '' }}">
+                <a href="{{ route('user.stock.index') }}" class="nav-link">
+                    <i class="fas fa-boxes"></i><span>Stock</span>
+                </a>
+            </li>
+            @endif
+            
             <hr class="my-1" style="height: 2px; background-color: black; border: none;">
+            
+            @if(auth()->user()->hasPermission('Credit Shops'))
             <li class="dropdown {{ request()->is('user/credit_shop*') ? 'active' : '' }}">
                 <a href="{{ route('user.credit_shop.index') }}" class="nav-link">
-                  <i class="fas fa-store"></i><span>Credit Shops</span>
+                    <i class="fas fa-store"></i><span>Credit Shops</span>
                 </a>
-              </li>
-
-              <li class="dropdown {{ request()->is('user/credit_invoices*') ? 'active' : '' }}">
-                <a href="{{ route('user.credit_invoices.index') }}" class="nav-link">
-                  <i class="fas fa-file-invoice-dollar"></i><span>Credit Invoices</span>
-                </a>
-              </li>
-          <hr class="my-1" style="height: 2px; background-color: black; border: none;">
-
-          <li class="dropdown {{ request()->is('user/total-amount*') ? 'active' : '' }}">
-              <a href="{{ route('user.total_amount.index') }}" class="nav-link">
-                <i class="fas fa-chart-line"></i><span>Invoice Report</span>
-              </a>
             </li>
-
-
-            <li class="dropdown {{ request()->is('user/laptop-repair*') ? 'active' : '' }}">
-              <a href="{{ route('user.laptop-repair.index') }}" class="nav-link">
-                <i class="fas fa-laptop-medical"></i><span>Laptop Repair</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/complete-repair*') ? 'active' : '' }}">
-              <a href="{{ route('user.complete-repair.index') }}" class="nav-link">
-                <i class="fas fa-check-circle"></i><span>Completed Repair</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/stock*') ? 'active' : '' }}">
-              <a href="{{ route('user.stock.index') }}" class="nav-link">
-                <i class="fas fa-boxes"></i><span>Stock</span>
-              </a>
-            </li>
-
-            <hr class="my-1" style="height: 2px; background-color: black; border: none;">
-
-
-            <li class="dropdown {{ request()->is('user/shop_names*') ? 'active' : '' }}">
-              <a href="{{ route('user.shop_names.index') }}" class="nav-link">
-                <i class="fas fa-store"></i><span>Shop Repair Details</span>
-              </a>
-            </li>
-
-            <li class="dropdown {{ request()->is('user/shop_completed_repair*') ? 'active' : '' }}">
-              <a href="{{ route('user.shop_completed_repair.index') }}" class="nav-link">
-                <i class="fas fa-check-double"></i><span>Completed Shop Repairs</span>
-              </a>
-
+            @endif
             
-
-            <li class="dropdown {{ request()->is('user/user/email-settings*') ? 'active' : '' }}">
-              <a href="{{ route('user.email-settings.index') }}" class="nav-link">
-                <i class="fas fa-envelope"></i></i><span>Email Setting</span>
-              </a>
+            @if(auth()->user()->hasPermission('Credit Invoices'))
+            <li class="dropdown {{ request()->is('user/credit_invoices*') ? 'active' : '' }}">
+                <a href="{{ route('user.credit_invoices.index') }}" class="nav-link">
+                    <i class="fas fa-file-invoice-dollar"></i><span>Credit Invoices</span>
+                </a>
             </li>
+            @endif
+            
+            
+            
+            @if(auth()->user()->hasPermission('Invoice Report'))
+            <hr class="my-1" style="height: 2px; background-color: black; border: none;">
+            <li class="dropdown {{ request()->is('user/total-amount*') ? 'active' : '' }}">
+                <a href="{{ route('user.total_amount.index') }}" class="nav-link">
+                    <i class="fas fa-chart-line"></i><span>Invoice Report</span>
+                </a>
+            </li>
+            @endif
+            
+            @if(auth()->user()->hasPermission('Laptop Repair'))
+            <li class="dropdown {{ request()->is('user/laptop-repair*') ? 'active' : '' }}">
+                <a href="{{ route('user.laptop-repair.index') }}" class="nav-link">
+                    <i class="fas fa-laptop-medical"></i><span>Laptop Repair</span>
+                </a>
+            </li>
+            @endif
+            
+            @if(auth()->user()->hasPermission('Completed Repair'))
+            <li class="dropdown {{ request()->is('user/complete-repair*') ? 'active' : '' }}">
+                <a href="{{ route('user.complete-repair.index') }}" class="nav-link">
+                    <i class="fas fa-check-circle"></i><span>Completed Repair</span>
+                </a>
+            </li>
+            @endif
+            
+            
+            
+            @if(auth()->user()->hasPermission('Shop Repair Details'))
+            <hr class="my-1" style="height: 2px; background-color: black; border: none;">
+            <li class="dropdown {{ request()->is('user/shop_names*') ? 'active' : '' }}">
+                <a href="{{ route('user.shop_names.index') }}" class="nav-link">
+                    <i class="fas fa-store"></i><span>Shop Repair Details</span>
+                </a>
+            </li>
+            @endif
+            
+            @if(auth()->user()->hasPermission('Completed Shop Repairs'))
+            <li class="dropdown {{ request()->is('user/shop_completed_repair*') ? 'active' : '' }}">
+                <a href="{{ route('user.shop_completed_repair.index') }}" class="nav-link">
+                    <i class="fas fa-check-double"></i><span>Completed Shop Repairs</span>
+                </a>
+            </li>
+            @endif
+            
+            @if(auth()->user()->hasPermission('Email Setting'))
+            <li class="dropdown {{ request()->is('user/user/email-settings*') ? 'active' : '' }}">
+                <a href="{{ route('user.email-settings.index') }}" class="nav-link">
+                    <i class="fas fa-envelope"></i><span>Email Setting</span>
+                </a>
+            </li>
+            @endif
+
 
             <!-- <li class="dropdown {{ request()->is('repair-tracking*') ? 'active' : '' }}">
               <a href="{{ route('web.repair-tracking.index') }}" class="nav-link">
