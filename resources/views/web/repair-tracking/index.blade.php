@@ -661,25 +661,27 @@
                                 </div>
                             </div>
                         @else
-                            <!-- Show normal progress steps -->
+                            <!-- Show normal progress steps (filter out cancelled step if present) -->
                             @foreach($steps as $step)
-                                <div class="progress-step 
-                                    @if($step['completed']) step-completed
-                                    @elseif($step['active']) step-active
-                                    @else step-pending
-                                    @endif">
-                                    <div class="step-icon">
-                                        @if($step['completed'])
-                                            <i class="fas fa-check"></i>
-                                        @else
-                                            {{ $loop->iteration }}
-                                        @endif
+                                @unless($step['status'] === 'cancelled' && $status !== 'cancelled')
+                                    <div class="progress-step 
+                                        @if($step['completed']) step-completed
+                                        @elseif($step['active']) step-active
+                                        @else step-pending
+                                        @endif">
+                                        <div class="step-icon">
+                                            @if($step['completed'])
+                                                <i class="fas fa-check"></i>
+                                            @else
+                                                {{ $loop->iteration }}
+                                            @endif
+                                        </div>
+                                        <div class="step-content">
+                                            <div class="step-title">{{ $step['label'] }}</div>
+                                            <div class="step-description">{{ $step['description'] }}</div>
+                                        </div>
                                     </div>
-                                    <div class="step-content">
-                                        <div class="step-title">{{ $step['label'] }}</div>
-                                        <div class="step-description">{{ $step['description'] }}</div>
-                                    </div>
-                                </div>
+                                @endunless
                             @endforeach
                         @endif
 
