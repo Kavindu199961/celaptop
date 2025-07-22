@@ -634,180 +634,196 @@
 
         <!-- Content Area -->
         <div class="content-area">
-            @if(request()->has('tracking_number'))
-                @if(!$repair && !$repairItem)
-                    <div class="alert alert-danger fade-in">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        No repair found with number: {{ request('tracking_number') }}
-                    </div>
-                @else
-                    <div class="row">
-                        <!-- Left Side - Repair Progress -->
-                        <div class="col-lg-6 col-md-12">
-                            <div class="progress-card fade-in">
-                                <h4 class="card-title">
-                                    <i class="fas fa-tasks me-2"></i>Repair Progress
-                                </h4>
+    @if(request()->has('tracking_number'))
+        @if(!$repair && !$repairItem)
+            <div class="alert alert-danger fade-in">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                No repair found with number: {{ request('tracking_number') }}
+            </div>
+        @else
+            <div class="row">
+                <!-- Left Side - Repair Progress -->
+                <div class="col-lg-6 col-md-12">
+                    <div class="progress-card fade-in">
+                        <h4 class="card-title">
+                            <i class="fas fa-tasks me-2"></i>Repair Progress
+                        </h4>
 
-                                @foreach($steps as $step)
-                                    <div class="progress-step 
-                                        @if($step['completed']) step-completed
-                                        @elseif($step['active']) step-active
-                                        @else step-pending
-                                        @endif">
-                                        <div class="step-icon">
-                                            @if($step['completed'])
-                                                <i class="fas fa-check"></i>
-                                            @else
-                                                {{ $loop->iteration }}
-                                            @endif
-                                        </div>
-                                        <div class="step-content">
-                                            <div class="step-title">{{ $step['label'] }}</div>
-                                            <div class="step-description">{{ $step['description'] }}</div>
-                                        </div>
+                        @if($status === 'cancelled')
+                            <!-- Show only cancelled step -->
+                            <div class="progress-step step-active">
+                                <div class="step-icon">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Cancelled</div>
+                                    <div class="step-description">The repair has been cancelled.</div>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Show normal progress steps -->
+                            @foreach($steps as $step)
+                                <div class="progress-step 
+                                    @if($step['completed']) step-completed
+                                    @elseif($step['active']) step-active
+                                    @else step-pending
+                                    @endif">
+                                    <div class="step-icon">
+                                        @if($step['completed'])
+                                            <i class="fas fa-check"></i>
+                                        @else
+                                            {{ $loop->iteration }}
+                                        @endif
                                     </div>
-                                @endforeach
+                                    <div class="step-content">
+                                        <div class="step-title">{{ $step['label'] }}</div>
+                                        <div class="step-description">{{ $step['description'] }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
 
-                                @if($shopDetails)
-                                    <button class="contact-btn" onclick="window.location.href='tel:{{ $shopDetails->hotline }}'">
-                                        <i class="fas fa-phone me-2"></i>Contact Shop
-                                    </button>
-                                @endif
+                        @if($shopDetails)
+                            <button class="contact-btn" onclick="window.location.href='tel:{{ $shopDetails->hotline }}'">
+                                <i class="fas fa-phone me-2"></i>Contact Shop
+                            </button>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Right Side - Shop Info & Repair Details -->
+                <div class="col-lg-6 col-md-12">
+                    <!-- Shop Information -->
+                    @if($shopDetails)
+                        <div class="info-card fade-in">
+                            <h4 class="card-title">
+                                <i class="fas fa-store me-2"></i>{{ $shopDetails->shop_name ?? 'CE Laptop Repair Center' }}
+                            </h4>
+                            <div class="shop-contact">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span>{{ $shopDetails->address }}</span>
+                            </div>
+                            <div class="shop-contact">
+                                <i class="fas fa-phone me-2"></i>
+                                <span>{{ $shopDetails->hotline }}</span>
+                            </div>
+                            <div class="shop-contact">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span>{{ $shopDetails->email }}</span>
                             </div>
                         </div>
+                    @endif
 
-                        <!-- Right Side - Shop Info & Repair Details -->
-                        <div class="col-lg-6 col-md-12">
-                            <!-- Shop Information -->
-                            @if($shopDetails)
-                                <div class="info-card fade-in">
-                                    <h4 class="card-title">
-                                        <i class="fas fa-store me-2"></i>{{ $shopDetails->shop_name ?? 'CE Laptop Repair Center' }}
-                                    </h4>
-                                    <div class="shop-contact">
-                                        <i class="fas fa-map-marker-alt me-2"></i>
-                                        <span>{{ $shopDetails->address }}</span>
+                    <!-- Repair Details -->
+                    <div class="info-card fade-in">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-ticket-alt me-2"></i>
+                                @if($searchType === 'customer_number')
+                                    Repair #{{ $repair->customer_number }}
+                                @else
+                                    Item #{{ $repairItem->item_number }}
+                                @endif
+                            </h4>
+                            <span class="status-badge 
+                                @if($status === 'completed') status-completed
+                                @elseif($status === 'pending') status-pending
+                                @elseif($status === 'cancelled') status-cancelled
+                                @elseif(($repair && $repair->status === 'ready') || ($repairItem && $repairItem->status === 'ready')) status-completed
+                                @else status-in-progress @endif">
+                                @if($status === 'completed' || ($repair && $repair->status === 'ready') || ($repairItem && $repairItem->status === 'ready'))
+                                    <i class="fas fa-check-circle me-1"></i>Completed
+                                @elseif($status === 'pending')
+                                    <i class="fas fa-clock me-1"></i>Pending
+                                @elseif($status === 'cancelled')
+                                    <i class="fas fa-times-circle me-1"></i>Cancelled
+                                @else
+                                    <i class="fas fa-cog me-1"></i>In Progress
+                                @endif
+                            </span>
+                        </div>
+
+                        <p class="text-muted mb-3" style="font-size: 0.85rem;">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Received on {{ ($repair ?? $repairItem)->created_at->format('M j, Y') }}
+                        </p>
+
+                        <div class="device-info">
+                            <h5 class="mb-2" style="font-size: 1rem;">
+                                <i class="fas fa-laptop me-2"></i>
+                                @if($searchType === 'customer_number')
+                                    Device Information
+                                @else
+                                    Item Information
+                                @endif
+                            </h5>
+                            @if($searchType === 'customer_number')
+                                <div class="info-item">
+                                    <div class="info-label">Device</div>
+                                    <div class="info-value">{{ $repair->device }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Serial Number</div>
+                                    <div class="info-value">{{ $repair->serial_number }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Reported Issue</div>
+                                    <div class="info-value">{{ $repair->fault }}</div>
+                                </div>
+                            @else
+                                <div class="info-item">
+                                    <div class="info-label">Item Name</div>
+                                    <div class="info-value">{{ $repairItem->item_name }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Serial Number</div>
+                                    <div class="info-value">{{ $repairItem->serial_number }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Description</div>
+                                    <div class="info-value">{{ $repairItem->description }}</div>
+                                </div>
+                                @if($repairItem->ram)
+                                    <div class="info-item">
+                                        <div class="info-label">RAM</div>
+                                        <div class="info-value">{{ $repairItem->ram }}</div>
                                     </div>
-                                    <div class="shop-contact">
-                                        <i class="fas fa-phone me-2"></i>
-                                        <span>{{ $shopDetails->hotline }}</span>
-                                    </div>
-                                    <div class="shop-contact">
-                                        <i class="fas fa-envelope me-2"></i>
-                                        <span>{{ $shopDetails->email }}</span>
-                                    </div>
+                                @endif
+                            @endif
+                        </div>
+
+                        <div class="customer-info">
+                            <h5 class="mb-2" style="font-size: 1rem;">
+                                <i class="fas fa-user me-2"></i>Customer Information
+                            </h5>
+                            @if($searchType === 'customer_number')
+                                <div class="info-item">
+                                    <div class="info-label">Name</div>
+                                    <div class="info-value">{{ $repair->customer_name }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Contact</div>
+                                    <div class="info-value">{{ $repair->contact }}</div>
+                                </div>
+                            @else
+                                <div class="info-item">
+                                    <div class="info-label">Shop</div>
+                                    <div class="info-value">{{ $repairItem->shop->name ?? 'N/A' }}</div>
                                 </div>
                             @endif
-
-                            <!-- Repair Details -->
-                            <div class="info-card fade-in">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h4 class="card-title mb-0">
-                                        <i class="fas fa-ticket-alt me-2"></i>
-                                        @if($searchType === 'customer_number')
-                                            Repair #{{ $repair->customer_number }}
-                                        @else
-                                            Item #{{ $repairItem->item_number }}
-                                        @endif
-                                    </h4>
-                                    <span class="status-badge 
-                                        @if($status === 'completed') status-completed
-                                        @elseif($status === 'pending') status-pending
-                                        @elseif(($repair && $repair->status === 'ready') || ($repairItem && $repairItem->status === 'ready')) status-completed
-                                        @else status-in-progress @endif">
-                                        @if($status === 'completed' || ($repair && $repair->status === 'ready') || ($repairItem && $repairItem->status === 'ready'))
-                                            <i class="fas fa-check-circle me-1"></i>Completed
-                                        @elseif($status === 'pending')
-                                            <i class="fas fa-clock me-1"></i>Pending
-                                        @else
-                                            <i class="fas fa-cog me-1"></i>In Progress
-                                        @endif
-                                    </span>
-                                </div>
-
-                                <p class="text-muted mb-3" style="font-size: 0.85rem;">
-                                    <i class="fas fa-calendar-alt me-2"></i>
-                                    Received on {{ ($repair ?? $repairItem)->created_at->format('M j, Y') }}
-                                </p>
-
-                                <div class="device-info">
-                                    <h5 class="mb-2" style="font-size: 1rem;">
-                                        <i class="fas fa-laptop me-2"></i>
-                                        @if($searchType === 'customer_number')
-                                            Device Information
-                                        @else
-                                            Item Information
-                                        @endif
-                                    </h5>
-                                    @if($searchType === 'customer_number')
-                                        <div class="info-item">
-                                            <div class="info-label">Device</div>
-                                            <div class="info-value">{{ $repair->device }}</div>
-                                        </div>
-                                        <div class="info-item">
-                                            <div class="info-label">Serial Number</div>
-                                            <div class="info-value">{{ $repair->serial_number }}</div>
-                                        </div>
-                                        <div class="info-item">
-                                            <div class="info-label">Reported Issue</div>
-                                            <div class="info-value">{{ $repair->fault }}</div>
-                                        </div>
-                                    @else
-                                        <div class="info-item">
-                                            <div class="info-label">Item Name</div>
-                                            <div class="info-value">{{ $repairItem->item_name }}</div>
-                                        </div>
-                                        <div class="info-item">
-                                            <div class="info-label">Serial Number</div>
-                                            <div class="info-value">{{ $repairItem->serial_number }}</div>
-                                        </div>
-                                        <div class="info-item">
-                                            <div class="info-label">Description</div>
-                                            <div class="info-value">{{ $repairItem->description }}</div>
-                                        </div>
-                                        @if($repairItem->ram)
-                                            <div class="info-item">
-                                                <div class="info-label">RAM</div>
-                                                <div class="info-value">{{ $repairItem->ram }}</div>
-                                            </div>
-                                        @endif
-                                    @endif
-                                </div>
-
-                                <div class="customer-info">
-                                    <h5 class="mb-2" style="font-size: 1rem;">
-                                        <i class="fas fa-user me-2"></i>Customer Information
-                                    </h5>
-                                    @if($searchType === 'customer_number')
-                                        <div class="info-item">
-                                            <div class="info-label">Name</div>
-                                            <div class="info-value">{{ $repair->customer_name }}</div>
-                                        </div>
-                                        <div class="info-item">
-                                            <div class="info-label">Contact</div>
-                                            <div class="info-value">{{ $repair->contact }}</div>
-                                        </div>
-                                    @else
-                                        <div class="info-item">
-                                            <div class="info-label">Shop</div>
-                                            <div class="info-value">{{ $repairItem->shop->name ?? 'N/A' }}</div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
                         </div>
                     </div>
-                @endif
-            @else
-                <div class="text-center py-4">
-                    <i class="fas fa-search fa-2x text-muted mb-3" style="opacity: 0.5;"></i>
-                    <h4 class="text-muted" style="font-size: 1.2rem;">Enter your customer number or item number to track your repair</h4>
-                    <p class="text-muted" style="font-size: 0.9rem;">Check the status of your device repair in real-time</p>
                 </div>
-            @endif
+            </div>
+        @endif
+    @else
+        <div class="text-center py-4">
+            <i class="fas fa-search fa-2x text-muted mb-3" style="opacity: 0.5;"></i>
+            <h4 class="text-muted" style="font-size: 1.2rem;">Enter your customer number or item number to track your repair</h4>
+            <p class="text-muted" style="font-size: 0.9rem;">Check the status of your device repair in real-time</p>
         </div>
-    </div>
+    @endif
+</div>
 </div>
 
     <!-- Login Modal -->

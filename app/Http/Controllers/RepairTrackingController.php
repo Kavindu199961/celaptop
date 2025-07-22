@@ -100,6 +100,10 @@ class RepairTrackingController extends Controller
                 'label' => 'Ready for Pickup',
                 'description' => 'Your device is ready for pickup.'
             ],
+            'cancelled' => [
+                'label' => 'Cancelled',
+                'description' => 'The repair has been cancelled.'
+            ],
         ];
 
         return $this->markStepsByGroup($allSteps, $status);
@@ -132,6 +136,10 @@ class RepairTrackingController extends Controller
                 'label' => 'Ready for Pickup',
                 'description' => $this->getReadyDescription($repairItem, $status)
             ],
+            'cancelled' => [
+                'label' => 'Cancelled',
+                'description' => 'The repair has been cancelled.'
+            ],
         ];
 
         return $this->markStepsByGroup($allSteps, $status);
@@ -151,37 +159,57 @@ class RepairTrackingController extends Controller
     }
 
     protected function markStepsByGroup($allSteps, $status)
-{
-    // Define groupings
-    $activeStepsMap = [
-        'pending' => ['pending', 'received'],
-        'in_progress' => ['diagnosis', 'repairing'],
-        'completed' => ['testing', 'ready']
-    ];
-
-    $steps = [];
-    $activeGroup = $activeStepsMap[$status] ?? [];
-
-    // Create a flat list of all keys (to track progress index)
-    $stepKeys = array_keys($allSteps);
-    $lastActiveIndex = max(array_map(fn($key) => array_search($key, $stepKeys), $activeGroup));
-
-    foreach ($allSteps as $key => $step) {
-        $stepIndex = array_search($key, $stepKeys);
-
-        $isCompleted = $stepIndex < $lastActiveIndex;
-        $isActive = in_array($key, $activeGroup);
-
-        $steps[] = [
-            'status' => $key,
-            'label' => $step['label'],
-            'description' => $step['description'],
-            'completed' => $isCompleted,
-            'active' => $isActive
+    {
+        // Define groupings
+        $activeStepsMap = [
+            'pending' => ['pending', 'received'],
+            'in_progress' => ['diagnosis', 'repairing'],
+            'completed' => ['testing', 'ready'],
+            'cancelled' => ['cancelled']
         ];
+
+        $steps = [];
+        $activeGroup = $activeStepsMap[$status] ?? [];
+
+        // For cancelled status, we want to show all steps as completed except cancelled which is active
+        if ($status === 'cancelled') {
+            $stepKeys = array_keys($allSteps);
+            $cancelledIndex = array_search('cancelled', $stepKeys);
+            
+            foreach ($allSteps as $key => $step) {
+                $stepIndex = array_search($key, $stepKeys);
+                
+                $steps[] = [
+                    'status' => $key,
+                    'label' => $step['label'],
+                    'description' => $step['description'],
+                    'completed' => $stepIndex < $cancelledIndex,
+                    'active' => $key === 'cancelled'
+                ];
+            }
+            
+            return $steps;
+        }
+
+        // Original logic for other statuses
+        $stepKeys = array_keys($allSteps);
+        $lastActiveIndex = max(array_map(fn($key) => array_search($key, $stepKeys), $activeGroup));
+
+        foreach ($allSteps as $key => $step) {
+            $stepIndex = array_search($key, $stepKeys);
+
+            $isCompleted = $stepIndex < $lastActiveIndex;
+            $isActive = in_array($key, $activeGroup);
+
+            $steps[] = [
+                'status' => $key,
+                'label' => $step['label'],
+                'description' => $step['description'],
+                'completed' => $isCompleted,
+                'active' => $isActive
+            ];
+        }
+
+        return $steps;
     }
-
-    return $steps;
-}
-
 }
