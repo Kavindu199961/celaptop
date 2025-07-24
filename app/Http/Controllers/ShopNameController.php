@@ -8,6 +8,8 @@ use App\Models\ShopNames;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class ShopNameController extends Controller
 {
@@ -240,36 +242,47 @@ class ShopNameController extends Controller
             ->with('success', 'Repair item deleted successfully');
     }
 
-    public function updateStatus(Request $request, $repairItemId)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,in_progress,completed,canceled',
-            'final_price' => 'required_if:status,completed|numeric|min:0',
-            'notes' => 'nullable|string'
-        ]);
 
-        $repairItem = RepairItem::where('id', $repairItemId)
-            ->whereHas('shop', function($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->firstOrFail();
+public function updateStatus(Request $request, $repairItemId)
+{
+    $request->validate([
+        'status' => 'required|in:pending,in_progress,completed,canceled',
+        'final_price' => 'required_if:status,completed|numeric|min:0',
+        'notes' => 'nullable|string'
+    ]);
 
-        $repairItem->update(['status' => $request->status]);
+    // Load only if shop belongs to the current user
+    $repairItem = RepairItem::where('shop_id', $repairItemId)
+        ->whereHas('shop', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
+        ->with('shop')
+        ->first();
 
-        if ($request->status === 'completed') {
-            CompleteShopRepair::create([
-                'repair_item_id' => $repairItem->id,
-                'shop_id' => $repairItem->shop_id,
-                'user_id' => Auth::id(),
-                'final_price' => $request->final_price,
-                'notes' => $request->notes,
-                'status' => 'completed'
-            ]);
-        }
-
+    if (!$repairItem) {
         return response()->json([
-            'success' => true,
-            'message' => 'Status updated successfully'
+            'success' => false,
+            'message' => 'Repair item not found'
+        ], 404);
+    }
+
+    $repairItem->update(['status' => $request->status]);
+
+    if ($request->status === 'completed') {
+        CompleteShopRepair::create([
+            'repair_item_id' => $repairItem->id,
+            'shop_id' => $repairItem->shop_id,
+            'user_id' => Auth::id(),
+            'final_price' => $request->final_price,
+            'notes' => $request->notes,
+            'status' => 'completed'
         ]);
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Status updated successfully'
+    ]);
+}
+
 }

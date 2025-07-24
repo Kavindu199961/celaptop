@@ -25,6 +25,10 @@ class ShopItem extends Model
         'price' => 'decimal:2'
     ];
 
-   
+   public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 
 }
