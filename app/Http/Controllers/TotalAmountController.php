@@ -12,146 +12,174 @@ use Illuminate\Support\Facades\Log;
 
 class TotalAmountController extends Controller
 {
-    public function index(Request $request)
-    {
-        $userId = Auth::id();
-        $startDate = $request->input('start_date');
-        $endDate = $request->input('end_date');
-        $search = $request->input('search');
-        $searchDate = $request->input('search_date'); // Add this line to define $searchDate
+   public function index(Request $request)
+{
+    $userId = Auth::id();
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
+    $search = $request->input('search');
+    $searchDate = $request->input('search_date');
+    $searchMonth = $request->input('search_month'); // New month search parameter
 
-        // Standard Invoices Query
-        $standardQuery = Invoice::where('user_id', $userId)
-            ->select(
-                'id',
-                'invoice_number',
-                DB::raw('DATE(issue_date) as date'),
-                'total_amount',
-                'issue_date',
-                'customer_name'
-            );
+    // Standard Invoices Query
+    $standardQuery = Invoice::where('user_id', $userId)
+        ->select(
+            'id',
+            'invoice_number',
+            DB::raw('DATE(issue_date) as date'),
+            'total_amount',
+            'issue_date',
+            'customer_name'
+        );
 
-        // Stock Invoices Query with proper relationships
-        $stockQuery = InvoiceWithStock::with(['items.stock'])
-            ->where('user_id', $userId)
-            ->select(
-                'id',
-                'invoice_number',
-                DB::raw('DATE(issue_date) as date'),
-                'total_amount',
-                'issue_date',
-                'customer_name'
-            );
+    // Stock Invoices Query with proper relationships
+    $stockQuery = InvoiceWithStock::with(['items.stock'])
+        ->where('user_id', $userId)
+        ->select(
+            'id',
+            'invoice_number',
+            DB::raw('DATE(issue_date) as date'),
+            'total_amount',
+            'issue_date',
+            'customer_name'
+        );
 
-        // Apply search filter
-       if ($search) {
-    $standardQuery->where('invoice_number', 'like', '%' . $search . '%');
-    $stockQuery->where('invoice_number', 'like', '%' . $search . '%');
+    // Apply search filter
+    if ($search) {
+        $standardQuery->where('invoice_number', 'like', '%' . $search . '%');
+        $stockQuery->where('invoice_number', 'like', '%' . $search . '%');
+    }
+
+    // One day search filter
+    if ($searchDate) {
+        $standardQuery->whereDate('issue_date', '=', $searchDate);
+        $stockQuery->whereDate('issue_date', '=', $searchDate);
+    } 
+    // Month search filter
+    elseif ($searchMonth) {
+        $standardQuery->whereMonth('issue_date', '=', date('m', strtotime($searchMonth)))
+                     ->whereYear('issue_date', '=', date('Y', strtotime($searchMonth)));
+        $stockQuery->whereMonth('issue_date', '=', date('m', strtotime($searchMonth)))
+                  ->whereYear('issue_date', '=', date('Y', strtotime($searchMonth)));
+    }
+    // Date range filters
+    else {
+        if ($startDate) {
+            $standardQuery->whereDate('issue_date', '>=', $startDate);
+            $stockQuery->whereDate('issue_date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $standardQuery->whereDate('issue_date', '<=', $endDate);
+            $stockQuery->whereDate('issue_date', '<=', $endDate);
+        }
+    }
+
+    // Get standard invoices with pagination
+    $standardInvoices = $standardQuery
+        ->orderByDesc('issue_date')
+        ->paginate(10, ['*'], 'standard_page')
+        ->through(function ($invoice) {
+            return [
+                'id' => $invoice->id,
+                'type' => 'Standard',
+                'invoice_number' => $invoice->invoice_number,
+                'date' => $invoice->date,
+                'amount' => $invoice->total_amount,
+                'customer_name' => $invoice->customer_name ?? 'N/A',
+            ];
+        });
+
+    // Get stock invoices with pagination and detailed cost calculations
+    $stockInvoices = $stockQuery
+        ->orderByDesc('issue_date')
+        ->paginate(10, ['*'], 'stock_page')
+        ->through(function ($invoice) {
+            $totalCost = 0;
+            $itemDetails = [];
+
+            // Calculate cost for each item
+            foreach ($invoice->items as $item) {
+                $costPrice = $this->getCostPrice($item);
+                $itemCost = $item->quantity * $costPrice;
+                $totalCost += $itemCost;
+                
+                $itemDetails[] = [
+                    'id' => $item->id,
+                    'description' => $item->description,
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'amount' => $item->amount,
+                    'cost_price' => $costPrice,
+                    'item_cost' => $itemCost,
+                    'item_profit' => $item->amount - $itemCost,
+                ];
+            }
+
+            $profit = $invoice->total_amount - $totalCost;
+            $margin = $invoice->total_amount > 0 ? ($profit / $invoice->total_amount) * 100 : 0;
+
+            return [
+                'id' => $invoice->id,
+                'type' => 'Stock',
+                'invoice_number' => $invoice->invoice_number,
+                'date' => $invoice->date,
+                'amount' => $invoice->total_amount,
+                'cost' => $totalCost,
+                'profit' => $profit,
+                'margin' => $margin,
+                'customer_name' => $invoice->customer_name ?? 'N/A',
+                'items' => $itemDetails,
+            ];
+        });
+
+    // Calculate totals for all records (not just the paginated ones)
+    $standardTotalQuery = clone $standardQuery;
+    $stockTotalQuery = clone $stockQuery;
+    
+    $standardTotal = $standardTotalQuery->sum('total_amount');
+    $stockTotal = $stockTotalQuery->sum('total_amount');
+    
+    // For stock cost and profit, we need to calculate for all matching records
+    $stockCostTotal = 0;
+    $stockProfitTotal = 0;
+    
+    $allStockInvoices = $stockTotalQuery->with(['items.stock'])->get();
+    foreach ($allStockInvoices as $invoice) {
+        $invoiceCost = 0;
+        foreach ($invoice->items as $item) {
+            $costPrice = $this->getCostPrice($item);
+            $invoiceCost += $item->quantity * $costPrice;
+        }
+        $stockCostTotal += $invoiceCost;
+        $stockProfitTotal += ($invoice->total_amount - $invoiceCost);
+    }
+    
+    $overallMargin = $stockTotal > 0 ? ($stockProfitTotal / $stockTotal) * 100 : 0;
+
+    // Debug information
+    Log::info('TotalAmountController Debug', [
+        'standardCount' => $standardInvoices->total(),
+        'stockCount' => $stockInvoices->total(),
+        'stockTotal' => $stockTotal,
+        'stockCostTotal' => $stockCostTotal,
+        'stockProfitTotal' => $stockProfitTotal,
+    ]);
+
+    return view('user.total_amount.index', [
+        'standardInvoices' => $standardInvoices,
+        'stockInvoices' => $stockInvoices,
+        'standardTotal' => $standardTotal,
+        'stockTotal' => $stockTotal,
+        'stockCostTotal' => $stockCostTotal,
+        'stockProfitTotal' => $stockProfitTotal,
+        'overallMargin' => $overallMargin,
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+        'search' => $search,
+        'searchMonth' => $searchMonth, // Pass the month search parameter back to view
+    ]);
 }
 
-// One day search filter
-if ($searchDate) {
-    $standardQuery->whereDate('issue_date', '=', $searchDate);
-    $stockQuery->whereDate('issue_date', '=', $searchDate);
-} else {
-    // Apply date range filters if provided
-    if ($startDate) {
-        $standardQuery->whereDate('issue_date', '>=', $startDate);
-        $stockQuery->whereDate('issue_date', '>=', $startDate);
-    }
-    if ($endDate) {
-        $standardQuery->whereDate('issue_date', '<=', $endDate);
-        $stockQuery->whereDate('issue_date', '<=', $endDate);
-    }
-}
-
-        // Get standard invoices
-        $standardInvoices = $standardQuery
-            ->orderByDesc('date')
-            ->get()
-            ->map(function ($invoice) {
-                return [
-                    'id' => $invoice->id,
-                    'type' => 'Standard',
-                    'invoice_number' => $invoice->invoice_number,
-                    'date' => $invoice->date,
-                    'amount' => $invoice->total_amount,
-                    'customer_name' => $invoice->customer_name ?? 'N/A',
-                ];
-            });
-
-        // Get stock invoices with detailed cost calculations
-        $stockInvoices = $stockQuery
-            ->orderByDesc('date')
-            ->get()
-            ->map(function ($invoice) {
-                $totalCost = 0;
-                $itemDetails = [];
-
-                // Calculate cost for each item
-                foreach ($invoice->items as $item) {
-                    $costPrice = $this->getCostPrice($item);
-                    $itemCost = $item->quantity * $costPrice;
-                    $totalCost += $itemCost;
-                    
-                    $itemDetails[] = [
-                        'id' => $item->id,
-                        'description' => $item->description,
-                        'quantity' => $item->quantity,
-                        'unit_price' => $item->unit_price,
-                        'amount' => $item->amount,
-                        'cost_price' => $costPrice,
-                        'item_cost' => $itemCost,
-                        'item_profit' => $item->amount - $itemCost,
-                    ];
-                }
-
-                $profit = $invoice->total_amount - $totalCost;
-                $margin = $invoice->total_amount > 0 ? ($profit / $invoice->total_amount) * 100 : 0;
-
-                return [
-                    'id' => $invoice->id,
-                    'type' => 'Stock',
-                    'invoice_number' => $invoice->invoice_number,
-                    'date' => $invoice->date,
-                    'amount' => $invoice->total_amount,
-                    'cost' => $totalCost,
-                    'profit' => $profit,
-                    'margin' => $margin,
-                    'customer_name' => $invoice->customer_name ?? 'N/A',
-                    'items' => $itemDetails,
-                ];
-            });
-
-        // Calculate totals
-        $standardTotal = $standardInvoices->sum('amount');
-        $stockTotal = $stockInvoices->sum('amount');
-        $stockCostTotal = $stockInvoices->sum('cost');
-        $stockProfitTotal = $stockInvoices->sum('profit');
-        $overallMargin = $stockTotal > 0 ? ($stockProfitTotal / $stockTotal) * 100 : 0;
-
-        // Debug information
-        Log::info('TotalAmountController Debug', [
-            'standardCount' => $standardInvoices->count(),
-            'stockCount' => $stockInvoices->count(),
-            'stockTotal' => $stockTotal,
-            'stockCostTotal' => $stockCostTotal,
-            'stockProfitTotal' => $stockProfitTotal,
-        ]);
-
-        return view('user.total_amount.index', [
-            'standardInvoices' => $standardInvoices,
-            'stockInvoices' => $stockInvoices,
-            'standardTotal' => $standardTotal,
-            'stockTotal' => $stockTotal,
-            'stockCostTotal' => $stockCostTotal,
-            'stockProfitTotal' => $stockProfitTotal,
-            'overallMargin' => $overallMargin,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'search' => $search,
-        ]);
-    }
 
     /**
      * Get cost price for an invoice item

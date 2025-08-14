@@ -11,23 +11,24 @@ class UserMailService
     /**
      * Configure mail settings based on user credentials
      */
-    public function configureUserMail($user)
-    {
-        Config::set('mail.mailers.user_specific', [
-            'transport' => 'smtp',
-            'host' => $user->smtp_host ?? env('MAIL_HOST'),
-            'port' => $user->smtp_port ?? env('MAIL_PORT'),
-            'encryption' => $user->smtp_encryption ?? env('MAIL_ENCRYPTION'),
-            'username' => $user->email_username,
-            'password' => Crypt::decryptString($user->email_password),
-            'timeout' => null,
-        ]);
+public function configureUserMail($user)
+{
+    // Default to CE Laptop Repair Center settings if user settings aren't available
+    Config::set('mail.mailers.user_specific', [
+        'transport' => 'smtp',
+        'host' => $user->smtp_host ?? 'celaptoprepaircenter.com',
+        'port' => $user->smtp_port ?? 465,
+        'encryption' => $user->smtp_encryption ?? 'ssl',
+        'username' => $user->email_username ?? 'repair@celaptoprepaircenter.com',
+        'password' => $user->email_password ? Crypt::decryptString($user->email_password) : env('MAIL_PASSWORD'),
+        'timeout' => null,
+    ]);
 
-        Config::set('mail.from', [
-            'address' => $user->email,
-            'name' => $user->name,
-        ]);
-    }
+    Config::set('mail.from', [
+        'address' => $user->email ?? 'repair@celaptoprepaircenter.com',
+        'name' => $user->name ?? 'CE Laptop Repair Center',
+    ]);
+}
 
     /**
      * Send email using user's SMTP settings

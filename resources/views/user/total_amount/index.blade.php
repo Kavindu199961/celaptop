@@ -12,25 +12,29 @@
                     <!-- Search and Filter Form -->
                     <form action="{{ route('user.total_amount.index') }}" method="GET" class="mb-4">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input type="text" name="search" class="form-control" 
                                        placeholder="Search by invoice number..." 
                                        value="{{ request('search') }}">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input type="date" name="start_date" class="form-control" 
                                        value="{{ request('start_date') }}" placeholder="Start Date">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <input type="date" name="end_date" class="form-control" 
                                        value="{{ request('end_date') }}" placeholder="End Date">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <input type="month" name="search_month" class="form-control" 
+                                       value="{{ request('search_month') }}" placeholder="Select Month">
+                            </div>
+                            <div class="col-md-2">
                                 <div class="input-group">
                                     <button class="btn btn-primary" type="submit">
                                         <i class="fas fa-search"></i> Search
                                     </button>
-                                    @if(request('search') || request('start_date') || request('end_date'))
+                                    @if(request('search') || request('start_date') || request('end_date') || request('search_month'))
                                         <a href="{{ route('user.total_amount.index') }}" class="btn btn-outline-danger ml-2">Clear</a>
                                     @endif
                                 </div>
@@ -40,7 +44,14 @@
 
                     <!-- Standard Invoices Table -->
                     <div class="mb-5">
-                        <h4 class="mb-3">Standard Invoices</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4>Standard Invoices</h4>
+                            @if($standardInvoices->hasPages())
+                                <div>
+                                    {{ $standardInvoices->appends(request()->query())->links() }}
+                                </div>
+                            @endif
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead class="thead-dark">
@@ -49,7 +60,6 @@
                                         <th>Invoice Count</th>
                                         <th>Invoice Numbers</th>
                                         <th>Total Amount (LKR)</th>
-                                       
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,7 +87,6 @@
                                             <td>
                                                 <strong>{{ number_format($dayTotal, 2) }}</strong>
                                             </td>
-                                          
                                         </tr>
                                     @empty
                                         <tr>
@@ -88,17 +97,28 @@
                                 <tfoot class="thead-dark">
                                     <tr>
                                         <th colspan="3">Total Standard Invoices</th>
-                                        <th>{{ number_format($standardTotalAmount, 2) }}</th>
-                                       
+                                        <th>{{ number_format($standardTotal, 2) }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
+                        @if($standardInvoices->hasPages())
+                            <div class="d-flex justify-content-end">
+                                {{ $standardInvoices->appends(request()->query())->links() }}
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Stock Invoices Table -->
                     <div class="mb-4">
-                        <h4 class="mb-3">Stock Invoices</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4>Stock Invoices</h4>
+                            @if($stockInvoices->hasPages())
+                                <div>
+                                    {{ $stockInvoices->appends(request()->query())->links() }}
+                                </div>
+                            @endif
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead class="thead-dark">
@@ -110,7 +130,6 @@
                                         <th>Total Cost (LKR)</th>
                                         <th>Profit (LKR)</th>
                                         <th>Margin %</th>
-                                      
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -157,7 +176,6 @@
                                                     {{ number_format($dayMargin, 1) }}%
                                                 </span>
                                             </td>
-                                            
                                         </tr>
                                     @empty
                                         <tr>
@@ -168,19 +186,23 @@
                                 <tfoot class="thead-dark">
                                     <tr>
                                         <th colspan="3">Total Stock Invoices</th>
-                                        <th>{{ number_format($stockTotalAmount, 2) }}</th>
-                                        <th>{{ number_format($stockTotalCost, 2) }}</th>
-                                        <th>{{ number_format($stockTotalProfit, 2) }}</th>
+                                        <th>{{ number_format($stockTotal, 2) }}</th>
+                                        <th>{{ number_format($stockCostTotal, 2) }}</th>
+                                        <th>{{ number_format($stockProfitTotal, 2) }}</th>
                                         <th>
-                                            <span class="badge {{ $stockTotalAmount > 0 ? (($stockTotalProfit / $stockTotalAmount) * 100 >= 0 ? 'badge-success' : 'badge-danger') : 'badge-secondary' }}">
-                                                {{ $stockTotalAmount > 0 ? number_format(($stockTotalProfit / $stockTotalAmount) * 100, 1) : 0 }}%
+                                            <span class="badge {{ $overallMargin >= 0 ? 'badge-success' : 'badge-danger' }}">
+                                                {{ number_format($overallMargin, 1) }}%
                                             </span>
                                         </th>
-                                        
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
+                        @if($stockInvoices->hasPages())
+                            <div class="d-flex justify-content-end">
+                                {{ $stockInvoices->appends(request()->query())->links() }}
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Summary Cards -->
@@ -189,7 +211,7 @@
                             <div class="card bg-primary text-white">
                                 <div class="card-body">
                                     <h5>Standard Invoices Total</h5>
-                                    <h3>{{ number_format($standardTotalAmount, 2) }}</h3>
+                                    <h3>{{ number_format($standardTotal, 2) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -197,7 +219,7 @@
                             <div class="card bg-success text-white">
                                 <div class="card-body">
                                     <h5>Stock Invoices Total</h5>
-                                    <h3>{{ number_format($stockTotalAmount, 2) }}</h3>
+                                    <h3>{{ number_format($stockTotal, 2) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -205,7 +227,7 @@
                             <div class="card bg-info text-white">
                                 <div class="card-body">
                                     <h5>Total Profit</h5>
-                                    <h3>{{ number_format($stockTotalProfit, 2) }}</h3>
+                                    <h3>{{ number_format($stockProfitTotal, 2) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +235,7 @@
                             <div class="card bg-warning text-white">
                                 <div class="card-body">
                                     <h5>Overall Total</h5>
-                                    <h3>{{ number_format($standardTotalAmount + $stockTotalAmount, 2) }}</h3>
+                                    <h3>{{ number_format($standardTotal + $stockTotal, 2) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -266,6 +288,10 @@
 
 .summary-cards .card:hover {
     transform: translateY(-5px);
+}
+
+.pagination {
+    justify-content: flex-end;
 }
 </style>
 

@@ -68,7 +68,7 @@ Route::middleware(['user'])->prefix('user')->name('user.')->group(function () {
     Route::get('get-note-number', [LaptopRepairController::class, 'getNextNoteNumber'])->name('get-note-number');
     Route::get('repairs/{repair}', [LaptopRepairController::class, 'show'])->name('show');
     Route::delete('repairs/{repair}', [LaptopRepairController::class, 'destroy'])->name('destroy');
-     Route::get('{id}/edit', [LaptopRepairController::class, 'edit'])->name('edit');
+    Route::get('{id}/edit', [LaptopRepairController::class, 'edit'])->name('edit');
     Route::put('{id}', [LaptopRepairController::class, 'update'])->name('update');
 });
 
