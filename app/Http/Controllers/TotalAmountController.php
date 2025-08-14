@@ -77,7 +77,7 @@ class TotalAmountController extends Controller
     // Get standard invoices with pagination
     $standardInvoices = $standardQuery
         ->orderByDesc('issue_date')
-        ->paginate(10, ['*'], 'standard_page')
+        ->paginate(20, ['*'], 'standard_page')
         ->through(function ($invoice) {
             return [
                 'id' => $invoice->id,
@@ -92,7 +92,7 @@ class TotalAmountController extends Controller
     // Get stock invoices with pagination and detailed cost calculations
     $stockInvoices = $stockQuery
         ->orderByDesc('issue_date')
-        ->paginate(10, ['*'], 'stock_page')
+        ->paginate(20, ['*'], 'stock_page')
         ->through(function ($invoice) {
             $totalCost = 0;
             $itemDetails = [];

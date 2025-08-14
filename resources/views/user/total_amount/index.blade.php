@@ -43,165 +43,163 @@
                     </form>
 
                     <!-- Standard Invoices Table -->
-                    <div class="mb-5">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4>Standard Invoices</h4>
-                            @if($standardInvoices->hasPages())
-                                <div>
-                                    {{ $standardInvoices->appends(request()->query())->links() }}
-                                </div>
-                            @endif
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            <h4 class="card-title">Standard Invoices</h4>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Invoice Count</th>
-                                        <th>Invoice Numbers</th>
-                                        <th>Total Amount (LKR)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $standardGrouped = $standardInvoices->groupBy('date');
-                                        $standardTotalAmount = 0;
-                                    @endphp
-                                    @forelse($standardGrouped as $date => $invoices)
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Invoice Count</th>
+                                            <th>Invoice Numbers</th>
+                                            <th>Total Amount (LKR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         @php
-                                            $dayTotal = $invoices->sum('amount');
-                                            $standardTotalAmount += $dayTotal;
+                                            $standardGrouped = $standardInvoices->groupBy('date');
+                                            $standardTotalAmount = 0;
                                         @endphp
+                                        @forelse($standardGrouped as $date => $invoices)
+                                            @php
+                                                $dayTotal = $invoices->sum('amount');
+                                                $standardTotalAmount += $dayTotal;
+                                            @endphp
+                                            <tr>
+                                                <td>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</td>
+                                                <td>
+                                                    <span class="badge badge-primary">{{ $invoices->count() }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="invoice-numbers">
+                                                        @foreach($invoices as $invoice)
+                                                            <span class="badge badge-secondary mr-1">{{ $invoice['invoice_number'] }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong>{{ number_format($dayTotal, 2) }}</strong>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center">No standard invoices found</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                    <tfoot class="thead-dark">
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</td>
-                                            <td>
-                                                <span class="badge badge-primary">{{ $invoices->count() }}</span>
-                                            </td>
-                                            <td>
-                                                <div class="invoice-numbers">
-                                                    @foreach($invoices as $invoice)
-                                                        <span class="badge badge-secondary mr-1">{{ $invoice['invoice_number'] }}</span>
-                                                    @endforeach
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <strong>{{ number_format($dayTotal, 2) }}</strong>
-                                            </td>
+                                            <th colspan="3">Total Standard Invoices</th>
+                                            <th>{{ number_format($standardTotal, 2) }}</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center">No standard invoices found</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                                <tfoot class="thead-dark">
-                                    <tr>
-                                        <th colspan="3">Total Standard Invoices</th>
-                                        <th>{{ number_format($standardTotal, 2) }}</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                         @if($standardInvoices->hasPages())
-                            <div class="d-flex justify-content-end">
-                                {{ $standardInvoices->appends(request()->query())->links() }}
-                            </div>
+                        <div class="card-footer text-right">
+                            <nav class="d-inline-block" aria-label="Pagination">
+                                {{ $standardInvoices->appends(request()->query())->links('pagination::bootstrap-4') }}
+                            </nav>
+                        </div>
                         @endif
                     </div>
 
                     <!-- Stock Invoices Table -->
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4>Stock Invoices</h4>
-                            @if($stockInvoices->hasPages())
-                                <div>
-                                    {{ $stockInvoices->appends(request()->query())->links() }}
-                                </div>
-                            @endif
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4 class="card-title">Stock Invoices</h4>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Invoice Count</th>
-                                        <th>Invoice Numbers</th>
-                                        <th>Total Amount (LKR)</th>
-                                        <th>Total Cost (LKR)</th>
-                                        <th>Profit (LKR)</th>
-                                        <th>Margin %</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $stockGrouped = $stockInvoices->groupBy('date');
-                                        $stockTotalAmount = 0;
-                                        $stockTotalCost = 0;
-                                        $stockTotalProfit = 0;
-                                    @endphp
-                                    @forelse($stockGrouped as $date => $invoices)
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Invoice Count</th>
+                                            <th>Invoice Numbers</th>
+                                            <th>Total Amount (LKR)</th>
+                                            <th>Total Cost (LKR)</th>
+                                            <th>Profit (LKR)</th>
+                                            <th>Margin %</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         @php
-                                            $dayTotal = $invoices->sum('amount');
-                                            $dayCost = $invoices->sum('cost');
-                                            $dayProfit = $invoices->sum('profit');
-                                            $dayMargin = $dayTotal > 0 ? ($dayProfit / $dayTotal) * 100 : 0;
-                                            
-                                            $stockTotalAmount += $dayTotal;
-                                            $stockTotalCost += $dayCost;
-                                            $stockTotalProfit += $dayProfit;
+                                            $stockGrouped = $stockInvoices->groupBy('date');
+                                            $stockTotalAmount = 0;
+                                            $stockTotalCost = 0;
+                                            $stockTotalProfit = 0;
                                         @endphp
+                                        @forelse($stockGrouped as $date => $invoices)
+                                            @php
+                                                $dayTotal = $invoices->sum('amount');
+                                                $dayCost = $invoices->sum('cost');
+                                                $dayProfit = $invoices->sum('profit');
+                                                $dayMargin = $dayTotal > 0 ? ($dayProfit / $dayTotal) * 100 : 0;
+                                                
+                                                $stockTotalAmount += $dayTotal;
+                                                $stockTotalCost += $dayCost;
+                                                $stockTotalProfit += $dayProfit;
+                                            @endphp
+                                            <tr>
+                                                <td>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</td>
+                                                <td>
+                                                    <span class="badge badge-success">{{ $invoices->count() }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="invoice-numbers">
+                                                        @foreach($invoices as $invoice)
+                                                            <span class="badge badge-secondary mr-1">{{ $invoice['invoice_number'] }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong>{{ number_format($dayTotal, 2) }}</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="text-danger">{{ number_format($dayCost, 2) }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-success">{{ number_format($dayProfit, 2) }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge {{ $dayMargin >= 0 ? 'badge-success' : 'badge-danger' }}">
+                                                        {{ number_format($dayMargin, 1) }}%
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" class="text-center">No stock invoices found</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                    <tfoot class="thead-dark">
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</td>
-                                            <td>
-                                                <span class="badge badge-success">{{ $invoices->count() }}</span>
-                                            </td>
-                                            <td>
-                                                <div class="invoice-numbers">
-                                                    @foreach($invoices as $invoice)
-                                                        <span class="badge badge-secondary mr-1">{{ $invoice['invoice_number'] }}</span>
-                                                    @endforeach
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <strong>{{ number_format($dayTotal, 2) }}</strong>
-                                            </td>
-                                            <td>
-                                                <span class="text-danger">{{ number_format($dayCost, 2) }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="text-success">{{ number_format($dayProfit, 2) }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge {{ $dayMargin >= 0 ? 'badge-success' : 'badge-danger' }}">
-                                                    {{ number_format($dayMargin, 1) }}%
+                                            <th colspan="3">Total Stock Invoices</th>
+                                            <th>{{ number_format($stockTotal, 2) }}</th>
+                                            <th>{{ number_format($stockCostTotal, 2) }}</th>
+                                            <th>{{ number_format($stockProfitTotal, 2) }}</th>
+                                            <th>
+                                                <span class="badge {{ $overallMargin >= 0 ? 'badge-success' : 'badge-danger' }}">
+                                                    {{ number_format($overallMargin, 1) }}%
                                                 </span>
-                                            </td>
+                                            </th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="text-center">No stock invoices found</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                                <tfoot class="thead-dark">
-                                    <tr>
-                                        <th colspan="3">Total Stock Invoices</th>
-                                        <th>{{ number_format($stockTotal, 2) }}</th>
-                                        <th>{{ number_format($stockCostTotal, 2) }}</th>
-                                        <th>{{ number_format($stockProfitTotal, 2) }}</th>
-                                        <th>
-                                            <span class="badge {{ $overallMargin >= 0 ? 'badge-success' : 'badge-danger' }}">
-                                                {{ number_format($overallMargin, 1) }}%
-                                            </span>
-                                        </th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                         @if($stockInvoices->hasPages())
-                            <div class="d-flex justify-content-end">
-                                {{ $stockInvoices->appends(request()->query())->links() }}
-                            </div>
+                        <div class="card-footer text-right">
+                            <nav class="d-inline-block" aria-label="Pagination">
+                                {{ $stockInvoices->appends(request()->query())->links('pagination::bootstrap-4') }}
+                            </nav>
+                        </div>
                         @endif
                     </div>
 
@@ -290,8 +288,13 @@
     transform: translateY(-5px);
 }
 
+.card-footer {
+    background-color: rgba(0,0,0,0.03);
+    border-top: 1px solid rgba(0,0,0,0.125);
+}
+
 .pagination {
-    justify-content: flex-end;
+    margin-bottom: 0;
 }
 </style>
 
