@@ -5,40 +5,37 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>CE Laptop Repair</title>
+
   <!-- General CSS Files -->
   <link rel="stylesheet" href="{{ asset('assets/css/app.min.css') }}">
-  <!-- Template CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
-  <!-- Custom style CSS -->
   <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
-  <!-- Font Awesome 6 CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="icon" href="{{ asset('assets/img/desktop.png') }}" type="image/png">
-
 </head>
 
 <body>
   <div id="app">
     <div class="main-wrapper main-wrapper-1">
       <div class="navbar-bg"></div>
+
       <nav class="navbar navbar-expand-lg main-navbar sticky">
         <div class="form-inline mr-auto">
           <ul class="navbar-nav mr-3">
-            <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg
-									collapse-btn"> <i data-feather="align-justify"></i></a></li>
+            <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn">
+                <i data-feather="align-justify"></i></a></li>
             <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
-                <i data-feather="maximize"></i>
-              </a></li>
-            <li>
-              
-            </li>
+                <i data-feather="maximize"></i></a></li>
           </ul>
         </div>
+
         <ul class="navbar-nav navbar-right">
-          <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link nav-link-lg message-toggle d-flex align-items-center">
+          <li class="dropdown dropdown-list-toggle">
+            <a href="#" data-toggle="dropdown" class="nav-link nav-link-lg message-toggle d-flex align-items-center">
               <i class="fas fa-user-circle" style="font-size: 35px; color:rgb(0, 0, 0);"></i>
               <span class="ml-2 d-none d-md-inline text-dark font-weight-bold" style="font-size: 16px;">
                 {{ auth()->user()->name ?? 'User' }}
@@ -46,69 +43,55 @@
             </a>
 
             <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
-              <div class="dropdown-header">
-               Profile
-                <div class="float-right">
-            
-              </div>
-              <div class="dropdown-list-content ">
-                 <div class="dropdown-item text-center">
-                    <!-- Profile Image -->
-                     @php
-                      $user = auth()->user();
-                      $shopDetail = $user ? App\Models\MyShopDetail::where('user_id', $user->id)->first() : null;
+              <div class="dropdown-header">Profile</div>
+              <div class="dropdown-list-content">
+                <div class="dropdown-item text-center">
+                  @php
+                    $user = auth()->user();
+                    $shopDetail = $user ? App\Models\MyShopDetail::where('user_id', $user->id)->first() : null;
                   @endphp
-                            @if($shopDetail && $shopDetail->logo_image)
-                      <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="User Image" class="rounded-circle mt-2" width="60" height="60">
-                    @else
-                      <img src="{{ asset('/assets/img/user.png') }}" alt="Default User" class="rounded-circle mt-2" width="60" height="60">
-                    @endif
+                  @if($shopDetail && $shopDetail->logo_image)
+                    <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="User Image" class="rounded-circle mt-2" width="60" height="60">
+                  @else
+                    <img src="{{ asset('/assets/img/user.png') }}" alt="Default User" class="rounded-circle mt-2" width="60" height="60">
+                  @endif
 
-                    <!-- User Greeting -->
-                    <span class="message-user d-block font-weight-bold mt-2">
-                      Hello, {{ auth()->user()->name ?? 'User' }}
-                    </span>
+                  <span class="message-user d-block font-weight-bold mt-2">
+                    Hello, {{ auth()->user()->name ?? 'User' }}
+                  </span>
 
-                    <!-- Logout Button -->
-                    <form action="{{ route('logout') }}" method="POST" class="mt-2 mb-2">
-                      @csrf
-                      <button type="submit" class="btn btn-danger btn-sm w-100">
-                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
-                      </button>
-                    </form>
-                  </div>
-
+                  <form action="{{ route('logout') }}" method="POST" class="mt-2 mb-2">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm w-100">
+                      <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    </button>
+                  </form>
+                </div>
               </div>
-   
+            </div>
           </li>
-          
-          
         </ul>
       </nav>
 
-    <div class="main-sidebar sidebar-style-2">
-      <aside id="sidebar-wrapper">
-        <div class="sidebar-brand text-center py-3">
-          @php
+      <div class="main-sidebar sidebar-style-2">
+        <aside id="sidebar-wrapper">
+          <div class="sidebar-brand text-center py-3">
+            @php
               $user = auth()->user();
               $shopDetail = $user ? App\Models\MyShopDetail::where('user_id', $user->id)->first() : null;
-          @endphp
-
-          <a href="{{ route('user.dashboard') }}">
+            @endphp
+            <a href="{{ route('user.dashboard') }}">
               @if($shopDetail && $shopDetail->logo_image)
-                  <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:65px; height: auto;">
+                <img src="{{ Storage::url($shopDetail->logo_image) }}" alt="Logo" class="header-logo" style="width:65px;">
               @else
-                  <img src="{{ asset('/assets/logo/logo.png') }}" alt="Logo" class="header-logo" style="width:120px; height: auto;">
+                <img src="{{ asset('/assets/logo/logo.png') }}" alt="Logo" class="header-logo" style="width:120px;">
               @endif
-              
               <div class="logo-name mt-2" style="font-weight: bold; font-size: 12px; color: #333;">
-                  {{ $shopDetail->shop_name ?? 'User ID: ' . ($user->id ?? 'CeylonGIT') }}
+                {{ $shopDetail->shop_name ?? 'User ID: ' . ($user->id ?? 'CeylonGIT') }}
               </div>
-          
-          </a>
-        </div>
+            </a>
+          </div>
 
-          
           <ul class="sidebar-menu mt-4">
             <li class="menu-header">Navigations</li>
 
@@ -117,6 +100,7 @@
                 <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
               </a>
             </li>
+
             <li class="dropdown {{ request()->is('user/myshop*') ? 'active' : '' }}">
               <a href="{{ route('user.myshop.index') }}" class="nav-link">
                 <i class="fas fa-home"></i><span>My Shop Details</span>
@@ -125,9 +109,19 @@
 
             <li class="dropdown {{ request()->is('user/cashier*') ? 'active' : '' }}">
               <a href="{{ route('user.cashier.index') }}" class="nav-link">
-              <i class="fas fa-cash-register"></i><span>Cashier</span>
+                <i class="fas fa-cash-register"></i><span>Cashier</span>
               </a>
             </li>
+
+            {{-- ✅ Only user ID = 3 can see this --}}
+            @if(auth()->check() && auth()->user()->id == 3)
+            <li class="dropdown {{ request()->is('user/account*') ? 'active' : '' }}">
+              <a href="#" class="nav-link" data-toggle="modal" data-target="#passwordModal">
+               <i class="fas fa-credit-card"></i><span>Account</span>
+
+              </a>
+            </li>
+            @endif
 
            @if(auth()->user()->hasPermission('Invoice'))
             <li class="dropdown {{ request()->is('user/invoices') || request()->is('user/invoices/*') ? 'active' : '' }}">
@@ -249,46 +243,85 @@
                 @csrf
               </form>
             </li>
+
           </ul>
         </aside>
       </div>
-      
+
+      <!-- ✅ Password Modal (Bootstrap 4 Compatible) -->
+      <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="passwordModalLabel">Enter Access Password</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="accessPassword">Password</label>
+                <input type="text" class="form-control" id="accessPassword" placeholder="Enter password" required>
+              </div>
+              <button id="submitPassword" class="btn btn-primary w-100">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById('accessPassword');
+        const submitButton = document.getElementById('submitPassword');
+
+        // ✅ Ensure input type stays as password
+        passwordInput.addEventListener('focus', function() {
+          if (this.type === 'text') {
+            this.type = 'password';
+          }
+        });
+
+        // ✅ Handle submit
+        submitButton.addEventListener('click', function () {
+          const enteredPassword = passwordInput.value.trim();
+
+          if (enteredPassword === '2535') {
+            $('#passwordModal').modal('hide');
+            window.location.href = "{{ route('user.account.index') }}";
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Incorrect password!',
+              confirmButtonColor: '#3085d6',
+            });
+          }
+        });
+      });
+    </script>
+
       <!-- Main Content -->
       <div class="main-content">
         @yield('content')
       </div>
-      
+
       <footer class="main-footer">
         <div class="footer-left">
           <a href="https://ceylongit.online/" target="_blank">Powered by CeylonGIT</a>
-        </div>
-        <div class="footer-right">
-          <!-- You can add extra footer content here -->
         </div>
       </footer>
     </div>
   </div>
 
-  <!-- jQuery -->
+  <!-- JS Dependencies -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-  <!-- Bootstrap 4 JS -->
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-
-  <!-- General JS Scripts -->
   <script src="{{ asset('assets/js/app.min.js') }}"></script>
-  <!-- JS Libraies -->
   <script src="{{ asset('assets/bundles/apexcharts/apexcharts.min.js') }}"></script>
-  <!-- Page Specific JS File -->
   <script src="{{ asset('assets/js/page/index.js') }}"></script>
-  <!-- Template JS File -->
   <script src="{{ asset('assets/js/scripts.js') }}"></script>
-  <!-- Custom JS File -->
   <script src="{{ asset('assets/js/custom.js') }}"></script>
 
-  
-  
   @stack('scripts')
 </body>
 </html>

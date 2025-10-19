@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 18, 2025 at 11:31 AM
+-- Generation Time: Oct 19, 2025 at 04:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,33 @@ SET time_zone = "+00:00";
 --
 -- Database: `celaptop`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account`
+--
+
+CREATE TABLE `account` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `description` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `date` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `account`
+--
+
+INSERT INTO `account` (`id`, `user_id`, `description`, `amount`, `date`, `created_at`, `updated_at`) VALUES
+(1, 3, 'mouse', 2500.00, '2025-10-19', '2025-10-19 14:04:57', '2025-10-19 14:04:57'),
+(2, 3, 'kk', -250.00, '2025-10-19', '2025-10-19 14:05:14', '2025-10-19 14:05:14'),
+(3, 3, 'key', 3000.00, '2025-10-20', '2025-10-19 14:06:20', '2025-10-19 14:06:20'),
+(4, 3, 'pc', 25000.00, '2025-10-19', '2025-10-19 14:15:23', '2025-10-19 14:15:23'),
+(5, 3, 'pc', 25000.00, '2025-10-19', '2025-10-19 14:28:31', '2025-10-19 14:28:31');
 
 -- --------------------------------------------------------
 
@@ -129,7 +156,8 @@ CREATE TABLE `complete_shop_repairs` (
 --
 
 INSERT INTO `complete_shop_repairs` (`id`, `repair_item_id`, `shop_id`, `user_id`, `final_price`, `notes`, `status`, `created_at`, `updated_at`) VALUES
-(4, 11, 4, 3, 2500.00, 'kllk', 'completed', '2025-07-16 07:33:38', '2025-07-16 07:33:38');
+(4, 11, 4, 3, 2500.00, 'kllk', 'completed', '2025-07-16 07:33:38', '2025-07-16 07:33:38'),
+(5, 16, 6, 3, 2500.00, '5000', 'completed', '2025-07-24 06:14:15', '2025-07-24 06:14:15');
 
 -- --------------------------------------------------------
 
@@ -153,7 +181,7 @@ CREATE TABLE `counters` (
 INSERT INTO `counters` (`id`, `user_id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (2, 3, 'customer_number', 1, '2025-07-03 08:14:12', '2025-07-03 08:14:12'),
 (3, 3, 'customer_number_3', 1, '2025-07-04 07:12:47', '2025-07-04 07:12:47'),
-(4, 3, 'customer_number_user_3', 42, '2025-07-04 07:14:41', '2025-07-16 07:32:23'),
+(4, 3, 'customer_number_user_3', 45, '2025-07-04 07:14:41', '2025-08-02 16:17:44'),
 (11, 31, 'customer_number_user_31', 1, '2025-07-07 08:17:19', '2025-07-07 08:17:19'),
 (12, 32, 'customer_number_user_32', 1, '2025-07-10 13:30:52', '2025-07-10 13:30:52');
 
@@ -523,7 +551,10 @@ CREATE TABLE `laptop_repairs` (
 
 INSERT INTO `laptop_repairs` (`id`, `customer_name`, `contact`, `email`, `date`, `fault`, `device`, `repair_price`, `serial_number`, `status`, `images`, `customer_number`, `created_at`, `updated_at`, `note_number`, `user_id`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
 (74, 'Kavindu Nelshan', '0765645303', NULL, '2025-07-07', 'kjjj', 'asus', NULL, '234765889995t5t', 'pending', '[\"repairs\\/6q5omVYPQLUs0HydVIP2SxeUxJPjO7IGNXjXGrF9.jpg\"]', 'XX-31-0001', '2025-07-07 08:17:19', '2025-07-07 08:17:19', '425', 31, NULL, 0, 0, 0, 0, 0, 0),
-(98, 'Kavindu Nelshan', '0765645303', 'jayathissa1999max@gmail.com', '2025-07-10', 'no power', 'asushhg', NULL, 'yeryeu46u68tyhh', 'pending', NULL, 'XX-32-0001', '2025-07-10 13:30:52', '2025-07-10 13:30:52', '500', 32, NULL, 0, 0, 0, 0, 0, 0);
+(98, 'Kavindu Nelshan', '0765645303', 'jayathissa1999max@gmail.com', '2025-07-10', 'no power', 'asushhg', NULL, 'yeryeu46u68tyhh', 'pending', NULL, 'XX-32-0001', '2025-07-10 13:30:52', '2025-07-10 13:30:52', '500', 32, NULL, 0, 0, 0, 0, 0, 0),
+(113, 'kavi', '0114578552', 'kavindunelsan@gmail.com', '2025-08-02', 'ghtj', 'dell', NULL, 'fvgfsgv', 'pending', NULL, 'CE-3-0043', '2025-08-02 15:47:51', '2025-08-02 15:47:51', '455', 3, '12GB', 0, 1, 0, 0, 0, 0),
+(114, 'janith', '077412554', 'kavindunelsan@gmail.com', '2025-08-02', 'dsfsdf', 'dell', NULL, 'sdfsarrr4r', 'in_progress', NULL, 'CE-3-0044', '2025-08-02 15:52:32', '2025-08-02 15:53:01', '452', 3, '12GB', 0, 1, 0, 0, 0, 1),
+(115, 'kavindu', '0774515644', 'kavindunelsan@gmail.com', '2025-08-02', 'dgfrsfdgs', 'ertfdhfgh', NULL, 'fds4543tgfdg', 'pending', NULL, 'CE-3-0045', '2025-08-02 16:17:44', '2025-08-02 16:17:44', '345', 3, '8GB', 0, 0, 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -611,7 +642,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (70, '2025_07_16_143504_create_credit_shops_table', 60),
 (71, '2025_07_16_151629_create_credit_invoices_table', 61),
 (72, '2025_07_16_151804_create_credit_invoice_items_table', 61),
-(73, '2025_07_18_090844_add_permissions_column_to_users_table', 62);
+(73, '2025_07_18_090844_add_permissions_column_to_users_table', 62),
+(74, '2025_07_24_093825_add_user_id_to_repair_items_table', 63),
+(75, '2025_10_19_191946_create_account_table', 64),
+(76, '2025_10_19_193247_add_user_id_to_account_table', 65);
 
 -- --------------------------------------------------------
 
@@ -713,6 +747,7 @@ CREATE TABLE `repair_items` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `item_number` varchar(255) NOT NULL,
   `shop_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
   `item_name` varchar(255) NOT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `description` text DEFAULT NULL,
@@ -734,17 +769,19 @@ CREATE TABLE `repair_items` (
 -- Dumping data for table `repair_items`
 --
 
-INSERT INTO `repair_items` (`id`, `item_number`, `shop_id`, `item_name`, `price`, `description`, `serial_number`, `date`, `status`, `created_at`, `updated_at`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
-(9, 'CE-3-0001', 3, 'laptop', NULL, 'no power', '4ergg', '2025-07-16', 'completed', '2025-07-16 05:00:04', '2025-07-16 05:15:38', '12GB', 1, 0, 0, 0, 1, 1),
-(10, 'PO-4-0001', 4, 'asus', NULL, 'mother bord replace', '4erggt3rt', '2025-07-15', 'in_progress', '2025-07-16 05:00:54', '2025-07-16 18:46:57', '16GB', 0, 1, 0, 0, 1, 1),
-(11, 'PO-4-0002', 4, 'asus', NULL, 'no power', '4erggt3rt', '2025-07-16', 'completed', '2025-07-16 07:31:40', '2025-07-16 07:33:38', NULL, 0, 1, 0, 0, 1, 1),
-(12, 'PO-4-0003', 4, 'laptop', 2500.00, 'niii', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:17:18', '2025-07-16 19:17:18', '12GB', 0, 1, 0, 0, 1, 1),
-(13, 'HJ-5-0001', 5, 'laptop', 2500.00, 'nbvvhb', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:32:54', '2025-07-16 19:33:57', '16GB', 1, 0, 0, 0, 0, 0),
-(14, 'HJ-5-0002', 5, 'laptop', 2500.00, 'fghftdg', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:37:23', '2025-07-16 19:37:23', '16GB', 1, 0, 0, 0, 1, 0),
-(15, 'HJ-5-0003', 5, 'laptopjyrjydr', 50000.00, 'sfdsr', '4ergg', '2025-07-14', 'pending', '2025-07-16 19:37:59', '2025-07-16 19:49:01', '8GB', 1, 0, 0, 1, 0, 0),
-(16, 'KA-6-0001', 6, 'laptopjyrjydr', 2500.00, 'gfrgtre', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:50:09', '2025-07-16 19:50:09', NULL, 1, 1, 0, 0, 0, 0),
-(17, 'KA-6-0002', 6, 'laptopjyrjydr', 2500.00, 'dfegedrfg', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:52:31', '2025-07-16 19:52:31', '8GB', 1, 0, 0, 0, 0, 0),
-(18, 'KA-6-0003', 6, 'laptopjyrjydr', 2500.00, NULL, '4erggfg', '2025-07-17', 'pending', '2025-07-16 19:53:38', '2025-07-16 19:53:38', '12GB', 1, 0, 0, 0, 0, 0);
+INSERT INTO `repair_items` (`id`, `item_number`, `shop_id`, `user_id`, `item_name`, `price`, `description`, `serial_number`, `date`, `status`, `created_at`, `updated_at`, `ram`, `hdd`, `ssd`, `nvme`, `battery`, `dvd_rom`, `keyboard`) VALUES
+(9, 'CE-3-0001', 3, NULL, 'laptop', NULL, 'no power', '4ergg', '2025-07-16', 'completed', '2025-07-16 05:00:04', '2025-07-16 05:15:38', '12GB', 1, 0, 0, 0, 1, 1),
+(10, 'PO-4-0001', 4, NULL, 'asus', NULL, 'mother bord replace', '4erggt3rt', '2025-07-15', 'in_progress', '2025-07-16 05:00:54', '2025-07-16 18:46:57', '16GB', 0, 1, 0, 0, 1, 1),
+(11, 'PO-4-0002', 4, NULL, 'asus', NULL, 'no power', '4erggt3rt', '2025-07-16', 'completed', '2025-07-16 07:31:40', '2025-07-16 07:33:38', NULL, 0, 1, 0, 0, 1, 1),
+(12, 'PO-4-0003', 4, NULL, 'laptop', 2500.00, 'niii', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:17:18', '2025-07-16 19:17:18', '12GB', 0, 1, 0, 0, 1, 1),
+(13, 'HJ-5-0001', 5, NULL, 'laptop', 2500.00, 'nbvvhb', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:32:54', '2025-07-16 19:33:57', '16GB', 1, 0, 0, 0, 0, 0),
+(14, 'HJ-5-0002', 5, NULL, 'laptop', 2500.00, 'fghftdg', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:37:23', '2025-07-16 19:37:23', '16GB', 1, 0, 0, 0, 1, 0),
+(15, 'HJ-5-0003', 5, NULL, 'laptopjyrjydr', 50000.00, 'sfdsr', '4ergg', '2025-07-14', 'pending', '2025-07-16 19:37:59', '2025-07-16 19:49:01', '8GB', 1, 0, 0, 1, 0, 0),
+(16, 'KA-6-0001', 6, NULL, 'laptopjyrjydr', 2500.00, 'gfrgtre', '4ergg', '2025-07-17', 'in_progress', '2025-07-16 19:50:09', '2025-07-24 06:14:43', NULL, 1, 1, 0, 0, 0, 0),
+(17, 'KA-6-0002', 6, NULL, 'laptopjyrjydr', 2500.00, 'dfegedrfg', '4ergg', '2025-07-17', 'pending', '2025-07-16 19:52:31', '2025-07-16 19:52:31', '8GB', 1, 0, 0, 0, 0, 0),
+(18, 'KA-6-0003', 6, NULL, 'laptopjyrjydr', 2500.00, NULL, '4erggfg', '2025-07-17', 'pending', '2025-07-16 19:53:38', '2025-07-16 19:53:38', '12GB', 1, 0, 0, 0, 0, 0),
+(19, 'PO-4-0004', 4, NULL, 'laptop', 5000.00, ';j;jo;o;o;', '4erggt3rtyju', '2025-07-24', 'pending', '2025-07-24 04:25:02', '2025-07-24 04:25:02', '8GB', 1, 0, 0, 1, 1, 0),
+(20, 'PO-4-0005', 4, NULL, 'laptop', 5000.00, ';j;jo;o;o;', '4erggt3rtyju', '2025-07-21', 'in_progress', '2025-07-24 04:25:03', '2025-07-24 06:02:45', '8GB', 1, 0, 0, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -766,7 +803,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('bJbp2LAna97QFKsOZnjTEtEZXbE9Rmxyl1jyVbBB', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoidkxCZVRFV0lKWk9JRlFkbXlEN1VWYnhGMWgzZ1hWT2xrMWdNYmp5RSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2Rhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM7fQ==', 1752816784);
+('PPg9mZy8YquS4cBVACljk12zBy2VuT8XZxEcGIkB', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiU3FObDZPbHlzWnFwVzBGZVNoSHdxSmZ5b0JSN0g4TFh5SGVUYXhETyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC91c2VyL2Nhc2hpZXIiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=', 1760884746);
 
 -- --------------------------------------------------------
 
@@ -899,7 +936,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `remember_token`, `permissions`, `created_at`, `updated_at`, `email_verified_at`, `verification_token`, `smtp_host`, `smtp_port`, `smtp_encryption`, `email_username`, `email_password`) VALUES
-(3, 'Admin User', 'admin@celaptop.com', '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, NULL, '2025-06-28 07:53:09', '2025-07-10 15:17:38', NULL, NULL, 'smtp.gmail.com', 587, 'tls', 'www.kavi1999maxnelshan@gmail.com', 'eyJpdiI6IkNMKzFnb1RnOGErUnI0MW1zTXhGckE9PSIsInZhbHVlIjoiL1lFdlhSK2pMcHBLTWh2UDF2cTl3M2MwZFVhUWJsRENsaXFUV09xOUlNND0iLCJtYWMiOiIwZTZhY2FlOWFkYjk4ZWFhMzYyZmJhMGQ2OTY4NDdhNGM2N2YzYzkzYTU5MmE4ZmFmZTk0M2FkMmM0MGM4NWQ1IiwidGFnIjoiIn0='),
+(3, 'Admin User', 'admin@celaptop.com', '$2y$12$zkgptxReVd3tfYjUa0cd0.WDwVxXKHIKSfW/5FHCCxKEssaniaO0C', 'user', 1, NULL, '[\"Invoice\",\"Invoice With Stock\",\"Estimates\",\"Stock\",\"Credit Shops\",\"Credit Invoices\",\"Invoice Report\",\"Laptop Repair\",\"Completed Repair\",\"Shop Repair Details\",\"Completed Shop Repairs\",\"Email Setting\"]', '2025-06-28 07:53:09', '2025-08-02 16:03:58', NULL, NULL, 'celaptoprepaircenter.com', 465, 'ssl', 'repair@celaptoprepaircenter.com', 'eyJpdiI6InhoYmM1YnBvMkkrNDBMR21Oc25pL1E9PSIsInZhbHVlIjoieFA2cWRSMXhFbjVUNVF5UWQvQ2JJZz09IiwibWFjIjoiY2FiYzhmYzViMTY0OWM3ZjFhMzY4YTA0NTNmMDI1Y2IyNTYzMzIyNGE5N2Y5MDgyZjlmNzAzYjY2MGY2MDc2MCIsInRhZyI6IiJ9'),
 (5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$GqqTz1B0JJOex0QSsD1ideJ6bYP/uvksX5XS5ut984O9dcwkt3Tk.', 'super-admin', 1, NULL, NULL, '2025-07-03 04:36:21', '2025-07-03 04:36:21', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (31, 'Kavindu Nelshan', 'www.kavi1999maxnelshan@gmail.com', '$2y$12$sxwrffpy6HqYmpuCMqXGxukhgrptM2tpXcbT70FhQrB2BQHiGwK52', 'user', 1, NULL, '[\"Invoice\",\"Invoice With Stock\"]', '2025-07-07 07:18:17', '2025-07-18 05:09:04', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (32, 'kavindu nelshan', 'test3@gmail.com', '$2y$12$xo08Mm5.hngQBufYFTnn9.ZBwE1xhc9ST.9/Q3Z8g/1PA5o7LpxDa', 'user', 1, NULL, NULL, '2025-07-10 08:29:15', '2025-07-18 04:04:27', NULL, NULL, 'smtp.gmail.com', 587, 'tls', 'www.kavi1999maxnelshan@gmail.com', 'eyJpdiI6IkF0L000WllRdk1NWWcrb0pPRVBMTXc9PSIsInZhbHVlIjoiMjdjcXF6QmpzczZtaUZPTXpnWndlblBNVUtwOWpTTFhoYnpzZGJBRit5Zz0iLCJtYWMiOiI5YTRmNjkxMjg0NTQ5MjFjZDhkMDYxZTYyNzFkN2UzYTlmMmU0MTE5ODY3NDRkNWMxMGU0N2FmMDU2MTgxYTRmIiwidGFnIjoiIn0='),
@@ -924,6 +961,13 @@ CREATE TABLE `user_email_settings` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `account`
+--
+ALTER TABLE `account`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `account_user_id_date_index` (`user_id`,`date`);
 
 --
 -- Indexes for table `cache`
@@ -1121,7 +1165,8 @@ ALTER TABLE `payments`
 ALTER TABLE `repair_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `repair_items_shop_id_index` (`shop_id`),
-  ADD KEY `repair_items_item_number_index` (`item_number`);
+  ADD KEY `repair_items_item_number_index` (`item_number`),
+  ADD KEY `repair_items_user_id_foreign` (`user_id`);
 
 --
 -- Indexes for table `sessions`
@@ -1178,6 +1223,12 @@ ALTER TABLE `user_email_settings`
 --
 
 --
+-- AUTO_INCREMENT for table `account`
+--
+ALTER TABLE `account`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `cashiers`
 --
 ALTER TABLE `cashiers`
@@ -1193,7 +1244,7 @@ ALTER TABLE `completed_repairs`
 -- AUTO_INCREMENT for table `complete_shop_repairs`
 --
 ALTER TABLE `complete_shop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `counters`
@@ -1283,13 +1334,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `laptop_repairs`
 --
 ALTER TABLE `laptop_repairs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `my_shop_details`
@@ -1313,7 +1364,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `repair_items`
 --
 ALTER TABLE `repair_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `shops`
@@ -1354,6 +1405,12 @@ ALTER TABLE `user_email_settings`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `account`
+--
+ALTER TABLE `account`
+  ADD CONSTRAINT `account_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `cashiers`
@@ -1479,7 +1536,8 @@ ALTER TABLE `payments`
 -- Constraints for table `repair_items`
 --
 ALTER TABLE `repair_items`
-  ADD CONSTRAINT `repair_items_shop_id_foreign` FOREIGN KEY (`shop_id`) REFERENCES `shop_names` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `repair_items_shop_id_foreign` FOREIGN KEY (`shop_id`) REFERENCES `shop_names` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `repair_items_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `shops`

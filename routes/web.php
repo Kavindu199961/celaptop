@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
@@ -147,6 +148,19 @@ Route::prefix('shop')->name('shop.')->group(function () {
     Route::put('/{shop}', [ShopController::class, 'update'])->name('update');
     Route::delete('/{shop}', [ShopController::class, 'destroy'])->name('destroy');
      Route::get('/{shop}', [ShopController::class, 'show'])->name('show');
+});
+
+Route::prefix('account')->name('account.')->group(function () {
+    Route::get('/', [AccountController::class, 'index'])->name('index');
+    Route::post('/', [AccountController::class, 'store'])->name('store');
+    Route::get('/{id}', [AccountController::class, 'show'])->name('show');
+    Route::put('/{id}', [AccountController::class, 'update'])->name('update');
+    Route::delete('/{id}', [AccountController::class, 'destroy'])->name('destroy');
+    Route::get('/{id}/edit', [AccountController::class, 'edit'])->name('edit');
+    
+    // Optional routes for additional features
+    Route::get('/summary/data', [AccountController::class, 'summary'])->name('summary');
+    Route::get('/export/pdf', [AccountController::class, 'exportPdf'])->name('export.pdf');
 });
 
 Route::prefix('user/shop_names')->name('shop_names.')->group(function () {
