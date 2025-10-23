@@ -93,7 +93,7 @@
                                     <i class="fas fa-list-ul"></i> View
                                 </a>
                             </td>
-                                                    </tr>
+                        </tr>
                         @empty
                         <tr>
                             <td colspan="5" class="text-center">No shops found</td>
@@ -210,7 +210,7 @@
 
 <!-- Add Repair Items Modal -->
 <div class="modal fade" id="addRepairItemsModal" tabindex="-1" role="dialog" aria-labelledby="addRepairItemsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addRepairItemsModalLabel">Add Repair Items to <span id="shop-name-title"></span></h5>
@@ -218,7 +218,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addRepairItemsForm" method="POST">
+            <form id="addRepairItemsForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div id="repair-items-container">
@@ -312,6 +312,83 @@
         margin-bottom: 1rem;
         color: #495057;
         font-weight: 600;
+    }
+
+    /* Image upload and preview styling */
+    .image-upload-section {
+        background-color: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .image-preview {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border: 2px solid #dee2e6;
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+
+    .image-preview img {
+        width: 50%;
+        height: 50%;
+      
+    }
+
+    .image-preview .remove-image {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: rgba(255, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #007bff;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .image-counter {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 5px;
     }
 </style>
 @endpush
@@ -524,6 +601,31 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Image Upload Section -->
+                <div class="image-upload-section">
+                    <h6><i class="fas fa-images"></i> Upload Images (Optional)</h6>
+                    <div class="form-group">
+                        <div class="file-input-wrapper">
+                            <button type="button" class="file-input-label">
+                                <i class="fas fa-upload"></i> Choose Images
+                            </button>
+                            <input type="file" class="image-upload-input" 
+                                   name="repair_items[${index}][images][]" 
+                                   multiple 
+                                   accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                   data-index="${index}">
+                        </div>
+                        <small class="form-text text-muted">
+                            You can select multiple images (JPEG, PNG, JPG, GIF, WEBP). Max 2MB per image.
+                        </small>
+                        <div class="image-counter" id="image-counter-${index}">No images selected</div>
+                    </div>
+                    
+                    <div class="image-preview-container" id="image-preview-${index}">
+                        <!-- Image previews will be added here -->
+                    </div>
+                </div>
                 
                 <div class="form-group mt-3">
                     <label for="description_${index}">Description</label>
@@ -537,6 +639,96 @@
             `;
             $('#repair-items-container').append(html);
         }
+
+        // Handle image file selection
+        $(document).on('change', '.image-upload-input', function() {
+            var index = $(this).data('index');
+            var files = $(this)[0].files;
+            var previewContainer = $('#image-preview-' + index);
+            var counterElement = $('#image-counter-' + index);
+            
+            // Update counter
+            if (files.length > 0) {
+                counterElement.text(files.length + ' image(s) selected');
+            } else {
+                counterElement.text('No images selected');
+            }
+            
+            // Clear existing previews
+            previewContainer.empty();
+            
+            // Create preview for each selected file
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                
+                // Validate file type and size
+                if (!file.type.match('image.*')) {
+                    continue;
+                }
+                
+                if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'File too large',
+                        text: 'File "' + file.name + '" exceeds 2MB limit',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                    continue;
+                }
+                
+                var reader = new FileReader();
+                
+                reader.onload = (function(file, index, fileIndex) {
+                    return function(e) {
+                        var previewHtml = `
+                            <div class="image-preview">
+                                <img src="${e.target.result}" alt="Preview">
+                                <button type="button" class="remove-image" data-index="${index}" data-file-index="${fileIndex}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                        previewContainer.append(previewHtml);
+                    };
+                })(file, index, i);
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle remove image from preview
+        $(document).on('click', '.remove-image', function() {
+            var index = $(this).data('index');
+            var fileIndex = $(this).data('file-index');
+            var fileInput = $(`.image-upload-input[data-index="${index}"]`)[0];
+            var files = Array.from(fileInput.files);
+            
+            // Remove the file from the FileList
+            files.splice(fileIndex, 1);
+            
+            // Create a new FileList (this is a workaround since FileList is read-only)
+            var newFileList = new DataTransfer();
+            files.forEach(function(file) {
+                newFileList.items.add(file);
+            });
+            
+            // Update the file input
+            fileInput.files = newFileList.files;
+            
+            // Remove the preview
+            $(this).closest('.image-preview').remove();
+            
+            // Update counter
+            var counterElement = $('#image-counter-' + index);
+            if (fileInput.files.length > 0) {
+                counterElement.text(fileInput.files.length + ' image(s) selected');
+            } else {
+                counterElement.text('No images selected');
+            }
+            
+            // Trigger change event to update the input
+            $(fileInput).trigger('change');
+        });
 
         // Handle Add Another Item button click
         $(document).on('click', '#add-another-item', function() {
@@ -590,6 +782,28 @@
                         forAttr = forAttr.replace(/_\d+$/, '_' + index);
                         label.attr('for', forAttr);
                     }
+                });
+                
+                // Update data-index for file inputs
+                $(this).find('.image-upload-input').attr('data-index', index);
+                
+                // Update preview container IDs
+                var oldPreviewId = $(this).find('.image-preview-container').attr('id');
+                if (oldPreviewId) {
+                    var newPreviewId = oldPreviewId.replace(/-\d+$/, '-' + index);
+                    $(this).find('.image-preview-container').attr('id', newPreviewId);
+                }
+                
+                // Update counter IDs
+                var oldCounterId = $(this).find('.image-counter').attr('id');
+                if (oldCounterId) {
+                    var newCounterId = oldCounterId.replace(/-\d+$/, '-' + index);
+                    $(this).find('.image-counter').attr('id', newCounterId);
+                }
+                
+                // Update remove image buttons
+                $(this).find('.remove-image').each(function() {
+                    $(this).attr('data-index', index);
                 });
             });
             

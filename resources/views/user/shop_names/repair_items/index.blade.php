@@ -18,6 +18,21 @@
     </script>
     @endif 
 
+    @if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '{{ session('error') }}',
+            showConfirmButton: true,
+            confirmButtonColor: '#0d6efd',
+            confirmButtonText: 'OK',
+            background: '#f8f9fa',
+            iconColor: '#dc3545'
+        });
+    </script>
+    @endif
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4>Repair Items for {{ $shop->name }}</h4>
@@ -69,13 +84,14 @@
                                 </button>
                                 <button class="btn btn-sm btn-danger delete-repair-item" 
                                         data-id="{{ $item->id }}"
+                                        data-shop-id="{{ $shop->id }}"
                                         data-number="{{ $item->item_number }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <button class="btn btn-sm btn-info view-details" 
-                                        data-item="{{ json_encode($item) }}">
-                                    <i class="fas fa-eye"></i>
-                                </button>
+                                <a href="{{ route('user.shop_names.repair_items.show', ['shop' => $shop->id, 'repairItem' => $item->id]) }}" 
+                                    class="btn btn-sm btn-primary">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
                             </td>
                         </tr>
                         @empty
@@ -142,7 +158,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addRepairItemsForm" method="POST" action="{{ route('user.shop_names.repair_items.store', $shop->id) }}">
+            <form id="addRepairItemsForm" method="POST" action="{{ route('user.shop_names.repair_items.store', $shop->id) }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div id="repair-items-container">
@@ -163,7 +179,7 @@
 
 <!-- Item Details Modal -->
 <div class="modal fade" id="itemDetailsModal" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="itemDetailsModalLabel">Repair Item Details</h5>
@@ -216,7 +232,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="editRepairItemForm" method="POST">
+            <form id="editRepairItemForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
@@ -348,6 +364,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Image Upload Section -->
+                    <div class="image-upload-section mt-4">
+                        <h6><i class="fas fa-images"></i> Images</h6>
+                        
+                        <!-- Existing Images -->
+                        <div class="existing-images mb-3" id="edit_existing_images_container">
+                            <!-- Existing images will be loaded here -->
+                        </div>
+                        
+                        <!-- New Image Upload -->
+                        <div class="form-group">
+                            <label for="edit_images">Upload New Images</label>
+                            <input type="file" class="form-control-file" id="edit_images" name="images[]" multiple accept="image/*">
+                            <small class="form-text text-muted">You can select multiple images. Maximum file size: 2MB per image.</small>
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div class="image-preview mt-3" id="edit_image_preview">
+                            <!-- New image previews will be shown here -->
+                        </div>
+                    </div>
                     
                     <div class="form-group mt-3">
                         <label for="edit_description">Description</label>
@@ -420,6 +458,67 @@
         cursor: pointer;
         font-weight: 500;
         margin-bottom: 0;
+    }
+    .image-upload-section {
+        background-color: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        padding: 1rem;
+    }
+    .existing-image-item {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    .existing-image-item img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 2px solid #dee2e6;
+    }
+    .remove-existing-image {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .image-preview-item {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    .image-preview-item img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 2px solid #28a745;
+    }
+    .remove-preview-image {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .image-upload-input {
+        margin-bottom: 10px;
     }
 </style>
 
@@ -567,6 +666,19 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Image Upload Section for Add Form -->
+                <div class="image-upload-section mt-3">
+                    <h6><i class="fas fa-images"></i> Images</h6>
+                    <div class="form-group">
+                        <label for="images_${index}">Upload Images</label>
+                        <input type="file" class="form-control-file image-upload-input" id="images_${index}" name="repair_items[${index}][images][]" multiple accept="image/*">
+                        <small class="form-text text-muted">You can select multiple images. Maximum file size: 2MB per image.</small>
+                    </div>
+                    <div class="image-preview mt-2" id="image_preview_${index}">
+                        <!-- Image previews will be shown here -->
+                    </div>
+                </div>
                 
                 <div class="form-group mt-3">
                     <label for="description_${index}">Description</label>
@@ -580,6 +692,36 @@
             `;
             $('#repair-items-container').append(html);
         }
+
+        // Handle image preview for add form
+        $(document).on('change', '.image-upload-input', function() {
+            var previewContainer = $(this).siblings('.image-preview');
+            previewContainer.empty();
+            
+            var files = $(this)[0].files;
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+                
+                reader.onload = (function(file) {
+                    return function(e) {
+                        var previewItem = $('<div class="image-preview-item mr-2 mb-2">' +
+                            '<img src="' + e.target.result + '" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #28a745;">' +
+                            '<button type="button" class="remove-preview-image" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">&times;</button>' +
+                            '</div>');
+                        
+                        previewContainer.append(previewItem);
+                    };
+                })(file);
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle remove preview image
+        $(document).on('click', '.remove-preview-image', function() {
+            $(this).closest('.image-preview-item').remove();
+        });
 
         // Handle Add Another Item button click
         $(document).on('click', '#add-another-item', function() {
@@ -605,14 +747,16 @@
         // Handle Delete Repair Item button click
         $(document).on('click', '.delete-repair-item', function() {
             var itemId = $(this).data('id');
+            var shopId = $(this).data('shop-id');
             var itemNumber = $(this).data('number');
             
             $('#delete_item_number').text(itemNumber);
             
-            var actionUrl = "{{ route('user.shop_names.repair_items.destroy', ['shop' => $shop->id, 'repairItem' => ':id']) }}";
-            actionUrl = actionUrl.replace(':id', itemId);
+            var actionUrl = "{{ route('user.shop_names.repair_items.destroy', ['shop' => ':shopId', 'repairItem' => ':id']) }}"
+                .replace(':shopId', shopId)
+                .replace(':id', itemId);
+                
             $('#deleteRepairItemForm').attr('action', actionUrl);
-            
             $('#deleteRepairItemModal').modal('show');
         });
 
@@ -620,6 +764,23 @@
         $(document).on('click', '.view-details', function() {
             var item = $(this).data('item');
             var formattedDate = new Date(item.date).toLocaleDateString();
+            
+            // Build images HTML
+            var imagesHtml = '';
+            if (item.images && item.images.length > 0) {
+                imagesHtml = '<div class="mt-3"><h6>Images</h6><div class="d-flex flex-wrap">';
+                item.images.forEach(function(image) {
+                    var imageUrl = "{{ Storage::url('') }}" + image;
+                    imagesHtml += `
+                        <div class="existing-image-item mr-2 mb-2">
+                            <img src="${imageUrl}" alt="Repair Image" 
+                                 onclick="window.open('${imageUrl}', '_blank')" 
+                                 style="cursor: pointer; width: 120px; height: 120px; object-fit: cover; border-radius: 5px; border: 2px solid #dee2e6;">
+                        </div>
+                    `;
+                });
+                imagesHtml += '</div></div>';
+            }
             
             var html = `
                 <div class="mb-3">
@@ -655,6 +816,8 @@
                     <h6>Description</h6>
                     <p>${item.description || 'No description provided'}</p>
                 </div>
+                
+                ${imagesHtml}
             `;
             
             $('#itemDetailsContent').html(html);
@@ -708,45 +871,156 @@
             var shopId = $(this).data('shop-id');
             var repairItemId = $(this).data('id');
             
-            var editUrl = "{{ route('user.shop_names.repair_items.edit', ['shop' => $shop->id, 'repairItem' => ':id']) }}"
+            var editUrl = "{{ route('user.shop_names.repair_items.edit', ['shop' => ':shopId', 'repairItem' => ':id']) }}"
+                .replace(':shopId', shopId)
                 .replace(':id', repairItemId);
             
-            var updateUrl = "{{ route('user.shop_names.repair_items.update', ['shop' => $shop->id, 'repairItem' => ':id']) }}"
+            var updateUrl = "{{ route('user.shop_names.repair_items.update', ['shop' => ':shopId', 'repairItem' => ':id']) }}"
+                .replace(':shopId', shopId)
                 .replace(':id', repairItemId);
             
-            $.get(editUrl, function(data) {
-                $('#edit_item_name').val(data.item_name);
-                $('#edit_serial_number').val(data.serial_number);
-                $('#edit_price').val(data.price);
-                $('#edit_date').val(new Date(data.date).toISOString().substr(0, 10));
-                $('#edit_status').val(data.status);
-                $('#edit_ram').val(data.ram);
-                $('#edit_description').val(data.description);
-                
-                $('#edit_hdd').prop('checked', data.hdd == 1);
-                $('#edit_ssd').prop('checked', data.ssd == 1);
-                $('#edit_nvme').prop('checked', data.nvme == 1);
-                $('#edit_battery').prop('checked', data.battery == 1);
-                $('#edit_dvd_rom').prop('checked', data.dvd_rom == 1);
-                $('#edit_keyboard').prop('checked', data.keyboard == 1);
-                
-                $('#editRepairItemForm').attr('action', updateUrl);
-                $('#editRepairItemModal').modal('show');
+            // Show loading
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
+            
+            $.get(editUrl)
+                .done(function(data) {
+                    Swal.close();
+                    
+                    // Set form values
+                    $('#edit_item_name').val(data.item_name);
+                    $('#edit_serial_number').val(data.serial_number);
+                    $('#edit_price').val(data.price);
+                    $('#edit_date').val(new Date(data.date).toISOString().substr(0, 10));
+                    $('#edit_status').val(data.status);
+                    $('#edit_ram').val(data.ram);
+                    $('#edit_description').val(data.description);
+                    
+                    // Handle checkbox values
+                    $('#edit_hdd').prop('checked', data.hdd == 1);
+                    $('#edit_ssd').prop('checked', data.ssd == 1);
+                    $('#edit_nvme').prop('checked', data.nvme == 1);
+                    $('#edit_battery').prop('checked', data.battery == 1);
+                    $('#edit_dvd_rom').prop('checked', data.dvd_rom == 1);
+                    $('#edit_keyboard').prop('checked', data.keyboard == 1);
+                    
+                    // Load existing images
+                    loadExistingImages(data.images);
+                    
+                    // Clear image preview and file input
+                    $('#edit_image_preview').empty();
+                    $('#edit_images').val('');
+                    
+                    $('#editRepairItemForm').attr('action', updateUrl);
+                    $('#editRepairItemModal').modal('show');
+                })
+                .fail(function(xhr) {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to load repair item data',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                });
         });
 
-        // Submit Edit Form
+        // Function to load existing images in edit modal
+        function loadExistingImages(images) {
+            var container = $('#edit_existing_images_container');
+            container.empty();
+            
+            if (images && images.length > 0) {
+                var html = '<label>Existing Images:</label><div class="d-flex flex-wrap">';
+                images.forEach(function(image, index) {
+                    var imageUrl = "{{ Storage::url('') }}" + image;
+                    html += `
+                        <div class="existing-image-item mr-2 mb-2">
+                            <input type="hidden" name="existing_images[]" value="${image}">
+                            <img src="${imageUrl}" alt="Existing Image" 
+                                 onclick="window.open('${imageUrl}', '_blank')" 
+                                 style="cursor: pointer; width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #dee2e6;">
+                            <button type="button" class="remove-existing-image" 
+                                    style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">
+                                &times;
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.html(html);
+            } else {
+                container.html('<p class="text-muted">No images uploaded yet.</p>');
+            }
+        }
+
+        // Handle remove existing image
+        $(document).on('click', '.remove-existing-image', function() {
+            $(this).closest('.existing-image-item').remove();
+        });
+
+        // Handle new image preview for edit form
+        $('#edit_images').on('change', function() {
+            var previewContainer = $('#edit_image_preview');
+            previewContainer.empty();
+            
+            var files = $(this)[0].files;
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+                
+                reader.onload = (function(file) {
+                    return function(e) {
+                        var previewItem = $('<div class="image-preview-item mr-2 mb-2">' +
+                            '<img src="' + e.target.result + '" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #28a745;">' +
+                            '<button type="button" class="remove-preview-image" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">&times;</button>' +
+                            '</div>');
+                        
+                        previewContainer.append(previewItem);
+                    };
+                })(file);
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Submit Edit Form with AJAX for file upload
         $('#editRepairItemForm').on('submit', function(e) {
             e.preventDefault();
             
             var form = $(this);
             var url = form.attr('action');
+            var formData = new FormData(this);
+            
+            // Add existing images to form data
+            $('input[name="existing_images[]"]').each(function() {
+                formData.append('existing_images[]', $(this).val());
+            });
+            
+            // Show loading
+            Swal.fire({
+                title: 'Updating...',
+                text: 'Please wait while we update the repair item',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             
             $.ajax({
                 url: url,
                 type: 'POST',
-                data: form.serialize(),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
+                    Swal.close();
                     if(response.success) {
                         $('#editRepairItemModal').modal('hide');
                         Swal.fire({
@@ -760,6 +1034,7 @@
                     }
                 },
                 error: function(xhr) {
+                    Swal.close();
                     var errorMessage = xhr.responseJSON && xhr.responseJSON.message 
                         ? xhr.responseJSON.message 
                         : 'Failed to update repair item';

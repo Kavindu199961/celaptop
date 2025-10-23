@@ -11,7 +11,7 @@ class RepairItem extends Model
     use HasFactory;
 
     protected $fillable = [
-         'item_number',
+        'item_number',
         'shop_id',
         'item_name',
         'price',
@@ -25,10 +25,12 @@ class RepairItem extends Model
         'nvme',
         'battery',
         'dvd_rom',
-        'keyboard'
+        'keyboard',
+        'images'
     ];
 
      protected $casts = [
+        'images' => 'array',
         'hdd' => 'boolean',
         'ssd' => 'boolean',
         'nvme' => 'boolean',
