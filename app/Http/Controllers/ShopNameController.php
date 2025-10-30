@@ -91,7 +91,7 @@ class ShopNameController extends Controller
             $shopName = $shop->name;
             $shop->delete();
 
-            return redirect()->route('shop_names.index')
+            return redirect()->route('user.shop_names.index')
                 ->with('success', 'Shop (' . $shopName . ') deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->route('shop_names.index')

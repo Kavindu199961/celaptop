@@ -237,7 +237,6 @@
     </div>
 </div>
 
-@push('styles')
 <style>
     .repair-item {
         background-color: #f8f9fa;
@@ -314,7 +313,7 @@
         font-weight: 600;
     }
 
-    /* Image upload and preview styling */
+    /* Image upload and preview styling - FIXED */
     .image-upload-section {
         background-color: #ffffff;
         border: 1px solid #e9ecef;
@@ -328,44 +327,49 @@
         flex-wrap: wrap;
         gap: 10px;
         margin-top: 10px;
+        min-height: 80px;
     }
 
-    .image-preview {
+    .image-preview-item {
         position: relative;
-        width: 60px;
-        height: 60px;
-        border: 2px solid #dee2e6;
-        border-radius: 0.375rem;
+        width: 100px;
+        height: 100px;
+        border: 2px solid #28a745;
+        border-radius: 8px;
         overflow: hidden;
+        background: #f8f9fa;
     }
 
-    .image-preview img {
-        width: 50%;
-        height: 50%;
-      
+    .image-preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .image-preview .remove-image {
+    .remove-preview-image {
         position: absolute;
-        top: 2px;
-        right: 2px;
-        background: rgba(255, 0, 0, 0.7);
+        top: -8px;
+        right: -8px;
+        background: #dc3545;
         color: white;
         border: none;
         border-radius: 50%;
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         font-size: 12px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 10;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .file-input-wrapper {
         position: relative;
         overflow: hidden;
         display: inline-block;
+        margin-bottom: 10px;
     }
 
     .file-input-wrapper input[type=file] {
@@ -373,25 +377,40 @@
         left: 0;
         top: 0;
         opacity: 0;
+        width: 100%;
+        height: 100%;
         cursor: pointer;
     }
 
     .file-input-label {
         display: inline-block;
-        padding: 6px 12px;
+        padding: 8px 16px;
         background: #007bff;
         color: white;
         border-radius: 4px;
         cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .file-input-label:hover {
+        background: #0056b3;
     }
 
     .image-counter {
         font-size: 12px;
         color: #6c757d;
         margin-top: 5px;
+        font-weight: 500;
+    }
+
+    .no-images-message {
+        color: #6c757d;
+        font-style: italic;
+        text-align: center;
+        width: 100%;
+        padding: 20px;
     }
 </style>
-@endpush
 
 @push('scripts')
 <script>
@@ -602,7 +621,7 @@
                     </div>
                 </div>
 
-                <!-- Image Upload Section -->
+                <!-- Image Upload Section - FIXED -->
                 <div class="image-upload-section">
                     <h6><i class="fas fa-images"></i> Upload Images (Optional)</h6>
                     <div class="form-group">
@@ -623,7 +642,7 @@
                     </div>
                     
                     <div class="image-preview-container" id="image-preview-${index}">
-                        <!-- Image previews will be added here -->
+                        <div class="no-images-message"></div>
                     </div>
                 </div>
                 
@@ -640,95 +659,117 @@
             $('#repair-items-container').append(html);
         }
 
-        // Handle image file selection
+        // Handle image file selection - FIXED VERSION
         $(document).on('change', '.image-upload-input', function() {
             var index = $(this).data('index');
             var files = $(this)[0].files;
             var previewContainer = $('#image-preview-' + index);
             var counterElement = $('#image-counter-' + index);
             
+            // Clear existing previews and messages
+            previewContainer.empty();
+            
             // Update counter
             if (files.length > 0) {
                 counterElement.text(files.length + ' image(s) selected');
             } else {
                 counterElement.text('No images selected');
+                previewContainer.html('<div class="no-images-message">No images selected</div>');
+                return;
             }
             
-            // Clear existing previews
-            previewContainer.empty();
-            
-            // Create preview for each selected file
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                
-                // Validate file type and size
+            // Process each selected file
+            Array.from(files).forEach((file, fileIndex) => {
+                // Validate file type
                 if (!file.type.match('image.*')) {
-                    continue;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid file type',
+                        text: 'File "' + file.name + '" is not a valid image',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                    return;
                 }
                 
-                if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                // Validate file size (2MB limit)
+                if (file.size > 2 * 1024 * 1024) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'File too large',
                         text: 'File "' + file.name + '" exceeds 2MB limit',
                         confirmButtonColor: '#0d6efd'
                     });
-                    continue;
+                    return;
                 }
                 
+                // Create preview
                 var reader = new FileReader();
-                
-                reader.onload = (function(file, index, fileIndex) {
-                    return function(e) {
-                        var previewHtml = `
-                            <div class="image-preview">
-                                <img src="${e.target.result}" alt="Preview">
-                                <button type="button" class="remove-image" data-index="${index}" data-file-index="${fileIndex}">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        `;
-                        previewContainer.append(previewHtml);
-                    };
-                })(file, index, i);
-                
+                reader.onload = function(e) {
+                    var previewHtml = `
+                        <div class="image-preview-item">
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="remove-preview-image" data-index="${index}" data-file-index="${fileIndex}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    previewContainer.append(previewHtml);
+                };
                 reader.readAsDataURL(file);
-            }
+            });
         });
 
-        // Handle remove image from preview
-        $(document).on('click', '.remove-image', function() {
+        // Handle remove image from preview - FIXED VERSION
+        $(document).on('click', '.remove-preview-image', function() {
             var index = $(this).data('index');
             var fileIndex = $(this).data('file-index');
             var fileInput = $(`.image-upload-input[data-index="${index}"]`)[0];
-            var files = Array.from(fileInput.files);
             
-            // Remove the file from the FileList
-            files.splice(fileIndex, 1);
-            
-            // Create a new FileList (this is a workaround since FileList is read-only)
-            var newFileList = new DataTransfer();
-            files.forEach(function(file) {
-                newFileList.items.add(file);
-            });
-            
-            // Update the file input
-            fileInput.files = newFileList.files;
-            
-            // Remove the preview
-            $(this).closest('.image-preview').remove();
-            
-            // Update counter
-            var counterElement = $('#image-counter-' + index);
-            if (fileInput.files.length > 0) {
-                counterElement.text(fileInput.files.length + ' image(s) selected');
-            } else {
-                counterElement.text('No images selected');
+            if (fileInput && fileInput.files) {
+                // Convert FileList to Array
+                var files = Array.from(fileInput.files);
+                
+                // Remove the file from the array
+                files.splice(fileIndex, 1);
+                
+                // Create a new FileList
+                var dataTransfer = new DataTransfer();
+                files.forEach(file => dataTransfer.items.add(file));
+                
+                // Update the file input
+                fileInput.files = dataTransfer.files;
+                
+                // Remove the preview
+                $(this).closest('.image-preview-item').remove();
+                
+                // Update counter and check if no images left
+                var counterElement = $('#image-counter-' + index);
+                var previewContainer = $('#image-preview-' + index);
+                
+                if (fileInput.files.length > 0) {
+                    counterElement.text(fileInput.files.length + ' image(s) selected');
+                } else {
+                    counterElement.text('No images selected');
+                    previewContainer.html('<div class="no-images-message">No images selected</div>');
+                }
+                
+                // Re-index all remaining previews
+                reindexImagePreviews(index);
             }
-            
-            // Trigger change event to update the input
-            $(fileInput).trigger('change');
         });
+
+        // Function to re-index image previews after removal
+        function reindexImagePreviews(index) {
+            var previewContainer = $('#image-preview-' + index);
+            var fileInput = $(`.image-upload-input[data-index="${index}"]`)[0];
+            
+            if (fileInput && fileInput.files) {
+                // Update data-file-index for all remaining previews
+                previewContainer.find('.remove-preview-image').each(function(newIndex) {
+                    $(this).data('file-index', newIndex);
+                });
+            }
+        }
 
         // Handle Add Another Item button click
         $(document).on('click', '#add-another-item', function() {
@@ -800,11 +841,6 @@
                     var newCounterId = oldCounterId.replace(/-\d+$/, '-' + index);
                     $(this).find('.image-counter').attr('id', newCounterId);
                 }
-                
-                // Update remove image buttons
-                $(this).find('.remove-image').each(function() {
-                    $(this).attr('data-index', index);
-                });
             });
             
             itemCounter = $('.repair-item').length - 1;

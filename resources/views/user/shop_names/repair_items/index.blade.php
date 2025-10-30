@@ -491,11 +491,15 @@
         font-size: 12px;
         cursor: pointer;
     }
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
     .image-preview-item {
-        display: inline-block;
-        margin-right: 10px;
-        margin-bottom: 10px;
         position: relative;
+        display: inline-block;
     }
     .image-preview-item img {
         width: 100px;
@@ -516,6 +520,10 @@
         height: 20px;
         font-size: 12px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
     }
     .image-upload-input {
         margin-bottom: 10px;
@@ -675,7 +683,7 @@
                         <input type="file" class="form-control-file image-upload-input" id="images_${index}" name="repair_items[${index}][images][]" multiple accept="image/*">
                         <small class="form-text text-muted">You can select multiple images. Maximum file size: 2MB per image.</small>
                     </div>
-                    <div class="image-preview mt-2" id="image_preview_${index}">
+                    <div class="image-preview-container" id="image_preview_${index}">
                         <!-- Image previews will be shown here -->
                     </div>
                 </div>
@@ -693,22 +701,48 @@
             $('#repair-items-container').append(html);
         }
 
-        // Handle image preview for add form
+        // Handle image preview for add form - FIXED VERSION
         $(document).on('change', '.image-upload-input', function() {
-            var previewContainer = $(this).siblings('.image-preview');
+            var previewContainer = $(this).closest('.image-upload-section').find('.image-preview-container');
             previewContainer.empty();
             
             var files = $(this)[0].files;
+            
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
+                
+                // Check file size (2MB limit)
+                if (file.size > 2 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File too large',
+                        text: 'File ' + file.name + ' is too large. Maximum size is 2MB.',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                    continue;
+                }
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid file type',
+                        text: 'File ' + file.name + ' is not an image.',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                    continue;
+                }
+                
                 var reader = new FileReader();
                 
                 reader.onload = (function(file) {
                     return function(e) {
-                        var previewItem = $('<div class="image-preview-item mr-2 mb-2">' +
-                            '<img src="' + e.target.result + '" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #28a745;">' +
-                            '<button type="button" class="remove-preview-image" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">&times;</button>' +
-                            '</div>');
+                        var previewItem = $(
+                            '<div class="image-preview-item">' +
+                            '<img src="' + e.target.result + '" alt="Preview" class="img-preview">' +
+                            '<button type="button" class="remove-preview-image" data-file-name="' + file.name + '">&times;</button>' +
+                            '</div>'
+                        );
                         
                         previewContainer.append(previewItem);
                     };
@@ -718,9 +752,25 @@
             }
         });
 
-        // Handle remove preview image
+        // Handle remove preview image for add form
         $(document).on('click', '.remove-preview-image', function() {
+            var fileName = $(this).data('file-name');
+            var previewContainer = $(this).closest('.image-preview-container');
+            var fileInput = previewContainer.closest('.image-upload-section').find('.image-upload-input')[0];
+            
+            // Remove the preview
             $(this).closest('.image-preview-item').remove();
+            
+            // Remove the file from the input
+            if (fileInput && fileInput.files) {
+                var files = Array.from(fileInput.files);
+                var updatedFiles = files.filter(file => file.name !== fileName);
+                
+                // Create a new FileList (simulated)
+                var dataTransfer = new DataTransfer();
+                updatedFiles.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+            }
         });
 
         // Handle Add Another Item button click
@@ -965,28 +1015,74 @@
             $(this).closest('.existing-image-item').remove();
         });
 
-        // Handle new image preview for edit form
+        // Handle new image preview for edit form - FIXED VERSION
         $('#edit_images').on('change', function() {
             var previewContainer = $('#edit_image_preview');
             previewContainer.empty();
             
             var files = $(this)[0].files;
+            
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
+                
+                // Check file size (2MB limit)
+                if (file.size > 2 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File too large',
+                        text: 'File ' + file.name + ' is too large. Maximum size is 2MB.',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                    continue;
+                }
+                
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid file type',
+                        text: 'File ' + file.name + ' is not an image.',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                    continue;
+                }
+                
                 var reader = new FileReader();
                 
                 reader.onload = (function(file) {
                     return function(e) {
-                        var previewItem = $('<div class="image-preview-item mr-2 mb-2">' +
-                            '<img src="' + e.target.result + '" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #28a745;">' +
-                            '<button type="button" class="remove-preview-image" style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">&times;</button>' +
-                            '</div>');
+                        var previewItem = $(
+                            '<div class="image-preview-item">' +
+                            '<img src="' + e.target.result + '" alt="Preview" class="img-preview">' +
+                            '<button type="button" class="remove-preview-image" data-file-name="' + file.name + '">&times;</button>' +
+                            '</div>'
+                        );
                         
                         previewContainer.append(previewItem);
                     };
                 })(file);
                 
                 reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle remove preview image for edit form
+        $(document).on('click', '#edit_image_preview .remove-preview-image', function() {
+            var fileName = $(this).data('file-name');
+            var fileInput = $('#edit_images')[0];
+            
+            // Remove the preview
+            $(this).closest('.image-preview-item').remove();
+            
+            // Remove the file from the input
+            if (fileInput && fileInput.files) {
+                var files = Array.from(fileInput.files);
+                var updatedFiles = files.filter(file => file.name !== fileName);
+                
+                // Create a new FileList (simulated)
+                var dataTransfer = new DataTransfer();
+                updatedFiles.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
             }
         });
 

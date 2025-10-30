@@ -29,7 +29,7 @@
             <div>
                 <a class="btn btn-primary" href="{{ route('user.shop_names.index')}}">
                     <i class="fas fa-arrow-left"></i> Back to Shops
-                    </a>
+                </a>
             </div>
         </div>
 
@@ -202,10 +202,10 @@
                                                 <img src="{{ Storage::url($image) }}" 
                                                      alt="Repair Image {{ $index + 1 }}"
                                                      class="img-fluid rounded image-thumbnail"
-                                                     onclick="openImageModal('{{ Storage::url($image) }}')">
+                                                     data-image-src="{{ Storage::url($image) }}">
                                                 <div class="image-actions mt-2">
-                                                    <button class="btn btn-sm btn-outline-primary" 
-                                                            onclick="openImageModal('{{ Storage::url($image) }}')">
+                                                    <button class="btn btn-sm btn-outline-primary view-image-btn" 
+                                                            data-image-src="{{ Storage::url($image) }}">
                                                         <i class="fas fa-expand"></i> View
                                                     </button>
                                                     <a href="{{ Storage::url($image) }}" 
@@ -233,9 +233,7 @@
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="d-flex justify-content-end gap-2">
-                        
-                       
-                        </form>
+                        <!-- Add any action buttons here if needed -->
                     </div>
                 </div>
             </div>
@@ -359,6 +357,12 @@
         padding: 0.35em 0.65em;
     }
 
+    #modalImage {
+        max-height: 70vh;
+        width: auto;
+        max-width: 100%;
+    }
+
     @media (max-width: 768px) {
         .info-item {
             flex-direction: column;
@@ -397,26 +401,44 @@
 
 <script>
     function openImageModal(imageSrc) {
-       
+        const modalImage = document.getElementById('modalImage');
+        const downloadImage = document.getElementById('downloadImage');
+        
+        // Set image source
+        modalImage.src = imageSrc;
+        
+        // Set download link
+        downloadImage.href = imageSrc;
+        downloadImage.download = imageSrc.split('/').pop() || 'repair_image.jpg';
         
         // Initialize Bootstrap modal
-        var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+        const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
         imageModal.show();
     }
+
+    // Initialize image gallery with click functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click event to image thumbnails
+        const imageThumbnails = document.querySelectorAll('.image-thumbnail');
+        imageThumbnails.forEach((img) => {
+            img.addEventListener('click', function() {
+                const imageSrc = this.getAttribute('data-image-src') || this.src;
+                openImageModal(imageSrc);
+            });
+        });
+
+        // Add click event to view buttons
+        const viewButtons = document.querySelectorAll('.view-image-btn');
+        viewButtons.forEach((button) => {
+            button.addEventListener('click', function() {
+                const imageSrc = this.getAttribute('data-image-src');
+                openImageModal(imageSrc);
+            });
+        });
+    });
 
     function confirmDelete() {
         return confirm('Are you sure you want to delete this repair item? This action cannot be undone.');
     }
-
-    // Initialize image gallery with lightbox functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const images = document.querySelectorAll('.image-thumbnail');
-        
-        images.forEach((img, index) => {
-            img.addEventListener('click', function() {
-                openImageModal(this.src);
-            });
-        });
-    });
 </script>
 @endsection
